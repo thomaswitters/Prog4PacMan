@@ -51,12 +51,13 @@ namespace dae
 
         std::weak_ptr<GameObject> GetParent() const { return m_pParent; };
         void SetParent(std::shared_ptr<GameObject> parent, bool keepWorldPosition = false);
-
-        void RemoveChild(std::shared_ptr<GameObject> child);
-        void AddChild(std::shared_ptr<GameObject> child);
         std::vector<std::shared_ptr<GameObject>> GetChildren() const { return m_Children; }
 
     private:
+        void RemoveChild(std::shared_ptr<GameObject> child);
+        void AddChild(std::shared_ptr<GameObject> child);
+        bool IsChild(const std::shared_ptr<GameObject>& parent) const;
+
         std::weak_ptr<GameObject> m_pParent;
 
         std::vector<std::shared_ptr<BaseComponent>> m_Components;

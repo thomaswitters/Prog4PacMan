@@ -27,15 +27,10 @@ void RotationComponent::Update(float deltaTime)
         m_HasStartPos = true;
     }
     
-
     if (transform)
     {
-        // Get current position
-        //float currentPosX = transform->GetLocalPosition().x;
-        //float currentPosY = transform->GetLocalPosition().y;
-
-        float angularSpeed = m_RotationSpeed / m_Radius;
-        float rotationDirection = m_RotateClockwise ? 1.0f : -1.0f;
+        const float angularSpeed = m_RotationSpeed / m_Radius;
+        const float rotationDirection = m_RotateClockwise ? 1.0f : -1.0f;
         m_Angle += rotationDirection * angularSpeed * deltaTime;
 
         // Calculate new position relative to the current position

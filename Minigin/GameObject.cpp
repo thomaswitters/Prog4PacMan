@@ -55,6 +55,12 @@ void dae::GameObject::SetParent(std::shared_ptr<GameObject> parent, bool keepWor
     {
         return;
     }
+
+    if (IsChild(parent) || parent.get() == this || m_pParent.lock().get() == parent.get())
+    {
+        return;
+    }
+
     if (m_pParent.lock() == nullptr)
     {
         transform->SetLocalPosition(transform->GetWorldPosition());
@@ -78,15 +84,20 @@ void dae::GameObject::SetParent(std::shared_ptr<GameObject> parent, bool keepWor
             }
         }
     }
+
     if (m_pParent.lock())
     {
         m_pParent.lock()->RemoveChild(shared_from_this());
     }
+
     m_pParent = parent;
-    if (m_pParent.lock())
+
+    if (parent != nullptr)
     {
-        m_pParent.lock()->AddChild(shared_from_this());
+        parent->AddChild(shared_from_this());
     }
+
+   
 }
 
 void dae::GameObject::RemoveChild(std::shared_ptr<GameObject> child)
@@ -101,4 +112,30 @@ void dae::GameObject::RemoveChild(std::shared_ptr<GameObject> child)
 void dae::GameObject::AddChild(std::shared_ptr<GameObject> child)
 {
     m_Children.emplace_back(child);
+}
+
+bool dae::GameObject::IsChild(const std::shared_ptr<GameObject>& parent) const
+{
+    if (!parent)
+    {
+        return false;
+    }
+
+    for (const auto& child : m_Children)
+    {
+        if (child == parent)
+        {
+            return true;
+        }
+    }
+
+    for (const auto& child : m_Children)
+    {
+        if (child->IsChild(parent))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
