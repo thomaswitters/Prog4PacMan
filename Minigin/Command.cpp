@@ -1,11 +1,13 @@
 #include "Command.h"
 #include "InputManager.h"
+#include "PointsComponent.h"
+#include "HealthComponent.h"
 
 dae::MoveCommand::MoveCommand(std::shared_ptr<GameObject> object, float speed, glm::f32vec2 direction, bool useStickDir)
-	: m_pObject{ object }
-	, m_Speed{ speed }
-	, m_Direction{ direction }
-	, m_UseStickDir{ useStickDir }
+    : m_pObject{ object }
+    , m_Speed{ speed }
+    , m_Direction{ direction }
+    , m_UseStickDir{ useStickDir }
 {
 }
 
@@ -26,7 +28,7 @@ void dae::MoveCommand::Execute(float deltaTime)
         }
 
         m_Direction.x = stickValues.x;
-        m_Direction.y = stickValues.y; 
+        m_Direction.y = stickValues.y;
     }
 
     currentPos.x += m_Speed * m_Direction.x * deltaTime;
@@ -39,4 +41,27 @@ void dae::MoveCommand::Execute(float deltaTime)
 void dae::Command::Undo(float)
 {
 
+}
+
+dae::AddPointsCommand::AddPointsCommand(std::shared_ptr<GameObject> object, int amount)
+    : m_pObject{ object }
+    , AmountPoints{ amount }
+{
+}
+
+void dae::AddPointsCommand::Execute(float)
+{
+    auto points = m_pObject.lock().get()->GetComponent<PointsComponent>();
+    points.get()->AddPoints(AmountPoints);
+}
+
+dae::RemoveHealthCommand::RemoveHealthCommand(std::shared_ptr<GameObject> object)
+    : m_pObject{ object }
+{
+}
+
+void dae::RemoveHealthCommand::Execute(float)
+{
+    auto Health = m_pObject.lock().get()->GetComponent<HealthComponent>();
+    Health.get()->RemoveHealth(1);
 }
