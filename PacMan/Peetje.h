@@ -61,7 +61,7 @@ namespace dae
 
             m_TransFormComponent = std::make_shared<TransformComponent>(m_PacMan);
             m_PacMan->AddComponent(m_TransFormComponent);
-            m_MoveComponent = std::make_shared<PacManMoveComponent>(m_PacMan, 60.f);
+            m_MoveComponent = std::make_shared<PacManMoveComponent>(m_PacMan, 60.f, 10, 8);
             m_PacMan->AddComponent(m_MoveComponent);
             auto pointsComponent = std::make_shared<PointsComponent>(m_PacMan);
             m_PacMan->AddComponent(pointsComponent);

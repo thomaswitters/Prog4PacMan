@@ -12,7 +12,7 @@ namespace FSMStates
     class Patrol : public FSMState
     {
     public:
-        Patrol(std::weak_ptr<GameObject> pOwner) : FSMState(pOwner) {}
+        Patrol(std::shared_ptr<GameObject> pOwner, std::vector<int> targetCellIndices) : FSMState(pOwner), m_TargetCellIndices(targetCellIndices) {}
         ~Patrol() = default;
 
         Patrol(const Patrol&) = delete;
@@ -23,20 +23,20 @@ namespace FSMStates
         void OnEnter();
         void OnExit();
         void Update(float deltaTime);
-        std::vector<glm::vec2> GetPatrolPath() const;
-        size_t FindClosestWaypointIndex(const glm::vec2& currentPosition) const;
     private:
-        std::shared_ptr<TransformComponent> m_Transform;
-        std::vector<glm::vec2> m_PatrolPath;
-        size_t m_CurrentWaypointIndex = 0;
-        float m_Speed = 50.0f;
-        float m_Tolerance = 1.0f;
+        std::vector<int> m_TargetCellIndices;
     };
 
     class ChasePlayer : public FSMState
     {
     public:
-        ChasePlayer(std::weak_ptr<GameObject> pOwner) : FSMState(pOwner) {};
+        enum class FindPathType {
+            NONE,
+            BESTPATH,
+            SECONDBESTPATH
+        };
+
+        ChasePlayer(std::shared_ptr<GameObject> pOwner, FindPathType fincPathType) : FSMState(pOwner), m_FincPathType(fincPathType) {};
         ~ChasePlayer() = default;
 
         ChasePlayer(const ChasePlayer&) = delete;
@@ -48,6 +48,12 @@ namespace FSMStates
         void OnExit() override;
         void Update(float deltaTime) override;
 
+        
+    private:
+        std::shared_ptr<PacManMoveComponent> m_PlayerMoveComponent;
+        std::shared_ptr<GameObject> m_Player;
+
+        FindPathType m_FincPathType;
     };
 
     class Scatter : public FSMState

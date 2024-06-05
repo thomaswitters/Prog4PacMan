@@ -65,7 +65,7 @@ namespace dae
                     healthComponent->RemoveHealth(m_LoseHealthOnPickup);
                 }
 
-                GetOwner().lock()->RemoveObject();
+                //GetOwner().lock()->RemoveObject();
                 break;
             }
             default:

@@ -4,13 +4,21 @@
 #include "GameObject.h"
 #include <vector>
 #include "FOVComponent.h"
+#include "PacManMoveComponent.h"
 
 namespace dae
 {
 	class FSMState
 	{
 	public:
-		FSMState(std::weak_ptr<GameObject> pOwner) : m_pOwner(pOwner) {}
+		FSMState(std::shared_ptr<GameObject> pOwner) : m_pOwner(pOwner) {
+			if (m_pOwner)
+			{
+				m_pFovComponent = m_pOwner->GetComponent<FOVComponent>();
+				m_MoveCoomponent = m_pOwner->GetComponent<PacManMoveComponent>();
+			}
+				
+		}
 		virtual ~FSMState() = default;
 
 		virtual void OnEnter() {}
@@ -18,7 +26,9 @@ namespace dae
 		virtual void Update(float) {}
 
 	protected:
-		std::weak_ptr<GameObject> m_pOwner;
+		std::shared_ptr<GameObject> m_pOwner;
+		std::shared_ptr<PacManMoveComponent> m_MoveCoomponent;
+		std::shared_ptr<FOVComponent> m_pFovComponent;
 	};
 
 	class FSMCondition
@@ -26,13 +36,18 @@ namespace dae
 	public:
 		FSMCondition(std::shared_ptr<GameObject> pOwner) : m_pOwner(pOwner) {
 			if (m_pOwner)
+			{
 				m_pFovComponent = m_pOwner->GetComponent<FOVComponent>();
+				m_MoveCoomponent = m_pOwner->GetComponent<PacManMoveComponent>();
+			}
 		}
 		virtual ~FSMCondition() = default;
 		virtual bool Evaluate() const = 0;
 	protected:
 		std::shared_ptr<GameObject> m_pOwner;
 		std::shared_ptr<FOVComponent> m_pFovComponent;
+		std::shared_ptr<PacManMoveComponent> m_MoveCoomponent;
+
 	};
 
 	class FiniteStateMachine final : public BaseComponent

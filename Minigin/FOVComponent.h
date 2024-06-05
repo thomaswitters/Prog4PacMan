@@ -6,14 +6,14 @@
 
 namespace dae
 {
-	class FOVComponent : public BaseComponent
-	{
-	public:
-		FOVComponent(std::weak_ptr<GameObject> owner, float viewAngle, float viewDistance)
-			: BaseComponent(owner), m_ViewAngle(viewAngle), m_ViewDistance(viewDistance), m_PlayerInSight(false), m_Angle(0.f){}
+    class FOVComponent : public BaseComponent
+    {
+    public:
+        FOVComponent(std::weak_ptr<GameObject> owner, float viewAngle, float viewDistance)
+            : BaseComponent(owner), m_ViewAngle(viewAngle), m_ViewDistance(viewDistance), m_PlayerInSight(false), m_Angle(0.f) {}
 
-		void Update(float) override
-		{
+        void Update(float) override
+        {
             auto owner = GetOwner().lock();
             if (!owner)
                 return;
@@ -23,6 +23,8 @@ namespace dae
                 return;
 
             auto gameObjects = scene->GetObjects();
+            m_PlayerInSight = false;  // Resetting player in sight each update
+            m_PlayerInVision.reset(); // Resetting the stored player reference
 
             for (auto& gameObject : gameObjects)
             {
@@ -52,7 +54,7 @@ namespace dae
                     {
                         m_Angle = 0.f;
                     }
-                    else if(ownerTransform->GetDirection() == glm::f32vec2{ 0.f, 1.f })
+                    else if (ownerTransform->GetDirection() == glm::f32vec2{ 0.f, 1.f })
                     {
                         m_Angle = 90.f;
                     }
@@ -64,12 +66,8 @@ namespace dae
                     {
                         m_Angle = 270.f;
                     }
-                    // glm::f32vec2{ 1.f, 0.f } = agle 0 degrees
-                    // glm::f32vec2{ 0.f, 1.f } = agle 90 degrees
-                    // glm::f32vec2{ -1.f, 0.f } = agle 180 degrees
-                    // glm::f32vec2{ 0.f, -1.f } = agle 270 degrees
 
-                    double angleDifference = std::abs(/*ownerTransform->GetRotation()*/m_Angle - angleToTarget);
+                    double angleDifference = std::abs(m_Angle - angleToTarget);
 
                     if (angleDifference > 180)
                         angleDifference = 360 - angleDifference;
@@ -78,18 +76,14 @@ namespace dae
                         std::sqrt(dx * dx + dy * dy) <= m_ViewDistance)
                     {
                         m_PlayerInSight = true;
-                    }
-                    else
-                    {
-                        m_PlayerInSight = false;
+                        m_PlayerInVision = gameObject;
                     }
                 }
             }
-		}
-        //just render to test
-		void Render() const override
-		{
-            //Just to test
+        }
+
+       /* void Render() const override
+        {
             auto owner = GetOwner().lock();
             if (!owner)
                 return;
@@ -105,11 +99,10 @@ namespace dae
             SDL_SetRenderDrawColor(renderer, 255, 0, 0, 128);
 
             std::vector<SDL_Point> fovVertices;
-            fovVertices.push_back({ static_cast<int>(ownerTransform->GetWorldPosition().x + 7.f), static_cast<int>(ownerTransform->GetWorldPosition().y + 8.f)});
+            fovVertices.push_back({ static_cast<int>(ownerTransform->GetWorldPosition().x + 7.f), static_cast<int>(ownerTransform->GetWorldPosition().y + 8.f) });
 
-            float startAngle =/* ownerTransform->GetRotation()*/m_Angle - m_ViewAngle / 2;
-            float endAngle = /*ownerTransform->GetRotation()*/m_Angle + m_ViewAngle / 2;
-
+            float startAngle = m_Angle - m_ViewAngle / 2;
+            float endAngle = m_Angle + m_ViewAngle / 2;
 
             const int numSegments = 120;
             const float angleStep = m_ViewAngle / numSegments;
@@ -127,17 +120,24 @@ namespace dae
             SDL_RenderDrawLines(renderer, fovVertices.data(), static_cast<int>(fovVertices.size()));
 
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-		}
+        }*/
 
-        bool GetPlayerInSight()
+        bool GetPlayerInSight() const
         {
             return m_PlayerInSight;
         }
-	private:
+
+        std::shared_ptr<GameObject> GetPlayerInVision() const
+        {
+            return m_PlayerInVision.lock();
+        }
+
+    private:
         float m_ViewDistance;
-		float m_ViewAngle;
+        float m_ViewAngle;
         bool m_PlayerInSight;
         float m_Angle;
-	};
+        std::weak_ptr<GameObject> m_PlayerInVision;
+    };
 }
 

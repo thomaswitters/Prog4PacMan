@@ -13,107 +13,69 @@ using namespace FSMConditions;
 //------------
 
 //------------ Patrol State ------------
-
 void Patrol::OnEnter() {
-    std::cout << "Entering Patrol state" << std::endl;
-    m_Transform = m_pOwner.lock()->GetComponent<TransformComponent>();
+    m_MoveCoomponent->SetFollowPath(true);
 
-    m_PatrolPath = GetPatrolPath();
-    glm::vec2 currentPosition = m_Transform->GetLocalPosition();
-    m_CurrentWaypointIndex = FindClosestWaypointIndex(currentPosition);
+    m_MoveCoomponent->SetTargetCellIndex(m_TargetCellIndices[0]);
 }
 
 void Patrol::OnExit() {
+    m_MoveCoomponent->SetCurrentIndex(m_MoveCoomponent->GetCurrentGraphCellId());
 }
 
 void Patrol::Update(float deltaTime) {
-    if (m_Transform) {
-        glm::vec2 currentPosition = m_Transform->GetLocalPosition();
+    int currentCell = m_MoveCoomponent->GetCurrentIndex();
+    int nextCell = 0;
 
-        if (!m_PatrolPath.empty()) {
-            glm::vec2 currentWaypoint = m_PatrolPath[m_CurrentWaypointIndex];
+    if (m_MoveCoomponent->HasReachedTargetCell()) {
+        if (currentCell == m_TargetCellIndices[0])
+            nextCell = m_TargetCellIndices[1];
+        else if (currentCell == m_TargetCellIndices[1])
+            nextCell = m_TargetCellIndices[2];
+        else if (currentCell == m_TargetCellIndices[2])
+            nextCell = m_TargetCellIndices[3];
+        else
+            nextCell = m_TargetCellIndices[0];
 
-            glm::vec2 direction = glm::normalize(currentWaypoint - currentPosition);
-
-            glm::vec2 newPosition = currentPosition + direction * m_Speed * deltaTime;
-
-            float distanceToWaypoint = glm::length(currentWaypoint - newPosition);
-            if (distanceToWaypoint < m_Tolerance) {
-                m_CurrentWaypointIndex = (m_CurrentWaypointIndex + 1) % m_PatrolPath.size();
-            }
-
-            m_Transform->Translate(glm::vec3(newPosition - currentPosition, 0.f));
-
-            if (glm::abs(direction.y) > glm::abs(direction.x)) {
-                if (direction.y > 0)
-                    m_Transform->SetDirection(glm::f32vec2{ 0.f, 1.f });
-                else
-                    m_Transform->SetDirection(glm::f32vec2{ 0.f, -1.f });
-            }
-            else {
-                if (direction.x > 0)
-                    m_Transform->SetDirection(glm::f32vec2{ 1.f, 0.f });
-                else
-                    m_Transform->SetDirection(glm::f32vec2{ -1.f, 0.f });
-            }
-        }
-        else {
-            std::cerr << "Patrol path is empty!" << std::endl;
-        }
+        m_MoveCoomponent->SetTargetCellIndex(nextCell);
     }
-    else {
-        std::cerr << "TransformComponent not found!" << std::endl;
-    }
-}
-std::vector<glm::vec2> Patrol::GetPatrolPath() const {
-    std::vector<glm::vec2> patrolPath;
 
-    patrolPath.push_back(glm::vec2(100.f, 50.f)); // Waypoint 1
-    patrolPath.push_back(glm::vec2(200.f, 50.f)); // Waypoint 2
-    patrolPath.push_back(glm::vec2(200.f, 150.f)); // Waypoint 3
-    patrolPath.push_back(glm::vec2(100.f, 150.f)); // Waypoint 4
-
-    return patrolPath;
-}
-size_t Patrol::FindClosestWaypointIndex(const glm::vec2& currentPosition) const {
-    if (!m_PatrolPath.empty()) {
-        size_t closestIndex = 0;
-        float closestDistance = glm::length(currentPosition - m_PatrolPath[0]);
-
-        for (size_t i = 1; i < m_PatrolPath.size(); ++i) {
-            float distance = glm::length(currentPosition - m_PatrolPath[i]);
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                closestIndex = i;
-            }
-        }
-
-        return closestIndex;
-    }
-    else {
-        std::cerr << "Patrol path is empty!" << std::endl;
-        return 0;
-    }
+    m_MoveCoomponent->FollowPath(deltaTime, nextCell);
 }
 
 
 //------------ ChasePlayer State ------------
-
 void ChasePlayer::OnEnter() {
-    std::cout << "Entering ChasePlayer state" << std::endl;
+    m_Player = m_pFovComponent->GetPlayerInVision();
+    m_PlayerMoveComponent = m_Player->GetComponent<PacManMoveComponent>();
+    m_MoveCoomponent->SetFollowPath(true); 
+
+    m_MoveCoomponent->SetTargetCellIndex(m_PlayerMoveComponent->GetCurrentIndex());
 }
 
 void ChasePlayer::OnExit() {
-
+    m_MoveCoomponent->FollowPath(0.0f, m_PlayerMoveComponent->GetCurrentIndex());
 }
 
-void ChasePlayer::Update(float) {
+void ChasePlayer::Update(float deltaTime) {
 
+    switch (m_FincPathType) 
+    {
+    case FSMStates::ChasePlayer::FindPathType::NONE:
+        break;
+    case FSMStates::ChasePlayer::FindPathType::BESTPATH:
+        m_MoveCoomponent->FollowPath(deltaTime, m_PlayerMoveComponent->GetCurrentIndex());
+        break;
+    case FSMStates::ChasePlayer::FindPathType::SECONDBESTPATH:
+        m_MoveCoomponent->FollowSecondBestPath(deltaTime, m_PlayerMoveComponent->GetCurrentIndex());
+        break;
+    default:
+        break;
+    }
 }
 
 
 //------------ Scatter State ------------
-
 void Scatter::OnEnter() {
     std::cout << "Entering Scatter state" << std::endl;
     // Add logic for entering the scatter state
@@ -131,7 +93,6 @@ void Scatter::Update(float) {
 
 
 //------------ Frightened State ------------
-
 void Frightened::OnEnter() {
     std::cout << "Entering Frightened state" << std::endl;
     // Add logic for entering the frightened state
@@ -149,7 +110,6 @@ void Frightened::Update(float) {
 
 
 //------------ ReturnToBase State ------------
-
 void ReturnToBase::OnEnter() {
     std::cout << "Entering ReturnToBase state" << std::endl;
     // Add logic for entering the return to base state
@@ -167,7 +127,6 @@ void ReturnToBase::Update(float) {
 
 
 //----------------- Conditions -----------------
-
 bool PlayerInSight::Evaluate() const {
     if (m_pFovComponent && m_pFovComponent->GetPlayerInSight())
         return true;
@@ -176,7 +135,7 @@ bool PlayerInSight::Evaluate() const {
 }
 
 bool PlayerNotInSight::Evaluate() const {
-    if (m_pFovComponent && !m_pFovComponent->GetPlayerInSight())
+    if (m_pFovComponent && !m_pFovComponent->GetPlayerInSight() && m_MoveCoomponent->HasReachedTargetCell())
         return true;
 
     return false;
