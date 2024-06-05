@@ -33,11 +33,9 @@ void RotationComponent::Update(float deltaTime)
         const float rotationDirection = m_RotateClockwise ? 1.0f : -1.0f;
         m_Angle += rotationDirection * angularSpeed * deltaTime;
 
-        // Calculate new position relative to the current position
         float newX = m_StartPos.x + m_Radius * std::cos(m_Angle);
         float newY = m_StartPos.y + m_Radius * std::sin(m_Angle);
 
-        // Set the new position
         transform->SetLocalPosition({ newX, newY, 0.f });
     }
 	

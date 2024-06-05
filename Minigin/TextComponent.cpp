@@ -4,7 +4,6 @@
 #include "Font.h"
 #include "Texture2D.h"
 #include "GameObject.h"
-#include "RenderComponent.h"
 
 using namespace dae;
 
@@ -15,7 +14,9 @@ TextComponent::TextComponent(std::weak_ptr<GameObject> owner, const std::string&
 	m_pFont(std::move(font)),
 	m_Color(color),
 	m_pTextTexture(nullptr)
-{}
+{
+	m_pRenderComponent = GetOwner().lock()->GetComponent<RenderComponent>();
+}
 
 void TextComponent::Update(float)
 {
@@ -39,10 +40,9 @@ void TextComponent::Update(float)
 
 void TextComponent::Render() const
 {
-	auto renderComponent = GetOwner().lock()->GetComponent<RenderComponent>();
-	if (renderComponent)
+	if (m_pRenderComponent)
 	{
-		renderComponent->SetTexture(m_pTextTexture);
+		m_pRenderComponent->SetTexture(m_pTextTexture);
 	}
 }
 

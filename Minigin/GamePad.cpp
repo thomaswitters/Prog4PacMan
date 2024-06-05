@@ -1,147 +1,126 @@
 #include "GamePad.h"
-#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <Xinput.h>
 #pragma comment(lib, "xinput.lib")
 
-class dae::GamePad::GamePadImpl
-{
-public:
-	GamePadImpl(unsigned int controllerIndex);
+namespace dae {
+    class GamePad::GamePadImpl {
+    public:
+        GamePadImpl(unsigned int index);
+        void Update();
 
-	void Update();
+        bool IsDownThisFrame(unsigned int button) const;
+        bool IsUpThisFrame(unsigned int button) const;
+        bool IsButtonPressed(unsigned int button) const;
 
-	bool IsDownThisFrame(unsigned int button) const;
-	bool IsUpThisFrame(unsigned int button) const;
-	bool IsPressed(unsigned int button) const;
+        float GetLeftThumbstickX() const;
+        float GetLeftThumbstickY() const;
+        float GetRightThumbstickX() const;
+        float GetRightThumbstickY() const;
+    private:
+        XINPUT_STATE m_CurrentState{};
+        XINPUT_STATE m_PreviousState{};
 
-	float GetLeftStickX() const;
-	float GetLeftStickY() const;
-	float GetRightStickX() const;
-	float GetRightStickY() const;
+        WORD m_PressedThisFrame;
+        WORD m_ReleasedThisFrame;
 
-private:
-	XINPUT_STATE m_CurrentState{};
-	XINPUT_STATE m_PreviusState{};
+        unsigned int m_GamePadIndex{ 0 };
 
-	WORD m_ButtonPressedThisFrame;
-	WORD m_ButtonReleasedThisFrame;
+        float m_LeftThumbstickX{};
+        float m_LeftThumbstickY{};
+        float m_RightThumbstickX{};
+        float m_RightThumbstickY{};
+    };
 
-	unsigned int m_GamePadIndex{ 0 };
+    GamePad::GamePad(unsigned int index) {
+        pImpl = new GamePadImpl(index);
+    }
 
-	float m_LeftStickX{};
-	float m_LeftStickY{};
-	float m_RightStickX{};
-	float m_RightStickY{};
-};
+    GamePad::~GamePad() {
+        delete pImpl;
+    }
+
+    void GamePad::Update() {
+        pImpl->Update();
+    }
+
+    bool GamePad::IsButtonDown(ControllerButton button) {
+        return pImpl->IsDownThisFrame(static_cast<unsigned int>(button));
+    }
+
+    bool GamePad::IsButtonUp(ControllerButton button) {
+        return pImpl->IsUpThisFrame(static_cast<unsigned int>(button));
+    }
+
+    bool GamePad::IsButtonPressed(ControllerButton button) {
+        return pImpl->IsButtonPressed(static_cast<unsigned int>(button));
+    }
+
+    float GamePad::GetLeftThumbstickX() const {
+        return pImpl->GetLeftThumbstickX();
+    }
+
+    float GamePad::GetLeftThumbstickY() const {
+        return pImpl->GetLeftThumbstickY();
+    }
+
+    float GamePad::GetRightThumbstickX() const {
+        return pImpl->GetRightThumbstickX();
+    }
+
+    float GamePad::GetRightThumbstickY() const {
+        return pImpl->GetRightThumbstickY();
+    }
 
 
-dae::GamePad::GamePad(unsigned int controllerIndex)
-{
-	pImpl = new GamePadImpl(controllerIndex);
-}
+    GamePad::GamePadImpl::GamePadImpl(unsigned int index)
+        : m_GamePadIndex{ index }, m_PressedThisFrame{}, m_ReleasedThisFrame{} {
+        ZeroMemory(&m_PreviousState, sizeof(XINPUT_STATE));
+        ZeroMemory(&m_CurrentState, sizeof(XINPUT_STATE));
+    }
 
-dae::GamePad::~GamePad()
-{
-	delete pImpl;
-}
+    void GamePad::GamePadImpl::Update() {
+        CopyMemory(&m_PreviousState, &m_CurrentState, sizeof(XINPUT_STATE));
+        ZeroMemory(&m_CurrentState, sizeof(XINPUT_STATE));
+        XInputGetState(m_GamePadIndex, &m_CurrentState);
 
-void dae::GamePad::Update()
-{
-	pImpl->Update();
-}
+        auto buttonChanges = m_CurrentState.Gamepad.wButtons ^ m_PreviousState.Gamepad.wButtons;
+        m_PressedThisFrame = buttonChanges & m_CurrentState.Gamepad.wButtons;
+        m_ReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons);
 
-bool dae::GamePad::IsDown(ControllerButton button)
-{
-	return pImpl->IsDownThisFrame(static_cast<unsigned int>(button));
-}
+        m_LeftThumbstickX = m_CurrentState.Gamepad.sThumbLX;
+        m_LeftThumbstickY = m_CurrentState.Gamepad.sThumbLY;
+        m_RightThumbstickX = m_CurrentState.Gamepad.sThumbRX;
+        m_RightThumbstickY = m_CurrentState.Gamepad.sThumbRY;
+    }
 
-bool dae::GamePad::IsUp(ControllerButton button)
-{
-	return pImpl->IsUpThisFrame(static_cast<unsigned int>(button));
-}
+    bool GamePad::GamePadImpl::IsDownThisFrame(unsigned int button) const {
+        return m_PressedThisFrame & static_cast<int>(button);
+    }
 
-bool dae::GamePad::IsPressed(ControllerButton button)
-{
-	return pImpl->IsPressed(static_cast<unsigned int>(button));
-}
+    bool GamePad::GamePadImpl::IsUpThisFrame(unsigned int button) const {
+        return m_ReleasedThisFrame & static_cast<int>(button);
+    }
 
-float dae::GamePad::GetLeftStickX() const
-{
-	return pImpl->GetLeftStickX();
-}
-float dae::GamePad::GetLeftStickY() const
-{
-	return pImpl->GetLeftStickY();
-}
-float dae::GamePad::GetRightStickX() const
-{
-	return pImpl->GetRightStickX();
-}
-float dae::GamePad::GetRightStickY() const
-{
-	return pImpl->GetRightStickY();
-}
+    bool GamePad::GamePadImpl::IsButtonPressed(unsigned int button) const {
+        return m_CurrentState.Gamepad.wButtons & static_cast<int>(button);
+    }
 
-// GamePadImpl
-dae::GamePad::GamePadImpl::GamePadImpl(unsigned int controllerIndex)
-	: m_GamePadIndex{ controllerIndex }
-	, m_ButtonPressedThisFrame{}
-	, m_ButtonReleasedThisFrame{}
-{
-	ZeroMemory(&m_PreviusState, sizeof(XINPUT_STATE));
-	ZeroMemory(&m_CurrentState, sizeof(XINPUT_STATE));
-}
+    float GamePad::GamePadImpl::GetLeftThumbstickX() const {
+        return m_LeftThumbstickX;
+    }
 
-void dae::GamePad::GamePadImpl::Update()
-{
-	CopyMemory(&m_PreviusState, &m_CurrentState, sizeof(XINPUT_STATE));
-	ZeroMemory(&m_CurrentState, sizeof(XINPUT_STATE));
-	XInputGetState(m_GamePadIndex, &m_CurrentState);
+    float GamePad::GamePadImpl::GetLeftThumbstickY() const {
+        return m_LeftThumbstickY;
+    }
 
-	auto buttonChanges = m_CurrentState.Gamepad.wButtons xor m_PreviusState.Gamepad.wButtons; // ^ xor
-	m_ButtonPressedThisFrame = buttonChanges & m_CurrentState.Gamepad.wButtons;
-	m_ButtonReleasedThisFrame = buttonChanges & (~m_CurrentState.Gamepad.wButtons); // ~invert
+    float GamePad::GamePadImpl::GetRightThumbstickX() const {
+        return m_RightThumbstickX;
+    }
 
-	m_LeftStickX = m_CurrentState.Gamepad.sThumbLX;
-	m_LeftStickY = m_CurrentState.Gamepad.sThumbLY;
-	m_RightStickX = m_CurrentState.Gamepad.sThumbRX;
-	m_RightStickY = m_CurrentState.Gamepad.sThumbRY;
-}
-
-bool dae::GamePad::GamePadImpl::IsDownThisFrame(unsigned int button) const
-{
-	return m_ButtonPressedThisFrame & static_cast<int>(button);
-}
-
-bool dae::GamePad::GamePadImpl::IsUpThisFrame(unsigned int button) const
-{
-	return m_ButtonReleasedThisFrame & static_cast<int>(button);
-}
-
-bool dae::GamePad::GamePadImpl::IsPressed(unsigned int button) const
-{
-	return m_CurrentState.Gamepad.wButtons & static_cast<int>(button);
-}
-
-float dae::GamePad::GamePadImpl::GetLeftStickX() const 
-{ 
-	return m_LeftStickX; 
-}
-
-float dae::GamePad::GamePadImpl::GetLeftStickY() const
-{ 
-	return m_LeftStickY; 
-}
-
-float dae::GamePad::GamePadImpl::GetRightStickX() const 
-{ 
-	return m_RightStickX; 
-}
-
-float dae::GamePad::GamePadImpl::GetRightStickY() const 
-{ 
-	return m_RightStickY; 
+    float GamePad::GamePadImpl::GetRightThumbstickY() const {
+        return m_RightThumbstickY;
+    }
 }
 
 

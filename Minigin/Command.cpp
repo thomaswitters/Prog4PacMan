@@ -1,7 +1,6 @@
 #include "Command.h"
 #include "InputManager.h"
-#include "PointsComponent.h"
-#include "HealthComponent.h"
+
 
 dae::MoveCommand::MoveCommand(std::shared_ptr<GameObject> object, float speed, glm::f32vec2 direction, bool useStickDir)
     : m_pObject{ object }
@@ -16,12 +15,10 @@ void dae::MoveCommand::Execute(float deltaTime)
     auto objTransform{ m_pObject.lock()->GetComponent<TransformComponent>() };
     glm::vec3 currentPos{ objTransform->GetWorldPosition() };
 
-    // Check if useStickDir is true
     if (m_UseStickDir) {
 
         glm::vec2 stickValues = InputManager::GetInstance().GetControllerStickValues(GamePad::ControllerStick::LeftStick);
 
-        // Normalize stickValues to ensure its magnitude is capped at 1
         float magnitude = glm::length(stickValues);
         if (magnitude > 1.0f) {
             stickValues /= magnitude;
@@ -37,6 +34,24 @@ void dae::MoveCommand::Execute(float deltaTime)
 
 }
 
+dae::ChangeMoveDirCommand::ChangeMoveDirCommand(std::shared_ptr<GameObject> object, glm::f32vec2 direction, float angle)
+    : m_pObject{ object }
+    , m_Direction{ direction }
+    , m_Angle{ angle }
+{
+    m_pMoveComponent = m_pObject.lock()->GetComponent<PacManMoveComponent>();
+}
+
+void dae::ChangeMoveDirCommand::Execute(float)
+{
+    if (m_pMoveComponent != nullptr)
+    {
+        m_pMoveComponent->SetDirection(m_Direction);
+        m_pMoveComponent->SetAngle(m_Angle);
+    }
+   
+}
+
 
 void dae::Command::Undo(float)
 {
@@ -47,21 +62,27 @@ dae::AddPointsCommand::AddPointsCommand(std::shared_ptr<GameObject> object, int 
     : m_pObject{ object }
     , AmountPoints{ amount }
 {
+    m_pPoints = m_pObject.lock()->GetComponent<PointsComponent>();
 }
 
 void dae::AddPointsCommand::Execute(float)
 {
-    auto points = m_pObject.lock().get()->GetComponent<PointsComponent>();
-    points.get()->AddPoints(AmountPoints);
+    if (m_pPoints != nullptr)
+    {
+        m_pPoints.get()->AddPoints(AmountPoints);
+    }
 }
 
 dae::RemoveHealthCommand::RemoveHealthCommand(std::shared_ptr<GameObject> object)
     : m_pObject{ object }
 {
+    m_pHealth = m_pObject.lock()->GetComponent<HealthComponent>();
 }
 
 void dae::RemoveHealthCommand::Execute(float)
 {
-    auto Health = m_pObject.lock().get()->GetComponent<HealthComponent>();
-    Health.get()->RemoveHealth(1);
+    if (m_pHealth != nullptr)
+    {
+        m_pHealth.get()->RemoveHealth(1);
+    }
 }

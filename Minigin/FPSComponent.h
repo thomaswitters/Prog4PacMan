@@ -27,6 +27,8 @@ namespace dae
 		int m_FrameCount;
 		float m_ElapsedTime;
 		float m_Fps;
+
+		std::shared_ptr<TextComponent> m_TextComponent;
 	};
 }
 

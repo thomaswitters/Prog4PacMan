@@ -1,7 +1,7 @@
 #include "HealthComponent.h"
 
 
-dae::HealthComponent::HealthComponent(std::shared_ptr<GameObject> pOwner, int health)
+dae::HealthComponent::HealthComponent(std::weak_ptr<GameObject> pOwner, int health)
 	: BaseComponent(pOwner)
 	, m_Health{ health }
 {
@@ -10,6 +10,7 @@ dae::HealthComponent::HealthComponent(std::shared_ptr<GameObject> pOwner, int he
 
 void dae::HealthComponent::Update(float)
 {
+
 }
 
 void dae::HealthComponent::RemoveHealth(int amount)

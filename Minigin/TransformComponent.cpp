@@ -7,6 +7,8 @@ TransformComponent::TransformComponent(std::weak_ptr<GameObject> pOwner)
     : BaseComponent(pOwner)
     , m_LocalPosition{ 0.f, 0.f, 0.f }
     , m_WorldPosition{ 0.f, 0.f, 0.f}
+	, m_Direction{0.f, 0.f}
+	, m_RotationAngle{0.f}
 {
 }
 
@@ -29,6 +31,32 @@ const glm::vec3& TransformComponent::GetWorldPosition()
     return m_WorldPosition;
 }
 
+const float& TransformComponent::GetRotation()
+{
+	return m_RotationAngle;
+}
+
+const glm::f32vec2& TransformComponent::GetDirection()
+{
+	return m_Direction;
+}
+
+void TransformComponent::Translate(const glm::vec3& translation)
+{
+	m_LocalPosition += translation;
+	SetPositionDirty();
+}
+
+void TransformComponent::Rotate(float angle)
+{
+	m_RotationAngle += angle;
+}
+
+const void TransformComponent::SetAngle(const float& angle)
+{
+	m_RotationAngle = angle;
+}
+
 const void TransformComponent::SetLocalPosition(float x, float y, float z)
 {
     m_LocalPosition.x = x;
@@ -48,6 +76,11 @@ const void TransformComponent::SetLocalPosition(const glm::vec3& pos)
 const void TransformComponent::SetWorldPosition(const glm::vec3& pos)
 {
 	m_WorldPosition = pos;
+}
+
+const void TransformComponent::SetDirection(const glm::f32vec2& dir)
+{
+	m_Direction = dir;
 }
 
 void TransformComponent::UpdateWorldPosition()

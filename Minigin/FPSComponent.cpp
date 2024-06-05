@@ -12,7 +12,7 @@ FPSComponent::FPSComponent(std::weak_ptr<GameObject> owner) :
 	m_FrameCount(0),
 	m_Fps(0.f)
 {
-
+	m_TextComponent = GetOwner().lock()->GetComponent<TextComponent>();
 }
 
 void FPSComponent::Update(float deltaTime)
@@ -46,10 +46,10 @@ void FPSComponent::UpdateFps(float deltaTime)
 			//m_pTextComponent->SetText(stream.str());
 
 
-			auto textComponent = GetOwner().lock()->GetComponent<TextComponent>();
-			if (textComponent)
+			
+			if (m_TextComponent)
 			{
-				textComponent->SetText(stream.str());
+				m_TextComponent->SetText(stream.str());
 			}
 		}
 

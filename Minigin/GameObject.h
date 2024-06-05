@@ -14,6 +14,8 @@
 #include "TransformComponent.h"
 #include <set>
 
+#include "Scene.h"
+
 namespace dae
 {
     class Texture2D;
@@ -53,6 +55,19 @@ namespace dae
         void SetParent(std::shared_ptr<GameObject> parent, bool keepWorldPosition = false);
         std::vector<std::shared_ptr<GameObject>> GetChildren() const { return m_Children; }
 
+
+        void SetTag(const std::string& tag) { m_Tag = tag; }
+        std::string GetTag() const { return m_Tag; }
+        bool HasTag(const std::string& tag) const;
+
+        void SetScene(Scene* scene);
+        Scene* GetScene() const;
+
+        void RemoveObject();
+        bool GetRemoveObject();
+
+        void ClearComponents() { m_Components.clear();}
+
     private:
         void RemoveChild(std::shared_ptr<GameObject> child);
         void AddChild(std::shared_ptr<GameObject> child);
@@ -62,5 +77,10 @@ namespace dae
 
         std::vector<std::shared_ptr<BaseComponent>> m_Components;
         std::vector<std::shared_ptr<GameObject>> m_Children;
+
+        Scene* m_pScene;
+        std::string m_Tag;
+        
+        bool m_RemoveObject;
     };
 }

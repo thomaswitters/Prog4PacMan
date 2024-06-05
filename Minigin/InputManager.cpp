@@ -1,27 +1,13 @@
 #include <SDL.h>
 #include "InputManager.h"
-#include "imgui/imgui_impl_sdl2.h"
+//#include "imgui/imgui_impl_sdl2.h"
 
 using namespace dae;
 
 InputManager::InputManager()
 {
-    m_pControllers.push_back(new GamePad(0));
-    // Add keyboards
-    m_pKeyboards.push_back(new Keyboard(0)); 
-}
-
-InputManager::~InputManager()
-{
-    for (auto* controller : m_pControllers)
-    {
-        delete controller;
-    }
-
-    for (auto* keyboard : m_pKeyboards)
-    {
-        delete keyboard;
-    }
+    m_pControllers.push_back(std::make_unique<GamePad>(0));
+    m_pKeyboards.push_back(std::make_unique<Keyboard>(0));
 }
 
 bool InputManager::ProcessInput(float deltaTime)
@@ -34,7 +20,7 @@ bool InputManager::ProcessInput(float deltaTime)
             return false;
         }
 
-        ImGui_ImplSDL2_ProcessEvent(&e);
+        //ImGui_ImplSDL2_ProcessEvent(&e);
     }
 
 
@@ -51,19 +37,19 @@ bool InputManager::ProcessInput(float deltaTime)
             switch (commandData.second)
             {
             case KeyState::keyPressed:
-                if (m_pControllers[i]->IsPressed(button))
+                if (m_pControllers[i]->IsButtonPressed(button))
                 {
                     commandData.first->Execute(deltaTime);
                 }
                 break;
             case KeyState::keyUp:
-                if (m_pControllers[i]->IsUp(button))
+                if (m_pControllers[i]->IsButtonUp(button))
                 {
                     commandData.first->Execute(deltaTime);
                 }
                 break;
             case KeyState::keyDown:
-                if (m_pControllers[i]->IsDown(button))
+                if (m_pControllers[i]->IsButtonDown(button))
                 {
                     commandData.first->Execute(deltaTime);
                 }
@@ -150,13 +136,13 @@ glm::vec2 InputManager::GetControllerStickValues(GamePad::ControllerStick stick)
 
     if (stick == GamePad::ControllerStick::LeftStick)
     {
-        dir.x = m_pControllers[0]->GetLeftStickX();
-        dir.y = -m_pControllers[0]->GetLeftStickY();
+        dir.x = m_pControllers[0]->GetLeftThumbstickX();
+        dir.y = -m_pControllers[0]->GetLeftThumbstickY();
     }
     else
     {
-        dir.x = m_pControllers[0]->GetRightStickX();
-        dir.y = -m_pControllers[0]->GetRightStickY();
+        dir.x = m_pControllers[0]->GetRightThumbstickX();
+        dir.y = -m_pControllers[0]->GetRightThumbstickY();
     }
 
     return dir;

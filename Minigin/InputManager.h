@@ -19,7 +19,6 @@ namespace dae
     {
     public:
         InputManager();
-        ~InputManager();
 
         bool ProcessInput(float deltaTime);
 
@@ -31,8 +30,8 @@ namespace dae
 
     private:
         KeyState m_InputType = KeyState::keyDown;
-        std::vector<GamePad*> m_pControllers;
-        std::vector<Keyboard*> m_pKeyboards;
+        std::vector<std::unique_ptr<GamePad>> m_pControllers;
+        std::vector<std::unique_ptr<Keyboard>> m_pKeyboards;
 
         std::map<GamePad::ControllerButton, std::pair<std::unique_ptr<Command>, KeyState>> m_GamePadCommands;
         std::map<GamePad::ControllerStick, std::unique_ptr<Command>> m_GamePadStickCommands;

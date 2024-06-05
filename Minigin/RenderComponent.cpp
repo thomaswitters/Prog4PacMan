@@ -40,10 +40,11 @@ void dae::RenderComponent::Render() const
 		return;
 	}
 	glm::vec3 pos = transform->GetWorldPosition();
+	float rotationAngle = transform->GetRotation();
 	if (m_Texture != nullptr)
 	{
 		//auto size = glm::vec2(m_Texture.get()->GetSize().x, m_Texture.get()->GetSize().y) * 2.f;
-		dae::Renderer::GetInstance().RenderTexture(*m_Texture, pos.x, pos.y);
+		dae::Renderer::GetInstance().RenderTexture(*m_Texture, pos.x, pos.y, rotationAngle);
 	}
 }
 

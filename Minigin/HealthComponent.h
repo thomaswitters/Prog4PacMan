@@ -7,7 +7,7 @@ namespace dae
 	class HealthComponent final : public BaseComponent
 	{
 	public:
-		HealthComponent(std::shared_ptr<GameObject> pOwner, int health = 3);
+		HealthComponent(std::weak_ptr<GameObject> pOwner, int health = 3);
 		~HealthComponent() = default;
 
 		HealthComponent(const HealthComponent&) = delete;
@@ -23,7 +23,6 @@ namespace dae
 
 	private:
 		std::unique_ptr<Subject> m_pHealthChanged;
-
 		int m_Health;
 	};
 }

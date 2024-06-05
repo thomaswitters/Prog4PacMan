@@ -38,14 +38,14 @@ namespace dae
 
 		void Update();
 
-		bool IsDown(ControllerButton button);
-		bool IsUp(ControllerButton button);
-		bool IsPressed(ControllerButton button);
+		bool IsButtonDown(ControllerButton button);
+		bool IsButtonUp(ControllerButton button);
+		bool IsButtonPressed(ControllerButton button);
 
-		float GetLeftStickX() const;
-		float GetLeftStickY() const;
-		float GetRightStickX() const;
-		float GetRightStickY() const;
+		float GetLeftThumbstickX() const;
+		float GetLeftThumbstickY() const;
+		float GetRightThumbstickX() const;
+		float GetRightThumbstickY() const;
 
 	private:
 		class GamePadImpl;

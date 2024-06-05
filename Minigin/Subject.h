@@ -24,7 +24,5 @@ namespace dae
 
 	private:
 		std::vector<std::shared_ptr<Observer>> m_pObservers;
-		int m_NumObservers{ 0 };
-		const int m_MaxNumObservers{ 10 };
 	};
 }

@@ -7,7 +7,7 @@ namespace dae
 	class PointsComponent final : public BaseComponent
 	{
 	public:
-		PointsComponent(std::shared_ptr<GameObject> pOwner, int points = 0);
+		PointsComponent(std::weak_ptr<GameObject> pOwner, int points = 0);
 		~PointsComponent() = default;
 
 		PointsComponent(const PointsComponent&) = delete;

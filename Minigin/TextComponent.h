@@ -5,6 +5,7 @@
 #include "Transform.h"
 #include "BaseComponent.h"
 #include "TransformComponent.h"
+#include "RenderComponent.h"
 
 namespace dae
 {
@@ -16,15 +17,15 @@ namespace dae
 	public:
 		TextComponent(std::weak_ptr<GameObject> owner, const std::string& text, const std::shared_ptr<Font>& font, const SDL_Color& color);
 
-		virtual ~TextComponent() override = default;
+		~TextComponent() override = default;
 
 		TextComponent(const TextComponent& other) = delete;
 		TextComponent(TextComponent&& other) = delete;
 		TextComponent& operator=(const TextComponent& other) = delete;
 		TextComponent& operator=(TextComponent&& other) = delete;
 
-		virtual void Update(float deltaTime) override;
-		virtual void Render() const override;
+		void Update(float deltaTime) override;
+		void Render() const override;
 
 		void SetText(const std::string& text);
 		std::string GetText() const { return m_Text; }
@@ -36,6 +37,8 @@ namespace dae
 		std::shared_ptr<Texture2D> m_pTextTexture{};
 
 		bool m_NeedsUpdate{ true };
+
+		std::shared_ptr<RenderComponent> m_pRenderComponent;
 	};
 }
 

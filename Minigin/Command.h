@@ -1,6 +1,9 @@
 #pragma once
 #include <iostream>
 #include "GameObject.h"
+#include "PacManMoveComponent.h"
+#include "PointsComponent.h"
+#include "HealthComponent.h"
 
 namespace dae
 {
@@ -26,6 +29,19 @@ namespace dae
 		bool m_UseStickDir;
 	};
 
+	class ChangeMoveDirCommand final : public Command
+	{
+	public:
+		ChangeMoveDirCommand(std::shared_ptr<GameObject> object, glm::f32vec2 direction, float angle);
+
+		void Execute(float deltaTime) override;
+	private:
+		std::weak_ptr<GameObject> m_pObject;
+		glm::f32vec2 m_Direction;
+		float m_Angle;
+		std::shared_ptr<PacManMoveComponent> m_pMoveComponent;
+	};
+
 	class AddPointsCommand final : public Command
 	{
 	public:
@@ -35,6 +51,7 @@ namespace dae
 	private:
 		std::weak_ptr<GameObject> m_pObject;
 		int AmountPoints;
+		std::shared_ptr<PointsComponent> m_pPoints;
 	};
 
 	class RemoveHealthCommand final : public Command
@@ -45,5 +62,6 @@ namespace dae
 		void Execute(float deltaTime) override;
 	private:
 		std::weak_ptr<GameObject> m_pObject;
+		std::shared_ptr<HealthComponent> m_pHealth;
 	};
 }

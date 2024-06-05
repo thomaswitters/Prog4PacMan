@@ -1,6 +1,6 @@
 #include "PointsComponent.h"
 
-dae::PointsComponent::PointsComponent(std::shared_ptr<GameObject> pOwner, int points)
+dae::PointsComponent::PointsComponent(std::weak_ptr<GameObject> pOwner, int points)
 	: BaseComponent(pOwner)
 	, m_Points{ points }
 {

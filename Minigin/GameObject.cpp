@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "ResourceManager.h"
 #include "Renderer.h"
+#include "RenderComponent.h"
 
 dae::GameObject::~GameObject() = default;
 
@@ -138,4 +139,33 @@ bool dae::GameObject::IsChild(const std::shared_ptr<GameObject>& parent) const
     }
 
     return false;
+}
+
+bool dae::GameObject::HasTag(const std::string& tag) const
+{
+    return m_Tag == tag;
+}
+
+void dae::GameObject::SetScene(Scene* scene)
+{
+    m_pScene = scene;
+    for (const auto& children : m_Children)
+    {
+        children->SetScene(scene);
+    }
+}
+
+dae::Scene* dae::GameObject::GetScene() const
+{
+    return m_pScene;
+}
+
+void dae::GameObject::RemoveObject()
+{
+    m_RemoveObject = true;
+}
+
+bool dae::GameObject::GetRemoveObject()
+{
+    return m_RemoveObject;
 }
