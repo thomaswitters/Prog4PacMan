@@ -16,7 +16,7 @@ namespace dae
 	class FPSComponent final : public BaseComponent
 	{
 	public:
-		FPSComponent(std::weak_ptr<GameObject> owner, const std::shared_ptr<Font>& font);
+		FPSComponent(std::weak_ptr<GameObject> owner);
 
 		virtual void Update(float deltaTime) override;
 		virtual void Render() const override;
@@ -24,9 +24,6 @@ namespace dae
 		void UpdateFps(float deltaTime);
 
 	private:
-		std::unique_ptr<TextComponent> m_pTextComponent;
-
-		bool m_NeedsUpdate;
 		int m_FrameCount;
 		float m_ElapsedTime;
 		float m_Fps;

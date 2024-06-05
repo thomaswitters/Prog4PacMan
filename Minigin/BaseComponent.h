@@ -3,7 +3,6 @@
 namespace dae
 {
 	class GameObject;
-
 	class BaseComponent
 	{
 	public:

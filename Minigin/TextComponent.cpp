@@ -4,6 +4,7 @@
 #include "Font.h"
 #include "Texture2D.h"
 #include "GameObject.h"
+#include "RenderComponent.h"
 
 using namespace dae;
 
@@ -38,14 +39,13 @@ void TextComponent::Update(float)
 
 void TextComponent::Render() const
 {
-	if (m_pTextTexture != nullptr)
+	auto renderComponent = GetOwner().lock()->GetComponent<RenderComponent>();
+	if (renderComponent)
 	{
-		const auto& pos = GetOwner().lock().get()->GetPosition();
-		Renderer::GetInstance().RenderTexture(*m_pTextTexture, pos.x, pos.y);
+		renderComponent->SetTexture(m_pTextTexture);
 	}
 }
 
-// This implementation uses the "dirty flag" pattern
 void TextComponent::SetText(const std::string& text)
 {
 	m_Text = text;

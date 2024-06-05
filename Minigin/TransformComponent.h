@@ -16,10 +16,20 @@ namespace dae
 		TransformComponent& operator= (const TransformComponent&&) = delete;
 
 		void Update(float deltaTime) override;
-		const glm::vec3& GetPosition() const;
-		void SetPosition(const float x, const float y, const float z);
+
+		const glm::vec3& GetLocalPosition() const;
+		const glm::vec3& GetWorldPosition();
+
+		const void SetLocalPosition(float x, float y, float z);
+		const void SetLocalPosition(const glm::vec3& pos);
+		const void SetWorldPosition(const glm::vec3& pos);
+
+		void UpdateWorldPosition();
+		void SetPositionDirty();
 
 	private:
-		glm::vec3 m_Position;
+		glm::vec3 m_LocalPosition{};
+		glm::vec3 m_WorldPosition{};
+		bool m_PositionIsDirty{ true };
 	};
 }

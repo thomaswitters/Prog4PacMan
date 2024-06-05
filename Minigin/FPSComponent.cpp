@@ -6,48 +6,54 @@
 using namespace dae;
 
 
-FPSComponent::FPSComponent(std::weak_ptr<GameObject> owner, const std::shared_ptr<Font>& font) :
+FPSComponent::FPSComponent(std::weak_ptr<GameObject> owner) :
 	BaseComponent(owner),
-	m_pTextComponent(std::make_unique<TextComponent>(owner, "FPS: 00", font, SDL_Color{ 255, 255, 255, 255 })),
 	m_ElapsedTime(0.f),
 	m_FrameCount(0),
-	m_Fps(0.f),
-	m_NeedsUpdate(true)
-{}
+	m_Fps(0.f)
+{
+
+}
 
 void FPSComponent::Update(float deltaTime)
 {
-	m_pTextComponent->Update(deltaTime);
 	UpdateFps(deltaTime);
 }
 
 void FPSComponent::Render() const
 {
-	m_pTextComponent->Render();
+	
 }
 
 void FPSComponent::UpdateFps(float deltaTime)
 {
-	static float updateTimer = 0.0f;
 	const float updateInterval = 0.2f; // Update interval in seconds
-
-	updateTimer += deltaTime;
 
 	m_ElapsedTime += deltaTime;
 	m_FrameCount++;
 
-	if (updateTimer >= updateInterval || m_NeedsUpdate)
+	if (m_ElapsedTime >= updateInterval)
 	{
-		m_Fps = static_cast<float>(m_FrameCount) / updateTimer;
+		float currentFps = static_cast<float>(m_FrameCount) / m_ElapsedTime;
 
-		std::stringstream stream;
-		stream << std::fixed << std::setprecision(1) << m_Fps;
-		m_pTextComponent->SetText(stream.str() + " FPS");
+		
+		if (currentFps != m_Fps)
+		{
+			m_Fps = currentFps;
+
+			std::stringstream stream;
+			stream << std::fixed << std::setprecision(1) << m_Fps << " FPS";
+			//m_pTextComponent->SetText(stream.str());
 
 
-		updateTimer = 0.0f;
+			auto textComponent = GetOwner().lock()->GetComponent<TextComponent>();
+			if (textComponent)
+			{
+				textComponent->SetText(stream.str());
+			}
+		}
+
+		m_ElapsedTime = 0.0f;
 		m_FrameCount = 0;
-
-		m_NeedsUpdate = false;
 	}
 }
