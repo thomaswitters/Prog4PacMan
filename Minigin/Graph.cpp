@@ -1,5 +1,6 @@
 #include "Graph.h"
 #include <unordered_set>
+#include <glm/geometric.hpp>
 
 Grid::Grid(int numRows, int numCols, float cellWidth, float cellHeight, float x, float y)
     : rows(numRows), cols(numCols), gridX(x), gridY(y) {
@@ -172,6 +173,35 @@ int Grid::getNextCellId(int currentCellId, const glm::vec2& direction) const {
     return nextRow * cols + nextCol;
 }
 
+int Grid::getNextCellId5Front(int currentCellId, const glm::vec2& pacMandirection, const glm::vec2& ghostdirection) const {
+    int currentRow = currentCellId / cols;
+    int currentCol = currentCellId % cols;
+    int lastValidRow = currentRow;
+    int lastValidCol = currentCol;
+
+    for (int i = 0; i < 4; ++i) {
+        int nextRow = currentRow + static_cast<int>(pacMandirection.y) * (i + 1);
+        int nextCol = currentCol + static_cast<int>(pacMandirection.x) * (i + 1);
+
+        if (nextRow >= 0 && nextRow < rows && nextCol >= 0 && nextCol < cols) {
+            glm::vec2 nextCellDirection = glm::vec2(nextCol - currentCol, nextRow - currentRow);
+            if (glm::dot(nextCellDirection, ghostdirection) == -1) {
+                return lastValidRow * cols + lastValidCol;
+            }
+
+            if (cells[nextRow][nextCol] == CellType::Wall) {
+                return lastValidRow * cols + lastValidCol;
+            }
+            lastValidRow = nextRow;
+            lastValidCol = nextCol;
+        }
+        else {
+            return lastValidRow * cols + lastValidCol;
+        }
+    }
+    return lastValidRow * cols + lastValidCol;
+}
+
 float Grid::Heuristic(const std::pair<int, int>& start, const std::pair<int, int>& goal) const {
     return static_cast<float>(std::abs(start.first - goal.first) + std::abs(start.second - goal.second));
 }
@@ -278,4 +308,35 @@ std::vector<int> Grid::FindSecondBestPath(int startCellId, int goalCellId) {
     std::unordered_set<int> excludedNodes(shortestPath.begin() + 1, shortestPath.end() - 1);
 
     return AStarSearch(startCellId, goalCellId, excludedNodes);
+}
+
+std::vector<int> Grid::FindFarthestPath(int startCellId, int playerCellId) {
+    auto playerPos = getCellPosition(playerCellId);
+
+    int farthestCellId = -1;
+    float maxDistance = -1.0f;
+
+    for (int row = 0; row < rows; ++row) {
+        for (int col = 0; col < cols; ++col) {
+            if (getCell(row, col) == CellType::Wall) {
+                continue;
+            }
+
+            int cellId = getCellId(row, col);
+            auto cellPos = std::make_pair(row, col);
+
+            float distance = Heuristic(playerPos, cellPos);
+
+            if (distance > maxDistance) {
+                maxDistance = distance;
+                farthestCellId = cellId;
+            }
+        }
+    }
+
+    if (farthestCellId == -1) {
+        return {};
+    }
+
+    return AStarSearch(startCellId, farthestCellId);
 }

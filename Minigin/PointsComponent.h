@@ -20,7 +20,6 @@ namespace dae
 
 		int GetPoints() const;
 		Subject* GetPointSubject() const;
-
 	private:
 		std::unique_ptr<Subject> m_pPointsChanged;
 

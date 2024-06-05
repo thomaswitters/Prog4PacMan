@@ -2,6 +2,8 @@
 
 namespace dae
 {
+    int CollectableComponent::m_TotalCoins = 0;
+
     CollectableComponent::CollectableComponent(std::weak_ptr<GameObject> owner, CollectableInfo info)
         : BaseComponent(owner),
         m_PointsOnPickup(0),
@@ -12,13 +14,14 @@ namespace dae
 
         switch (m_Info.object)
         {
-        case Object::Coin:
+        case Object::COIN:
+        case Object::POWERUP:
             m_PointsOnPickup = m_Info.healthOrPoints;
             break;
-        case Object::Ghost:
+        case Object::GHOST:
             m_LoseHealthOnPickup = m_Info.healthOrPoints;
             break;
-        case Object::None:
+        case Object::NONE:
             break;
         }
     }
@@ -32,7 +35,11 @@ namespace dae
                 auto collidingObjects = m_BoxCollider->GetCollidingObjects();
                 for (auto& object : collidingObjects)
                 {
-                    OnPickup(object);
+                    if (object.lock()->GetTag() == "Player")
+                    {
+                        OnPickup(object);
+                    }
+                    
                 }
             }
         }
@@ -41,35 +48,60 @@ namespace dae
     void CollectableComponent::OnPickup(std::weak_ptr<GameObject> other)
     {
 
-        if (auto otherGameObject = other.lock()) {
+        if (auto otherGameObject = other.lock())
+        {
+            auto pointsComponent = otherGameObject->GetComponent<PointsComponent>();
+            auto poweredUpComponent = otherGameObject->GetComponent<PoweredUpComponent>();
+            auto healthComponent = otherGameObject->GetComponent<HealthComponent>();
+            auto boxColliderComponent = otherGameObject->GetComponent<BoxColliderComponent>();
+
             switch (m_Info.object)
             {
-            case Object::Coin:
-            {
-                auto pointsComponent = otherGameObject->GetComponent<PointsComponent>();
-
+            case Object::COIN:
                 if (pointsComponent)
                 {
                     pointsComponent->AddPoints(m_PointsOnPickup);
                 }
+                GetOwner().lock()->RemoveObject();
 
+                m_TotalCoins--;
+                if (m_TotalCoins <= 0)
+                {
+                    dae::SceneManager::GetInstance().SetActiveScene("EndSceneWon");
+                }
+                break;
+
+            case Object::POWERUP:
+                if (poweredUpComponent)
+                {
+                    poweredUpComponent->SetPoweredUp();
+                    
+                }
+                if (pointsComponent)
+                {
+                    pointsComponent->AddPoints(m_PointsOnPickup);
+                }
                 GetOwner().lock()->RemoveObject();
                 break;
-            }
-            case Object::Ghost:
-            {
-                auto healthComponent = otherGameObject->GetComponent<HealthComponent>();
 
-                if (healthComponent)
+            case Object::GHOST:
+                if (poweredUpComponent && poweredUpComponent->IsPoweredUp())
                 {
-                    healthComponent->RemoveHealth(m_LoseHealthOnPickup);
+                    if (pointsComponent)
+                    {
+                        pointsComponent->AddPoints(1000);
+                    }
+                    m_BoxCollider->SetActive(false);
                 }
-
-                //GetOwner().lock()->RemoveObject();
+                else if (healthComponent)
+                {
+                    
+                    healthComponent->RemoveHealth(m_LoseHealthOnPickup);
+                    //boxColliderComponent->SetActive(false);
+                }
                 break;
-            }
+
             default:
-                // Add default case handling
                 break;
             }
         }

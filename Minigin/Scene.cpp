@@ -28,6 +28,15 @@ void Scene::RemoveAll()
 	m_objects.clear();
 }
 
+void Scene::Reload()
+{
+	RemoveAll();
+	/*for (const auto& object : m_initialObjects)
+	{
+		m_objects.push_back(object->Clone());
+	}*/
+}
+
 void Scene::FixedUpdate()
 {
 	for (auto& object : m_objects)

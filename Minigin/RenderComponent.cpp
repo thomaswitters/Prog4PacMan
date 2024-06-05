@@ -19,6 +19,7 @@ dae::RenderComponent::RenderComponent(std::weak_ptr<GameObject> owner, std::shar
 
 void dae::RenderComponent::SetTexture(const std::string& filename)
 {
+	m_PreviousTexture = m_Texture; 
 	m_Texture = ResourceManager::GetInstance().LoadTexture(filename);
 }
 

@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include "Singleton.h"
+#include <stdexcept>
 
 namespace dae
 {
@@ -15,9 +16,15 @@ namespace dae
 		void FixedUpdate();
 		void Update(float deltaTime);
 		void Render();
+
+		void SetActiveScene(const std::string& name);
+		Scene& GetActiveScene() const;
+
 	private:
 		friend class Singleton<SceneManager>;
 		SceneManager() = default;
+
 		std::vector<std::shared_ptr<Scene>> m_scenes;
+		int m_activeSceneIndex{ -1 };
 	};
 }

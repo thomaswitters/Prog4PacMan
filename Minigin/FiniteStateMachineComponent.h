@@ -5,6 +5,8 @@
 #include <vector>
 #include "FOVComponent.h"
 #include "PacManMoveComponent.h"
+#include "RenderComponent.h"
+#include "BoxColliderComponent.h"
 
 namespace dae
 {
@@ -16,6 +18,8 @@ namespace dae
 			{
 				m_pFovComponent = m_pOwner->GetComponent<FOVComponent>();
 				m_MoveCoomponent = m_pOwner->GetComponent<PacManMoveComponent>();
+				m_RenderComponent = m_pOwner->GetComponent<RenderComponent>();
+				m_BoxColliderComponent = m_pOwner->GetComponent<BoxColliderComponent>();
 			}
 				
 		}
@@ -29,6 +33,8 @@ namespace dae
 		std::shared_ptr<GameObject> m_pOwner;
 		std::shared_ptr<PacManMoveComponent> m_MoveCoomponent;
 		std::shared_ptr<FOVComponent> m_pFovComponent;
+		std::shared_ptr<RenderComponent> m_RenderComponent;
+		std::shared_ptr<BoxColliderComponent> m_BoxColliderComponent;
 	};
 
 	class FSMCondition
@@ -39,6 +45,7 @@ namespace dae
 			{
 				m_pFovComponent = m_pOwner->GetComponent<FOVComponent>();
 				m_MoveCoomponent = m_pOwner->GetComponent<PacManMoveComponent>();
+				m_BoxColliderComponent = m_pOwner->GetComponent<BoxColliderComponent>();
 			}
 		}
 		virtual ~FSMCondition() = default;
@@ -47,6 +54,7 @@ namespace dae
 		std::shared_ptr<GameObject> m_pOwner;
 		std::shared_ptr<FOVComponent> m_pFovComponent;
 		std::shared_ptr<PacManMoveComponent> m_MoveCoomponent;
+		std::shared_ptr<BoxColliderComponent> m_BoxColliderComponent;
 
 	};
 

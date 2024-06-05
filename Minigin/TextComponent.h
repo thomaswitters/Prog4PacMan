@@ -29,7 +29,6 @@ namespace dae
 
 		void SetText(const std::string& text);
 		std::string GetText() const { return m_Text; }
-
 	private:
 		std::string m_Text{};
 		std::shared_ptr<Font> m_pFont{};

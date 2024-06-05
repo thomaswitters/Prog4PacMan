@@ -1,6 +1,8 @@
 #pragma once
 #include "Observer.h"
 #include "TextComponent.h"
+#include "PacManMoveComponent.h"
+#include "BoxColliderComponent.h"
 
 namespace dae
 {

@@ -2,6 +2,7 @@
 #include "BaseComponent.h"
 #include "TransformComponent.h"
 #include "GameObject.h"
+#include "Scene.h"
 
 namespace dae
 {
@@ -28,6 +29,9 @@ namespace dae
         void SetTrigger(bool isStatic) { m_IsTrigger = isStatic; }
         bool IsTrigger() const { return m_IsTrigger; }
 
+        bool IsActive() const { return m_IsActive; }
+        void SetActive(bool active) { m_IsActive = active; }
+
         bool GetOverlapped() { return m_IsOverlapped; }
 
         void FetchColliders();
@@ -35,9 +39,9 @@ namespace dae
         float m_Width;
         float m_Height;
         glm::vec2 m_Offset;
-        Scene* m_Scene;
 
         bool m_IsTrigger;
+        bool m_IsActive;
 
         bool m_IsOverlapped;
 

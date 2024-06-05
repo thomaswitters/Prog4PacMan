@@ -1,6 +1,8 @@
 #pragma once
 #include "BaseComponent.h"
 #include "Subject.h"
+#include "PacManMoveComponent.h"
+#include "BoxColliderComponent.h"
 
 namespace dae
 {
@@ -18,12 +20,15 @@ namespace dae
 		void Update(float deltaTime) override;
 		void RemoveHealth(int amount);
 
-		int GetHealth();
+		int GetHealth() const;
+		bool GetHasDied() const;
 		Subject* GetHealthSubject() const;
-
 	private:
 		std::unique_ptr<Subject> m_pHealthChanged;
+		std::shared_ptr<PacManMoveComponent> m_pMoveComponent;
+		std::shared_ptr<BoxColliderComponent> m_pBoxColliderComponentComponent;
 		int m_Health;
+		bool m_Died;
 	};
 }
 

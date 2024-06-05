@@ -24,10 +24,11 @@ public:
     void setRowHeight(int row, float height);
     void setColWidth(int col, float width);
     int getNextCellId(int currentCellId, const glm::vec2& direction) const;
+    int getNextCellId5Front(int currentCellId, const glm::vec2& pacMandirection, const glm::vec2& ghostdirection) const;
 
     std::vector<int> FindPath(int startCellId, int goalCellId);
     std::vector<int> FindSecondBestPath(int startCellId, int goalCellId);
-
+    std::vector<int> FindFarthestPath(int startCellId, int playerCellId);
 private:
     int rows;
     int cols;
@@ -42,7 +43,6 @@ private:
     struct CompareNode {
         bool operator()(const std::pair<int, float>& n1, const std::pair<int, float>& n2);
     };
-
     std::vector<int> AStarSearch(int startCellId, int goalCellId, const std::unordered_set<int>& excludedNodes = {}) const;
 };
 

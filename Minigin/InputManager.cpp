@@ -148,6 +148,13 @@ glm::vec2 InputManager::GetControllerStickValues(GamePad::ControllerStick stick)
     return dir;
 }
 
+void InputManager::ClearInputs()
+{
+    //m_GamePadCommands.clear();
+    //m_GamePadStickCommands.clear();
+    //m_KeyboardCommands.clear();
+}
+
 
 
 

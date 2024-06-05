@@ -17,9 +17,11 @@ namespace dae
 		void SetTexture(const std::string& filename);
 		void SetTexture(const std::shared_ptr<Texture2D> texture);
 		std::shared_ptr<Texture2D> GetTexture() const { return m_Texture; }
+		std::shared_ptr<Texture2D> GetPreviousTexture() const { return m_PreviousTexture; }
 		void SetPosition(float x, float y);
 	private:
 		std::shared_ptr<Texture2D> m_Texture{};
+		std::shared_ptr<Texture2D> m_PreviousTexture{};
 	};
 }
 

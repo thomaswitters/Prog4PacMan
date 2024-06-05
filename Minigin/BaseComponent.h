@@ -18,7 +18,6 @@ namespace dae
 		virtual void Update(float) {}
 		virtual void FixedUpdate() {}
 		virtual void Render() const {}
-
 	protected:
 		std::weak_ptr<GameObject> GetOwner() const { return m_pOwner; }
 

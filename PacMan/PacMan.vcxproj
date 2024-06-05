@@ -74,6 +74,12 @@
     <Import Project="..\sdl.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
@@ -151,11 +157,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DuoGameMode.cpp" />
     <ClCompile Include="PacMan.cpp" />
     <ClCompile Include="Peetje.cpp" />
+    <ClCompile Include="SoloGameMode.cpp" />
+    <ClCompile Include="VersusGameMode.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DuoGameMode.h" />
     <ClInclude Include="Peetje.h" />
+    <ClInclude Include="SoloGameMode.h" />
+    <ClInclude Include="VersusGameMode.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,8 @@
 #pragma once
 #include "FiniteStateMachineComponent.h"
 #include "GameObject.h"
+#include "RenderComponent.h"
+#include "HealthComponent.h"
 
 using namespace dae;
 
@@ -9,6 +11,38 @@ using namespace dae;
 //------------
 namespace FSMStates
 {
+    class None : public FSMState
+    {
+    public:
+        None(std::shared_ptr<GameObject> pOwner) : FSMState(pOwner){}
+        ~None() = default;
+
+        None(const None&) = delete;
+        None& operator=(const None&) = delete;
+        None(None&&) = delete;
+        None& operator=(None&&) = delete;
+
+        void OnEnter();
+        void OnExit();
+        void Update(float deltaTime);
+    };
+
+    class NoneFrightened : public FSMState
+    {
+    public:
+        NoneFrightened(std::shared_ptr<GameObject> pOwner) : FSMState(pOwner) {}
+        ~NoneFrightened() = default;
+
+        NoneFrightened(const NoneFrightened&) = delete;
+        NoneFrightened& operator=(const NoneFrightened&) = delete;
+        NoneFrightened(NoneFrightened&&) = delete;
+        NoneFrightened& operator=(NoneFrightened&&) = delete;
+
+        void OnEnter();
+        void OnExit();
+        void Update(float deltaTime);
+    };
+
     class Patrol : public FSMState
     {
     public:
@@ -33,10 +67,11 @@ namespace FSMStates
         enum class FindPathType {
             NONE,
             BESTPATH,
-            SECONDBESTPATH
+            SECONDBESTPATH,
+            PREDICT
         };
 
-        ChasePlayer(std::shared_ptr<GameObject> pOwner, FindPathType fincPathType) : FSMState(pOwner), m_FincPathType(fincPathType) {};
+        ChasePlayer(std::shared_ptr<GameObject> pOwner, FindPathType findPathType) : FSMState(pOwner), m_FincPathType(findPathType) {};
         ~ChasePlayer() = default;
 
         ChasePlayer(const ChasePlayer&) = delete;
@@ -51,25 +86,10 @@ namespace FSMStates
         
     private:
         std::shared_ptr<PacManMoveComponent> m_PlayerMoveComponent;
+        std::shared_ptr<GameObject> m_PreviousPlayer;
         std::shared_ptr<GameObject> m_Player;
 
         FindPathType m_FincPathType;
-    };
-
-    class Scatter : public FSMState
-    {
-    public:
-        Scatter(std::shared_ptr<GameObject> pOwner) : FSMState(pOwner) {}
-        ~Scatter() = default;
-
-        Scatter(const Scatter&) = delete;
-        Scatter& operator=(const Scatter&) = delete;
-        Scatter(Scatter&&) = delete;
-        Scatter& operator=(Scatter&&) = delete;
-
-        void OnEnter() override;
-        void OnExit() override;
-        void Update(float deltaTime) override;
     };
 
     class Frightened : public FSMState
@@ -86,6 +106,9 @@ namespace FSMStates
         void OnEnter() override;
         void OnExit() override;
         void Update(float deltaTime) override;
+    private:
+        std::shared_ptr<PacManMoveComponent> m_PlayerMoveComponent;
+        std::shared_ptr<GameObject> m_Player;
     };
 
     class ReturnToBase : public FSMState
@@ -110,7 +133,7 @@ namespace FSMStates
 //-----------------
 namespace FSMConditions
 {
-    class PlayerInSight : public FSMCondition
+    /*class PlayerInSight : public FSMCondition
     {
     public:
         PlayerInSight(std::shared_ptr<GameObject> pOwner) : FSMCondition(pOwner) {}
@@ -134,30 +157,55 @@ namespace FSMConditions
         PlayerNotInSight& operator=(PlayerNotInSight&&) = delete;
 
         bool Evaluate() const override;
-    };
+    };*/
 
-    class PlayerFrightened : public FSMCondition
+    class PlayerTimerChase : public FSMCondition
     {
     public:
-        PlayerFrightened(std::shared_ptr<GameObject> pOwner) : FSMCondition(pOwner) {}
+        PlayerTimerChase(std::shared_ptr<GameObject> pOwner) : FSMCondition(pOwner) {}
 
-        PlayerFrightened(const PlayerFrightened&) = delete;
-        PlayerFrightened& operator=(const PlayerFrightened&) = delete;
-        PlayerFrightened(PlayerFrightened&&) = delete;
-        PlayerFrightened& operator=(PlayerFrightened&&) = delete;
+        PlayerTimerChase(const PlayerTimerChase&) = delete;
+        PlayerTimerChase& operator=(const PlayerTimerChase&) = delete;
+        PlayerTimerChase(PlayerTimerChase&&) = delete;
+        PlayerTimerChase& operator=(PlayerTimerChase&&) = delete;
+
+        bool Evaluate() const override;
+    };
+    class PlayerTimerPatrol : public FSMCondition
+    {
+    public:
+        PlayerTimerPatrol(std::shared_ptr<GameObject> pOwner) : FSMCondition(pOwner) {}
+
+        PlayerTimerPatrol(const PlayerTimerPatrol&) = delete;
+        PlayerTimerPatrol& operator=(const PlayerTimerPatrol&) = delete;
+        PlayerTimerPatrol(PlayerTimerPatrol&&) = delete;
+        PlayerTimerPatrol& operator=(PlayerTimerPatrol&&) = delete;
 
         bool Evaluate() const override;
     };
 
-    class PlayerNotFrightened : public FSMCondition
+    class PlayerPoweredUp : public FSMCondition
     {
     public:
-        PlayerNotFrightened(std::shared_ptr<GameObject> pOwner) : FSMCondition(pOwner) {}
+        PlayerPoweredUp(std::shared_ptr<GameObject> pOwner) : FSMCondition(pOwner) {}
 
-        PlayerNotFrightened(const PlayerNotFrightened&) = delete;
-        PlayerNotFrightened& operator=(const PlayerNotFrightened&) = delete;
-        PlayerNotFrightened(PlayerNotFrightened&&) = delete;
-        PlayerNotFrightened& operator=(PlayerNotFrightened&&) = delete;
+        PlayerPoweredUp(const PlayerPoweredUp&) = delete;
+        PlayerPoweredUp& operator=(const PlayerPoweredUp&) = delete;
+        PlayerPoweredUp(PlayerPoweredUp&&) = delete;
+        PlayerPoweredUp& operator=(PlayerPoweredUp&&) = delete;
+
+        bool Evaluate() const override;
+    };
+
+    class PlayerNotPoweredUp : public FSMCondition
+    {
+    public:
+        PlayerNotPoweredUp(std::shared_ptr<GameObject> pOwner) : FSMCondition(pOwner) {}
+
+        PlayerNotPoweredUp(const PlayerNotPoweredUp&) = delete;
+        PlayerNotPoweredUp& operator=(const PlayerNotPoweredUp&) = delete;
+        PlayerNotPoweredUp(PlayerNotPoweredUp&&) = delete;
+        PlayerNotPoweredUp& operator=(PlayerNotPoweredUp&&) = delete;
 
         bool Evaluate() const override;
     };

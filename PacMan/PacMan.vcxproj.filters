@@ -21,9 +21,27 @@
     <ClCompile Include="Peetje.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SoloGameMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DuoGameMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VersusGameMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Peetje.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SoloGameMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DuoGameMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VersusGameMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

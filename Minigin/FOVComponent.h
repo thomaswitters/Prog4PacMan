@@ -23,8 +23,16 @@ namespace dae
                 return;
 
             auto gameObjects = scene->GetObjects();
-            m_PlayerInSight = false;  // Resetting player in sight each update
-            m_PlayerInVision.reset(); // Resetting the stored player reference
+
+            m_PlayerInSight = false;
+            m_PlayerInVision.reset();
+            float closestDistance = std::numeric_limits<float>::max();
+
+            auto ownerTransform = owner->GetComponent<TransformComponent>();
+            if (!ownerTransform)
+                return;
+
+            glm::vec2 ownerPosition = ownerTransform->GetWorldPosition();
 
             for (auto& gameObject : gameObjects)
             {
@@ -34,55 +42,31 @@ namespace dae
                 if (gameObject->GetTag() == "Player")
                 {
                     auto targetTransform = gameObject->GetComponent<TransformComponent>();
-                    auto ownerTransform = owner->GetComponent<TransformComponent>();
                     if (!targetTransform)
                         continue;
 
-                    if (!ownerTransform)
-                        continue;
+                    glm::vec2 targetPosition = targetTransform->GetWorldPosition();
+                    glm::vec2 direction = glm::normalize(targetPosition - ownerPosition);
+                    float angleToTarget = std::atan2(direction.y, direction.x) * 180 / float(M_PI);
 
-                    float dx = targetTransform->GetWorldPosition().x - ownerTransform->GetWorldPosition().x;
-                    float dy = targetTransform->GetWorldPosition().y - ownerTransform->GetWorldPosition().y;
+                    float dx = targetPosition.x - ownerPosition.x;
+                    float dy = targetPosition.y - ownerPosition.y;
+                    float distance = std::sqrt(dx * dx + dy * dy);
 
-                    double angleToTarget = std::atan2(dy, dx) * 180 / M_PI;
-
-                    if (angleToTarget < 0)
-                        angleToTarget += 360;
-
-                    ownerTransform->GetDirection();
-                    if (ownerTransform->GetDirection() == glm::f32vec2{ 1.f, 0.f })
-                    {
-                        m_Angle = 0.f;
-                    }
-                    else if (ownerTransform->GetDirection() == glm::f32vec2{ 0.f, 1.f })
-                    {
-                        m_Angle = 90.f;
-                    }
-                    else if (ownerTransform->GetDirection() == glm::f32vec2{ -1.f, 0.f })
-                    {
-                        m_Angle = 180.f;
-                    }
-                    else if (ownerTransform->GetDirection() == glm::f32vec2{ 0.f, -1.f })
-                    {
-                        m_Angle = 270.f;
-                    }
-
-                    double angleDifference = std::abs(m_Angle - angleToTarget);
-
-                    if (angleDifference > 180)
-                        angleDifference = 360 - angleDifference;
-
-                    if (angleDifference <= m_ViewAngle / 2 &&
-                        std::sqrt(dx * dx + dy * dy) <= m_ViewDistance)
+                    if (distance <= m_ViewDistance && std::abs(angleToTarget - m_Angle) <= m_ViewAngle / 2)
                     {
                         m_PlayerInSight = true;
-                        m_PlayerInVision = gameObject;
+                        if (distance < closestDistance)
+                        {
+                            closestDistance = distance;
+                            m_PlayerInVision = gameObject;
+                        }
                     }
                 }
             }
         }
 
-       /* void Render() const override
+        /*void Render() const override
         {
             auto owner = GetOwner().lock();
             if (!owner)
@@ -131,7 +115,6 @@ namespace dae
         {
             return m_PlayerInVision.lock();
         }
-
     private:
         float m_ViewDistance;
         float m_ViewAngle;

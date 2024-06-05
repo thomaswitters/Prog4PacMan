@@ -2,6 +2,7 @@
 #include <iostream>
 #include "TransformComponent.h"
 #include "FOVComponent.h"
+#include "PoweredUpComponent.h"
 
 // FSM TODO:
 using namespace FSMStates;
@@ -11,16 +12,46 @@ using namespace FSMConditions;
 //------------
 //---STATES---
 //------------
+void None::OnEnter() {
+    m_MoveCoomponent->SetFollowPath(false);
+}
+
+void None::OnExit() {
+}
+
+void None::Update(float) {
+
+}
+
+void NoneFrightened::OnEnter() {
+    m_MoveCoomponent->SetFollowPath(false);
+    m_RenderComponent->SetTexture("frightenghost.png");
+    m_MoveCoomponent->SetSpeed(40);
+}
+
+void NoneFrightened::OnExit() {
+    m_RenderComponent->SetTexture(m_RenderComponent->GetPreviousTexture());
+    m_MoveCoomponent->SetSpeed(90);
+}
+
+void NoneFrightened::Update(float) {
+
+}
+
 
 //------------ Patrol State ------------
 void Patrol::OnEnter() {
     m_MoveCoomponent->SetFollowPath(true);
 
     m_MoveCoomponent->SetTargetCellIndex(m_TargetCellIndices[0]);
+
+    if (m_MoveCoomponent->GetStateManager()->GetPatrolPhase() == 3)
+    {
+        m_MoveCoomponent->GetStateManager()->SetMaxTimeInPatrolState(5);
+    }
 }
 
 void Patrol::OnExit() {
-    m_MoveCoomponent->SetCurrentIndex(m_MoveCoomponent->GetCurrentGraphCellId());
 }
 
 void Patrol::Update(float deltaTime) {
@@ -41,33 +72,66 @@ void Patrol::Update(float deltaTime) {
     }
 
     m_MoveCoomponent->FollowPath(deltaTime, nextCell);
+
+    m_MoveCoomponent->GetStateManager()->TimeInPatrolStatePlus(deltaTime);
 }
 
 
 //------------ ChasePlayer State ------------
 void ChasePlayer::OnEnter() {
-    m_Player = m_pFovComponent->GetPlayerInVision();
-    m_PlayerMoveComponent = m_Player->GetComponent<PacManMoveComponent>();
-    m_MoveCoomponent->SetFollowPath(true); 
 
-    m_MoveCoomponent->SetTargetCellIndex(m_PlayerMoveComponent->GetCurrentIndex());
+    m_Player = m_pFovComponent->GetPlayerInVision();
+    if (m_Player != nullptr)
+    {
+        if (m_PlayerMoveComponent == nullptr)
+        {
+            m_PlayerMoveComponent = m_Player->GetComponent<PacManMoveComponent>();
+        }
+    }
+    
+   
+    m_MoveCoomponent->SetFollowPath(true); 
 }
 
 void ChasePlayer::OnExit() {
-    m_MoveCoomponent->FollowPath(0.0f, m_PlayerMoveComponent->GetCurrentIndex());
+
 }
 
 void ChasePlayer::Update(float deltaTime) {
 
+    std::shared_ptr<GameObject> currentPlayer = m_pFovComponent->GetPlayerInVision();
+    if (currentPlayer != m_PreviousPlayer)
+    {
+        m_Player = currentPlayer;
+        if (m_Player != nullptr)
+        {
+            m_PlayerMoveComponent = m_Player->GetComponent<PacManMoveComponent>();
+        }
+        m_PreviousPlayer = m_Player;
+    }
+
+    m_MoveCoomponent->GetStateManager()->TimeInChaseStatePlus(deltaTime);
     switch (m_FincPathType) 
     {
     case FSMStates::ChasePlayer::FindPathType::NONE:
         break;
     case FSMStates::ChasePlayer::FindPathType::BESTPATH:
-        m_MoveCoomponent->FollowPath(deltaTime, m_PlayerMoveComponent->GetCurrentIndex());
+        if (m_PlayerMoveComponent != nullptr)
+        {
+            m_MoveCoomponent->FollowPathToPlayer(deltaTime, m_PlayerMoveComponent->GetCurrentIndex());
+        }
         break;
     case FSMStates::ChasePlayer::FindPathType::SECONDBESTPATH:
-        m_MoveCoomponent->FollowSecondBestPath(deltaTime, m_PlayerMoveComponent->GetCurrentIndex());
+        if (m_PlayerMoveComponent != nullptr)
+        {
+            m_MoveCoomponent->FollowSecondBestPath(deltaTime, m_PlayerMoveComponent->GetCurrentIndex());
+        }
+        break;
+    case FSMStates::ChasePlayer::FindPathType::PREDICT:
+        if (m_PlayerMoveComponent != nullptr)
+        {
+            m_MoveCoomponent->FollowToPathThatPacManWillBeAt(deltaTime, m_PlayerMoveComponent->GetCurrentIndex(), m_PlayerMoveComponent->GetCurrentDirection());
+        }
         break;
     default:
         break;
@@ -75,92 +139,127 @@ void ChasePlayer::Update(float deltaTime) {
 }
 
 
-//------------ Scatter State ------------
-void Scatter::OnEnter() {
-    std::cout << "Entering Scatter state" << std::endl;
-    // Add logic for entering the scatter state
-}
-
-void Scatter::OnExit() {
-    std::cout << "Exiting Scatter state" << std::endl;
-    // Add logic for exiting the scatter state
-}
-
-void Scatter::Update(float) {
-    // Add logic for updating the scatter state
-    std::cout << "Updating Scatter state" << std::endl;
-}
-
 
 //------------ Frightened State ------------
 void Frightened::OnEnter() {
-    std::cout << "Entering Frightened state" << std::endl;
-    // Add logic for entering the frightened state
+    m_RenderComponent->SetTexture("frightenghost.png");
+    m_MoveCoomponent->SetSpeed(40);
+    m_MoveCoomponent->SetFollowPath(true);
+
+    m_Player = m_pFovComponent->GetPlayerInVision();
+    if (m_Player != nullptr)
+    {
+        if (m_PlayerMoveComponent == nullptr)
+        {
+            m_PlayerMoveComponent = m_Player->GetComponent<PacManMoveComponent>();
+        }
+    }
 }
 
 void Frightened::OnExit() {
-    std::cout << "Exiting Frightened state" << std::endl;
-    // Add logic for exiting the frightened state
+    m_RenderComponent->SetTexture(m_RenderComponent->GetPreviousTexture());
+    m_MoveCoomponent->SetSpeed(90);
 }
 
-void Frightened::Update(float) {
-    // Add logic for updating the frightened state
-    std::cout << "Updating Frightened state" << std::endl;
+void Frightened::Update(float deltaTime) {
+    if (m_PlayerMoveComponent != nullptr)
+    {
+        m_MoveCoomponent->FleeFromPlayer(deltaTime, m_PlayerMoveComponent->GetCurrentIndex());
+    }
 }
 
 
 //------------ ReturnToBase State ------------
 void ReturnToBase::OnEnter() {
-    std::cout << "Entering ReturnToBase state" << std::endl;
-    // Add logic for entering the return to base state
+    m_MoveCoomponent->SetFollowPath(true);
+    m_MoveCoomponent->SetTargetCellIndex(144);
+
+    if (!m_BoxColliderComponent->IsActive())
+    {
+        m_RenderComponent->SetTexture("ghostEyes.png");
+        m_MoveCoomponent->SetSpeed(200);
+        m_MoveCoomponent->GetStateManager()->SetMaxTimeInBase(3.f);
+    }
+   
 }
 
 void ReturnToBase::OnExit() {
-    std::cout << "Exiting ReturnToBase state" << std::endl;
-    // Add logic for exiting the return to base state
+    if (m_RenderComponent->GetPreviousTexture() != nullptr)
+    {
+        m_RenderComponent->SetTexture(m_RenderComponent->GetPreviousTexture());
+    }
+    
+    m_MoveCoomponent->SetSpeed(90);
+    m_BoxColliderComponent->SetActive(true);
 }
 
-void ReturnToBase::Update(float) {
-    // Add logic for updating the return to base state
-    std::cout << "Updating ReturnToBase state" << std::endl;
+void ReturnToBase::Update(float deltaTime) {
+
+    m_MoveCoomponent->FollowPath(deltaTime, 144);
+
+    if (m_MoveCoomponent->GetCurrentIndex() == 144)
+    {
+        if (m_RenderComponent->GetPreviousTexture() != nullptr)
+        {
+            m_RenderComponent->SetTexture(m_RenderComponent->GetPreviousTexture());
+        }
+        m_MoveCoomponent->GetStateManager()->TimeInBaseStatePlus(deltaTime);
+    }
+   
 }
 
 
-//----------------- Conditions -----------------
-bool PlayerInSight::Evaluate() const {
-    if (m_pFovComponent && m_pFovComponent->GetPlayerInSight())
-        return true;
+////----------------- Conditions -----------------
+//bool PlayerInSight::Evaluate() const {
+//    if (m_pFovComponent && m_pFovComponent->GetPlayerInSight())
+//        return true;
+//
+//    return false;
+//}
+//
+//bool PlayerNotInSight::Evaluate() const {
+//    if (m_pFovComponent && !m_pFovComponent->GetPlayerInSight() && m_MoveCoomponent->HasReachedTargetCell())
+//        return true;
+//
+//    return false;
+//}
 
+bool PlayerTimerChase::Evaluate() const {
+    return m_MoveCoomponent->GetStateManager()->TimeToSwitchToPatrol();
+}
+
+bool PlayerTimerPatrol::Evaluate() const {
+    return m_MoveCoomponent->GetStateManager()->TimeToSwitchToChase();
+}
+
+bool PlayerPoweredUp::Evaluate() const {
+    auto player = m_pFovComponent->GetPlayerInVision();
+    if (player) {
+        auto playerPoweredUp = player->GetComponent<PoweredUpComponent>();
+        return playerPoweredUp && playerPoweredUp->IsPoweredUp() && m_MoveCoomponent->GetCurrentIndex() != 144;
+    }
     return false;
 }
 
-bool PlayerNotInSight::Evaluate() const {
-    if (m_pFovComponent && !m_pFovComponent->GetPlayerInSight() && m_MoveCoomponent->HasReachedTargetCell())
-        return true;
-
-    return false;
-}
-
-bool PlayerFrightened::Evaluate() const {
-    // Add logic to check if the player is frightened
-    std::cout << "Evaluating PlayerFrightened condition" << std::endl;
-    return false; // Placeholder return value
-}
-
-bool PlayerNotFrightened::Evaluate() const {
-    // Add logic to check if the player is not frightened
-    std::cout << "Evaluating PlayerNotFrightened condition" << std::endl;
+bool PlayerNotPoweredUp::Evaluate() const {
+    auto player = m_pFovComponent->GetPlayerInVision();
+    if (player) { 
+        auto playerPoweredUp = player->GetComponent<PoweredUpComponent>();
+        return playerPoweredUp && !playerPoweredUp->IsPoweredUp();
+    }
     return false;
 }
 
 bool AtBase::Evaluate() const {
-    // Add logic to check if the ghost is at its base
-    std::cout << "Evaluating AtBase condition" << std::endl;
-    return false;
+    int baseId = 144;
+    return m_MoveCoomponent->GetCurrentIndex() == baseId &&
+        m_MoveCoomponent->GetStateManager()->GoOut() &&
+        m_pFovComponent->GetPlayerInSight();
 }
 
 bool NotAtBase::Evaluate() const {
-    // Add logic to check if the ghost is not at its base
-    std::cout << "Evaluating NotAtBase condition" << std::endl;
-    return false;
+    int baseId = 144;
+    return (!m_pFovComponent->GetPlayerInSight() &&
+        m_MoveCoomponent->GetCurrentIndex() != baseId) ||
+        !m_BoxColliderComponent->IsActive();
 }

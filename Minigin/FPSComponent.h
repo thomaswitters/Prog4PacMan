@@ -22,7 +22,6 @@ namespace dae
 		virtual void Render() const override;
 
 		void UpdateFps(float deltaTime);
-
 	private:
 		int m_FrameCount;
 		float m_ElapsedTime;

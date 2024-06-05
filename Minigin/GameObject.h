@@ -13,7 +13,6 @@
 #include <chrono>
 #include "TransformComponent.h"
 #include <set>
-
 #include "Scene.h"
 
 namespace dae
@@ -67,7 +66,6 @@ namespace dae
         bool GetRemoveObject();
 
         void ClearComponents() { m_Components.clear();}
-
     private:
         void RemoveChild(std::shared_ptr<GameObject> child);
         void AddChild(std::shared_ptr<GameObject> child);

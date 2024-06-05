@@ -18,7 +18,6 @@ namespace dae
 		RotationComponent& operator= (const RotationComponent&&) = delete;
 
 		void Update(float deltaTime) override;
-
 	private:
 		float m_Angle;
 		float m_Radius;

@@ -7,9 +7,9 @@ dae::BoxColliderComponent::BoxColliderComponent(std::weak_ptr<GameObject> pOwner
     m_Width(width),
     m_Height(height),
     m_Offset(offset),
-    m_Scene(),
     m_IsOverlapped(false),
-    m_IsTrigger(true)
+    m_IsTrigger(true),
+    m_IsActive(true)
 {
     m_TransformComponent = pOwner.lock()->GetComponent<TransformComponent>();
     CollidableObjects.push_back(pOwner);
@@ -37,7 +37,7 @@ void dae::BoxColliderComponent::FetchColliders()
 
 void dae::BoxColliderComponent::Render() const
 {
-    /*glm::vec2 minBounds = GetMinBounds();
+   /* glm::vec2 minBounds = GetMinBounds();
     glm::vec2 maxBounds = GetMaxBounds();
 
     dae::Renderer::GetInstance().DrawRectangle(minBounds.x, minBounds.y, m_Width, m_Height, { 255, 255, 255, 255 });*/
@@ -45,7 +45,7 @@ void dae::BoxColliderComponent::Render() const
 
 bool dae::BoxColliderComponent::CheckCollision(const std::shared_ptr<BoxColliderComponent>& otherCollider) const
 {
-    if (!otherCollider)
+    if (!m_IsActive || !otherCollider || !otherCollider->IsActive())
     {
         return false;
     }
@@ -151,10 +151,6 @@ void dae::BoxColliderComponent::Update(float)
         if (CheckCollision(otherCollider))
         {
             m_IsOverlapped = true;
-            if (!m_IsTrigger)
-            {
-                //ResolveCollision(otherCollider);
-            }
         }
     }
 }

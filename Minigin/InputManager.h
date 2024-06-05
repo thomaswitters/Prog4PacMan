@@ -28,6 +28,7 @@ namespace dae
 
         glm::vec2 GetControllerStickValues(GamePad::ControllerStick stick) const;
 
+        void ClearInputs();
     private:
         KeyState m_InputType = KeyState::keyDown;
         std::vector<std::unique_ptr<GamePad>> m_pControllers;

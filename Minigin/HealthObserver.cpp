@@ -17,6 +17,7 @@ void dae::HealthObserver::Notify(GameObject& actor, Event events)
 		if (actor.HasTag("Player"))
 		{
 			m_pText.get()->SetText("# " + text + " is dead");
+			dae::SceneManager::GetInstance().SetActiveScene("EndSceneLost");
 		}
 		else
 		{
