@@ -29,17 +29,18 @@ namespace dae
 		bool m_UseStickDir;
 	};
 
+
 	class ChangeMoveDirCommand final : public Command
 	{
 	public:
-		ChangeMoveDirCommand(std::shared_ptr<GameObject> object, glm::f32vec2 direction, float angle);
+		ChangeMoveDirCommand(std::shared_ptr<GameObject> object, PacManMoveComponent::Movement movement, float angle);
 
 		void Execute(float deltaTime) override;
 	private:
 		std::weak_ptr<GameObject> m_pObject;
-		glm::f32vec2 m_Direction;
 		float m_Angle;
 		std::shared_ptr<PacManMoveComponent> m_pMoveComponent;
+		PacManMoveComponent::Movement m_Movement;
 	};
 
 	class AddPointsCommand final : public Command

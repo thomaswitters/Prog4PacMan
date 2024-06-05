@@ -104,11 +104,11 @@ void ChasePlayer::OnEnter() {
 }
 
 void ChasePlayer::OnExit() {
-   
+
 }
 
 void ChasePlayer::Update(float) {
-    
+
 }
 
 
@@ -168,7 +168,7 @@ void ReturnToBase::Update(float) {
 
 //----------------- Conditions -----------------
 
-bool PlayerInSight::Evaluate() const { 
+bool PlayerInSight::Evaluate() const {
     if (m_pFovComponent && m_pFovComponent->GetPlayerInSight())
         return true;
 

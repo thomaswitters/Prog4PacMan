@@ -10,6 +10,11 @@ void dae::Subject::RemoveObserver(std::shared_ptr<Observer> observer)
 	m_pObservers.erase(std::find(m_pObservers.begin(), m_pObservers.end(), observer));
 }
 
+void dae::Subject::RemoveAllObservers()
+{
+	m_pObservers.clear();
+}
+
 void dae::Subject::Notify(GameObject& actor, Event events)
 {
 	for (size_t i = 0; i < m_pObservers.size(); i++)

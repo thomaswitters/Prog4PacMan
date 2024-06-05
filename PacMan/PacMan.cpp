@@ -21,6 +21,7 @@
 #include <FiniteStateMachineComponent.h>
 #include <GhosStatesAndTransitions.h>
 #include <FOVComponent.h>
+#include "Peetje.h"
 
 void load()
 {
@@ -50,59 +51,10 @@ void load()
 	scene.Add(FPSCounter);
 
 
-	auto PlayerPacManScore = std::make_shared<dae::GameObject>();
-	font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 14);
-	transform = std::make_shared<dae::TransformComponent>(PlayerPacManScore);
-	PlayerPacManScore->AddComponent(transform);
-	auto RenderTextPacManScore = std::make_shared<dae::RenderComponent>(PlayerPacManScore);
-	PlayerPacManScore->AddComponent(RenderTextPacManScore);
-	std::shared_ptr<dae::TextComponent> textPacManScore = std::make_shared<dae::TextComponent>(PlayerPacManScore, "Score: 0", font, SDL_Color{ 255, 255, 255, 255 });
-	PlayerPacManScore->AddComponent(textPacManScore);
-	transform->SetLocalPosition(0, 165, 0);
-	scene.Add(PlayerPacManScore);
-
-	auto PlayerPacManHealth = std::make_shared<dae::GameObject>();
-	font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 14);
-	transform = std::make_shared<dae::TransformComponent>(PlayerPacManHealth);
-	PlayerPacManHealth->AddComponent(transform);
-	auto RenderTextPlayerHealth = std::make_shared<dae::RenderComponent>(PlayerPacManHealth);
-	PlayerPacManHealth->AddComponent(RenderTextPlayerHealth);
-	std::shared_ptr<dae::TextComponent> textPlayerHealth = std::make_shared<dae::TextComponent>(PlayerPacManHealth, "# lives: 3", font, SDL_Color{ 255, 255, 255, 255 });
-	PlayerPacManHealth->AddComponent(textPlayerHealth);
-	transform->SetLocalPosition(0, 150, 0);
-	scene.Add(PlayerPacManHealth);
-
-	auto ScoreObserverPacMan = std::make_shared<dae::ScoreObserver>(PlayerPacManScore);
-	auto HealthObserverPacMan = std::make_shared<dae::HealthObserver>(PlayerPacManHealth);
-
-	auto PacMan = std::make_shared<dae::GameObject>();
-	PacMan->SetTag("Player");
-
-	transform = std::make_shared<dae::TransformComponent>(PacMan);
-	PacMan->AddComponent(transform);
-	auto MovePacManInDir = std::make_shared<dae::PacManMoveComponent>(PacMan, 60.f);
-	PacMan->AddComponent(MovePacManInDir);
-	auto PointComponentPacMan = std::make_shared<dae::PointsComponent>(PacMan);
-	PacMan->AddComponent(PointComponentPacMan);
-	auto HealthComponentPacMan = std::make_shared<dae::HealthComponent>(PacMan);
-	PacMan->AddComponent(HealthComponentPacMan);
-	auto BoxColliderComponentPacMan = std::make_shared<dae::BoxColliderComponent>(PacMan, 13.f, 13.f, glm::vec2(-8, -8));
-	PacMan->AddComponent(BoxColliderComponentPacMan);
-	auto RenderPacMan = std::make_shared<dae::RenderComponent>(PacMan, "pacman.png");
-	PacMan->AddComponent(RenderPacMan);
-
-	PointComponentPacMan->GetPointSubject()->AddObserver(ScoreObserverPacMan);
-	HealthComponentPacMan->GetHealthSubject()->AddObserver(HealthObserverPacMan);
+	Peetje pacMan(scene, 0, 3);
 
 
-	//BoxColliderComponentPacMan->SetTrigger(false);
-	transform->SetLocalPosition(100, 200, 0);
-
-	scene.Add(PacMan);
-
-
-
-	auto PlayerGhostScore = std::make_shared<dae::GameObject>();
+	/*auto PlayerGhostScore = std::make_shared<dae::GameObject>();
 	font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 14);
 	transform = std::make_shared<dae::TransformComponent>(PlayerGhostScore);
 	PlayerGhostScore->AddComponent(transform);
@@ -125,7 +77,7 @@ void load()
 	scene.Add(PlayerGhostHealth);
 
 	auto ScoreObserverGhost = std::make_shared<dae::ScoreObserver>(PlayerGhostScore);
-	auto HealthObserverGhost = std::make_shared<dae::HealthObserver>(PlayerGhostHealth);
+	auto HealthObserverGhost = std::make_shared<dae::HealthObserver>(PlayerGhostHealth);*/
 
 	auto Ghost = std::make_shared<dae::GameObject>();
 	Ghost->SetTag("Ghost");
@@ -139,6 +91,8 @@ void load()
 	Ghost->AddComponent(HealthComponentGhost);
 	auto BoxColliderComponentGhost = std::make_shared<dae::BoxColliderComponent>(Ghost, 20.f, 20.f, glm::vec2(-7, -8));
 	Ghost->AddComponent(BoxColliderComponentGhost);
+	auto GhostcollectableComponent = std::make_shared<dae::CollectableComponent>(Ghost, dae::CollectableInfo(dae::Object::Ghost, 1));
+	Ghost->AddComponent(GhostcollectableComponent);
 	auto RenderGhost = std::make_shared<dae::RenderComponent>(Ghost, "ghost.png");
 	Ghost->AddComponent(RenderGhost);
 	auto fovComponent = std::make_shared<dae::FOVComponent>(Ghost, 50.0f, 100.f);
@@ -155,19 +109,17 @@ void load()
 
 	Ghost->AddComponent(StateMachine);
 
-	
+	//PointComponentGhost->GetPointSubject()->AddObserver(ScoreObserverGhost);
+	//HealthComponentGhost->GetHealthSubject()->AddObserver(HealthObserverGhost);
 
-	PointComponentGhost->GetPointSubject()->AddObserver(ScoreObserverGhost);
-	HealthComponentGhost->GetHealthSubject()->AddObserver(HealthObserverGhost);
-
-	transform->SetLocalPosition(120, 200, 0);
+	transform->SetLocalPosition(220, 200, 0);
 
 	scene.Add(Ghost);
 
 
 
 	//const float player1Speed{ 50.f };
-	auto& input = dae::InputManager::GetInstance();
+	/*auto& input = dae::InputManager::GetInstance();
 
 	input.SetKeyboardCommand(SDL_SCANCODE_S, new dae::ChangeMoveDirCommand(PacMan, glm::f32vec2{ 0.f, 1.f }, 90.f), dae::KeyState::keyDown);
 	input.SetKeyboardCommand(SDL_SCANCODE_D, new dae::ChangeMoveDirCommand(PacMan, glm::f32vec2{ 1.f, 0.f }, 0.f), dae::KeyState::keyDown);
@@ -176,7 +128,7 @@ void load()
 
 	input.SetKeyboardCommand(SDL_SCANCODE_Z, new dae::AddPointsCommand(PacMan, 10), dae::KeyState::keyDown);
 	input.SetKeyboardCommand(SDL_SCANCODE_X, new dae::AddPointsCommand(PacMan, 100), dae::KeyState::keyDown);
-	input.SetKeyboardCommand(SDL_SCANCODE_C, new dae::RemoveHealthCommand(PacMan), dae::KeyState::keyDown);
+	input.SetKeyboardCommand(SDL_SCANCODE_C, new dae::RemoveHealthCommand(PacMan), dae::KeyState::keyDown);*/
 	//input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Down, new dae::MoveCommand(PacMan, player1Speed, glm::f32vec2{ 0.f, 1.f }), dae::KeyState::keyPressed);
 	//input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Right, new dae::MoveCommand(PacMan, player1Speed, glm::f32vec2{ 1.f, 0.f }), dae::KeyState::keyPressed);
 	//input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Up, new dae::MoveCommand(PacMan, player1Speed, glm::f32vec2{ 0.f, -1.f }), dae::KeyState::keyPressed);
@@ -220,7 +172,7 @@ void load()
 		auto boxCollider = std::make_shared<dae::BoxColliderComponent>(coin, 10.f, 10.f, glm::vec2(-8, -7));
 		coin->AddComponent(boxCollider);
 
-		auto collectableComponent = std::make_shared<dae::CollectableComponent>(coin, 100);
+		auto collectableComponent = std::make_shared<dae::CollectableComponent>(coin, dae::CollectableInfo(dae::Object::Coin, 100));
 		coin->AddComponent(collectableComponent);
 
 		auto renderComponent = std::make_shared<dae::RenderComponent>(coin, "coin.png");

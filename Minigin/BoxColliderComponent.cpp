@@ -83,6 +83,7 @@ void dae::BoxColliderComponent::ResolveCollision(const std::shared_ptr<BoxCollid
     {
         if (overlapX < overlapY)
         {
+
             // Resolve collision along X axis
             if (thisMin.x < otherMin.x)
                 m_TransformComponent->Translate(glm::vec3(-overlapX, 0, 0));
@@ -152,7 +153,7 @@ void dae::BoxColliderComponent::Update(float)
             m_IsOverlapped = true;
             if (!m_IsTrigger)
             {
-                ResolveCollision(otherCollider);
+                //ResolveCollision(otherCollider);
             }
         }
     }

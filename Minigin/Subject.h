@@ -20,6 +20,7 @@ namespace dae
 
 		void AddObserver(std::shared_ptr<Observer> observer);
 		void RemoveObserver(std::shared_ptr<Observer> observer);
+		void RemoveAllObservers();
 		void Notify(GameObject& actor, Event events);
 
 	private:

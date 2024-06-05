@@ -43,6 +43,12 @@
     <Filter Include="Source Files\States">
       <UniqueIdentifier>{468005da-8f81-43fd-b64f-d44e49ac3832}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Graph">
+      <UniqueIdentifier>{a378bed4-674e-4913-a6c4-b7543d03c4e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graph">
+      <UniqueIdentifier>{5ca6dc15-dca5-47ac-bd0d-9854d8f37896}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Singleton.h">
@@ -162,14 +168,17 @@
     <ClInclude Include="PacManMoveComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="GhosStatesAndTransitions.h">
-      <Filter>Header Files\States</Filter>
-    </ClInclude>
     <ClInclude Include="FiniteStateMachineComponent.h">
       <Filter>Header Files\States</Filter>
     </ClInclude>
     <ClInclude Include="FOVComponent.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GhosStatesAndTransitions.h">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Graph.h">
+      <Filter>Header Files\Graph</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -284,14 +293,17 @@
     <ClCompile Include="PacManMoveComponent.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="GhosStatesAndTransitions.cpp">
-      <Filter>Source Files\States</Filter>
-    </ClCompile>
     <ClCompile Include="FiniteStateMachineComponent.cpp">
       <Filter>Source Files\States</Filter>
     </ClCompile>
     <ClCompile Include="FOVComponent.cpp">
       <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GhosStatesAndTransitions.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="Graph.cpp">
+      <Filter>Source Files\Graph</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

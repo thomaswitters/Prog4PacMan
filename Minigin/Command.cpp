@@ -34,9 +34,9 @@ void dae::MoveCommand::Execute(float deltaTime)
 
 }
 
-dae::ChangeMoveDirCommand::ChangeMoveDirCommand(std::shared_ptr<GameObject> object, glm::f32vec2 direction, float angle)
+dae::ChangeMoveDirCommand::ChangeMoveDirCommand(std::shared_ptr<GameObject> object, PacManMoveComponent::Movement movement, float angle)
     : m_pObject{ object }
-    , m_Direction{ direction }
+    , m_Movement{ movement }
     , m_Angle{ angle }
 {
     m_pMoveComponent = m_pObject.lock()->GetComponent<PacManMoveComponent>();
@@ -46,8 +46,7 @@ void dae::ChangeMoveDirCommand::Execute(float)
 {
     if (m_pMoveComponent != nullptr)
     {
-        m_pMoveComponent->SetDirection(m_Direction);
-        m_pMoveComponent->SetAngle(m_Angle);
+        m_pMoveComponent->SetDirection(m_Movement);
     }
    
 }

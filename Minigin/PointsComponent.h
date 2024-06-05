@@ -18,7 +18,7 @@ namespace dae
 		void Update(float deltaTime) override;
 		void AddPoints(int amount);
 
-		int GetPoints();
+		int GetPoints() const;
 		Subject* GetPointSubject() const;
 
 	private:

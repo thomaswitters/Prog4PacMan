@@ -17,7 +17,7 @@ void dae::PointsComponent::AddPoints(int amount)
 	m_pPointsChanged.get()->Notify(*GetOwner().lock(), Event::GainPoints);
 }
 
-int dae::PointsComponent::GetPoints()
+int dae::PointsComponent::GetPoints() const
 {
 	return m_Points;
 }

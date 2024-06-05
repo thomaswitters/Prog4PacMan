@@ -188,6 +188,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GamePad.h" />
     <ClInclude Include="GhosStatesAndTransitions.h" />
+    <ClInclude Include="Graph.h" />
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="HealthObserver.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -232,6 +233,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GamePad.cpp" />
     <ClCompile Include="GhosStatesAndTransitions.cpp" />
+    <ClCompile Include="Graph.cpp" />
     <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="HealthObserver.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
