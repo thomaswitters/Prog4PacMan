@@ -25,6 +25,8 @@ namespace dae
         void SetupLevel2();
         void SetupLevel3();
 
+		//void SetupHighScoreScreen();
+
         void NextLevel() override {
 			m_CurrentLevel++;
 			switch (m_CurrentLevel)
@@ -45,17 +47,25 @@ namespace dae
 				break;
 			}
 			default:
+				//SetupHighScoreScreen();
 				break;
 			}
         };
 
-        void InitializeGhost(std::shared_ptr<dae::GameObject> pGhost, std::string texturePath, std::vector<int> patrolPoints, float maxTimeInBase, float maxTimeInChase, FSMStates::ChasePlayer::FindPathType pathType) override;
-        std::vector<glm::vec3> LoadPositionsFromJSON(const std::string& filePath, const std::string& type) override;
-
 		int GetAmountOfLevels() const override {return m_AmountLevels;}
 		int GetCurrentLevel() const override{return m_CurrentLevel;}
 	private:
-		std::shared_ptr<Peetje> m_PacMan;
+		void SetupLevel(const std::string& levelTexture, float ghostChaseTime);
+
+		void SetupGhosts(float chaseTime);
+		void SetupCollectables(const std::string& filePath, const std::string& key, const std::string& texture, float width, float height, dae::Object type, int value);
+		void SetupFPSCounter();
+		void SetupInputCommands();
+
+		void InitializeGhost(std::shared_ptr<dae::GameObject> pGhost, std::string texturePath, std::vector<int> patrolPoints, float maxTimeInBase, float maxTimeInChase, FSMStates::ChasePlayer::FindPathType pathType) override;
+		std::vector<glm::vec3> LoadPositionsFromJSON(const std::string& filePath, const std::string& type) override;
+
+		std::shared_ptr<Peetje> m_pPacMan;
 
 		int m_AmountLevels = 3;
 		int m_CurrentLevel = 0;

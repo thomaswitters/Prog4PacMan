@@ -65,9 +65,7 @@ namespace dae
                 if (m_TotalCoins <= 0)
                 {
                     auto& gameModeManager = GameModeManager::GetInstance();
-                    if (gameModeManager.GetCurrentLevelGameMode() >= gameModeManager.GetAmountOfLevelsGameMode())
-                        SceneManager::GetInstance().SetActiveScene("EndSceneWon");
-                    GameModeManager::GetInstance().NextLevelActiveGameMode();
+                    gameModeManager.NextLevelActiveGameMode();
                 }
                 break;
             case Object::POWERUP:
@@ -86,7 +84,7 @@ namespace dae
                 {
                     ServiceLocator::GetSoundSystem().PlaySoundEffect("../Data/Sounds/eat_ghost.wav", 100, 0);
                     if (pPointsComponent)
-                        pPointsComponent->AddPoints(1000);
+                        pPointsComponent->AddPoints(200);
                     m_pBoxCollider->SetActive(false);
                 }
                 else if (pHealthComponent)

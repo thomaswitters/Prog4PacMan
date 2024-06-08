@@ -4,7 +4,6 @@
 #include "Minigin.h"
 #include "SceneManager.h"
 #include "ResourceManager.h"
-#include "TextObject.h"
 #include "Scene.h"
 #include "FPSComponent.h"
 #include "TextComponent.h"

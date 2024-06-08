@@ -47,15 +47,20 @@ namespace dae
 			}
 		};
 
+		int GetAmountOfLevels() const override { return m_AmountLevels; } 
+		int GetCurrentLevel() const override { return m_CurrentLevel; }
+	private:
+		void SetupLevel(const std::string& levelTexture, float ghostChaseTime);
+		void SetupGhosts(float chaseTime);
+		void SetupCollectables(const std::string& filePath, const std::string& key, const std::string& texture, float width, float height, dae::Object type, int value);
+		void SetupFPSCounter();
+		void SetupInputCommands();
 
 		void InitializeGhost(std::shared_ptr<dae::GameObject> pGhost, std::string texturePath, std::vector<int> patrolPoints, float maxTimeInBase, float maxTimeInChase, FSMStates::ChasePlayer::FindPathType pathType) override;
 		std::vector<glm::vec3> LoadPositionsFromJSON(const std::string& filePath, const std::string& type) override;
 
-		int GetAmountOfLevels() const override { return m_AmountLevels; } 
-		int GetCurrentLevel() const override { return m_CurrentLevel; }
-	private:
-		std::shared_ptr<Peetje> m_PacMan;
-		std::shared_ptr<Peetje> m_MsPacMan;
+		std::shared_ptr<Peetje> m_pPacMan;
+		std::shared_ptr<Peetje> m_pMsPacMan;
 
 		int m_AmountLevels = 3;
 		int m_CurrentLevel = 0;

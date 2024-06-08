@@ -270,7 +270,6 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
     <ClInclude Include="StateManagerMovement.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="TextComponent.h" />
-    <ClInclude Include="TextObject.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="TransformComponent.h" />
@@ -319,7 +318,6 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPat
     <ClCompile Include="StateManagerMovement.cpp" />
     <ClCompile Include="Subject.cpp" />
     <ClCompile Include="TextComponent.cpp" />
-    <ClCompile Include="TextObject.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
