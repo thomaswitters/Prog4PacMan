@@ -1,3 +1,16 @@
+# Some specifics
+
+The engine includes a collision detection component to identify collisions between objects, such as pickups or ghosts. Colliding with a pickup results in a score increase, while colliding with a ghost causes the player to lose a life.
+
+The ghosts in the game utilize an A* pathfinding algorithm for their movement. Both Pac-Man and the ghosts can only move along a grid, avoiding cells marked as walls. The A* algorithm ensures that the ghosts find the fastest path without passing through walls.
+
+There are three types of pathfinding strategies for the ghosts:
+
+Chase Mode: Finds the fastest path to Pac-Man.
+Ambush Mode: Targets a position four cells ahead of Pac-Man to cut him off.
+Flee Mode: Moves towards the farthest cell from Pac-Man for fleeing purposes.
+Additionally, the ghosts have a field of vision (FOV) component, enabling them to detect Pac-Man and determine his position within their line of sight.
+
 # Minigin
 
 Minigin is a very small project using [SDL2](https://www.libsdl.org/) and [glm](https://github.com/g-truc/glm) for 2D c++ game projects. It is in no way a game engine, only a barebone start project where everything sdl related has been set up. It contains glm for vector math, to aleviate the need to write custom vector and matrix classes.
@@ -16,3 +29,4 @@ Minigin is, despite perhaps the suggestion in its name, not a game engine. It is
 # Use
 
 Download the latest release of this project and compile/run in visual studio. Since students need to have their work on github too, they can use this repository as a template.
+
