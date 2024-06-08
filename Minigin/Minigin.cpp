@@ -55,12 +55,12 @@ dae::Minigin::Minigin(const std::string &dataPath)
 	}
 
 	g_window = SDL_CreateWindow(
-		"Programming 4 assignment",
+		"2DAE18 - Thomas Witters - Prog 4",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
 		640,
 		480,
-		SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE
+		SDL_WINDOW_OPENGL
 	);
 	if (g_window == nullptr) 
 	{

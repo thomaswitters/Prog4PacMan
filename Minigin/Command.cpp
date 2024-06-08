@@ -1,5 +1,6 @@
 #include "Command.h"
 #include "InputManager.h"
+#include "HighscoreManager.h"
 
 dae::MoveCommand::MoveCommand(std::shared_ptr<GameObject> pObject, float speed, glm::f32vec2 direction, bool useStickDir)
     : m_pObject{ pObject }
@@ -91,7 +92,7 @@ dae::SwitchBetweenGameModesCommand::SwitchBetweenGameModesCommand(std::shared_pt
     : m_pObject{ pObject }
     , m_StartString{}
 {
-    m_StartString = "Level1";
+    m_StartString = "GameModeSolo";
     m_pRenderComponent = pObject->GetComponent<RenderComponent>();
 }
 
@@ -103,20 +104,20 @@ void dae::SwitchBetweenGameModesCommand::Execute(float)
     {
     case 0:
         m_pRenderComponent->SetTexture("pacman.png");
-        m_StartString = "Level1";
+        m_StartString = "GameModeSolo";
         break;
     case 1:
         m_pRenderComponent->SetTexture("msPacmanAndPacman.png");
-        m_StartString = "Level2";
+        m_StartString = "GameModeCoop";
         break;
     case 2:
         m_pRenderComponent->SetTexture("GhostAndPacman.png");
-        m_StartString = "Level3";
+        m_StartString = "GameModeVersus";
         break;
     default:
         m_pRenderComponent->SetTexture("pacman.png");
         m_CurrentLevelIndex = 0;
-        m_StartString = "Level1";
+        m_StartString = "GameModeSolo";
         break;
     }
 
@@ -133,6 +134,9 @@ dae::StartGame::StartGame(std::vector<std::shared_ptr<dae::GameMode>> pGameModes
 
 void dae::StartGame::Execute(float)
 {
+    std::string name = dae::InputManager::GetInstance().GetTypedString();
+    dae::HighscoreManager::GetInstance().SetPlayerName(name);
+
     dae::ServiceLocator::GetSoundSystem().UnloadMusic("../Data/Sounds/1-03. PAC-MAN NEVA PAX!!.mp3");
     auto& sceneManager = dae::SceneManager::GetInstance();
     auto& gameModeManager = dae::GameModeManager::GetInstance();
@@ -143,19 +147,19 @@ void dae::StartGame::Execute(float)
     if (currentSceneName != newSceneName) {
         sceneManager.SetActiveScene(newSceneName);
 
-        if (newSceneName == "Level3")
+        if (newSceneName == "GameModeVersus")
         {
             //m_GameModes[2]->SetupGameMode();
             gameModeManager.SetActiveGameMode(m_pGameModes[2]);
             gameModeManager.NextLevelActiveGameMode();
         }
-        else if (newSceneName == "Level2")
+        else if (newSceneName == "GameModeCoop")
         {
             //m_GameModes[1]->SetupGameMode(); 
             gameModeManager.SetActiveGameMode(m_pGameModes[1]);
             gameModeManager.NextLevelActiveGameMode();
         }
-        else if (newSceneName == "Level1")
+        else if (newSceneName == "GameModeSolo")
         {
             //m_GameModes[0]->SetupGameMode();
             gameModeManager.SetActiveGameMode(m_pGameModes[0]);

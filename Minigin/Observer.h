@@ -6,7 +6,8 @@ namespace dae
 	{
 		ActorDie,
 		HealthRemoved,
-		GainPoints
+		GainPoints,
+		TypeName
 	};
 
 	class Observer

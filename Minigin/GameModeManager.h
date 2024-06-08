@@ -12,6 +12,7 @@ namespace dae
         void SetActiveGameMode(std::shared_ptr<GameMode> pGameMode);
         void SetupActiveGameMode();
         void NextLevelActiveGameMode();
+        void SetLossActiveGameMode();
         int GetAmountOfLevelsGameMode();
         int GetCurrentLevelGameMode();
 

@@ -4,7 +4,7 @@ using namespace dae;
 void SoloGameMode::SetupGameMode()
 {
     m_Scene.RemoveAll();
-    m_pPacMan = std::make_shared<Peetje>(m_Scene, "pacman.png", 0, 3, 14, 8);
+    m_pPacMan = std::make_shared<Peetje>(m_Scene, "pacman.png", 0, 3, 14, 8, glm::vec2(510, 40), glm::vec2(510, 60));
     SetupLevel("PacManLevel1.png", 20.f);
 }
 
@@ -22,6 +22,129 @@ void SoloGameMode::SetupLevel3()
     auto& input = dae::InputManager::GetInstance();
     input.ClearInputs();
     SetupLevel("PacManLevel3.png", 30.f);
+}
+
+void SoloGameMode::SetupHighScoreScreen()
+{
+    SetupHighscores();
+    auto fontEndSceneWon = ResourceManager::GetInstance().LoadFont("Lingua.otf", 22);
+
+    auto EndScreenPeetje = std::make_shared<dae::GameObject>();
+
+    auto transformEndScreenPeetje = std::make_shared<dae::TransformComponent>(EndScreenPeetje);
+    auto RenderTextureEndScreenPeetje = std::make_shared<dae::RenderComponent>(EndScreenPeetje, "EndScreenPhoto.png");
+    EndScreenPeetje->AddComponent(transformEndScreenPeetje);
+    transformEndScreenPeetje->SetLocalPosition(30, 100, 0);
+    EndScreenPeetje->AddComponent(RenderTextureEndScreenPeetje);
+    m_Scene.Add(EndScreenPeetje);
+
+    auto EndSceneWon = std::make_shared<GameObject>();
+    auto transFormEndSceneWon = std::make_shared<TransformComponent>(EndSceneWon);
+    EndSceneWon->AddComponent(transFormEndSceneWon);
+    auto renderEndSceneWon = std::make_shared<RenderComponent>(EndSceneWon);
+    EndSceneWon->AddComponent(renderEndSceneWon);
+    auto textEndSceneWon = std::make_shared<TextComponent>(EndSceneWon, "Congratulations You won !!!", fontEndSceneWon, SDL_Color{ 255, 255, 0, 255 });
+    EndSceneWon->AddComponent(textEndSceneWon);
+    transFormEndSceneWon->SetLocalPosition(50, 45, 0);
+    m_Scene.Add(EndSceneWon);
+
+    auto PlayerScore = std::make_shared<GameObject>();
+    auto transformComponent = std::make_shared<TransformComponent>(PlayerScore);
+    PlayerScore->AddComponent(transformComponent);
+    auto renderTextScore = std::make_shared<RenderComponent>(PlayerScore);
+    PlayerScore->AddComponent(renderTextScore);
+    auto TextScore = std::make_shared<TextComponent>(PlayerScore, "Your score is: " + std::to_string(m_Score), fontEndSceneWon, SDL_Color{ 255, 255, 255, 255 });
+    PlayerScore->AddComponent(TextScore);
+    transformComponent->SetLocalPosition(410, 45, 0);
+    m_Scene.Add(PlayerScore);
+}
+void SoloGameMode::SetupLosHighScoreScreen()
+{
+    SetupHighscores();
+    auto fontEndSceneWon = ResourceManager::GetInstance().LoadFont("Lingua.otf", 22);
+
+    auto EndScreenLostPeetje = std::make_shared<dae::GameObject>();
+
+    auto transformEndScreenLostPeetje = std::make_shared<dae::TransformComponent>(EndScreenLostPeetje);
+    auto RenderTextureEndScreenLostPeetje = std::make_shared<dae::RenderComponent>(EndScreenLostPeetje, "EndScreenGhost.png");
+    EndScreenLostPeetje->AddComponent(transformEndScreenLostPeetje);
+    transformEndScreenLostPeetje->SetLocalPosition(30, 100, 0);
+    EndScreenLostPeetje->AddComponent(RenderTextureEndScreenLostPeetje);
+    m_Scene.Add(EndScreenLostPeetje);
+
+    auto EndSceneWon = std::make_shared<GameObject>();
+    auto transFormEndSceneWon = std::make_shared<TransformComponent>(EndSceneWon);
+    EndSceneWon->AddComponent(transFormEndSceneWon);
+    auto renderEndSceneWon = std::make_shared<RenderComponent>(EndSceneWon);
+    EndSceneWon->AddComponent(renderEndSceneWon);
+    auto textEndSceneWon = std::make_shared<TextComponent>(EndSceneWon, "YOU LOST !", fontEndSceneWon, SDL_Color{ 255, 0, 0, 255 });
+    EndSceneWon->AddComponent(textEndSceneWon);
+    transFormEndSceneWon->SetLocalPosition(150, 45, 0);
+    m_Scene.Add(EndSceneWon);
+
+    auto PlayerScore = std::make_shared<GameObject>();
+    auto transformComponent = std::make_shared<TransformComponent>(PlayerScore);
+    PlayerScore->AddComponent(transformComponent);
+    auto renderTextScore = std::make_shared<RenderComponent>(PlayerScore);
+    PlayerScore->AddComponent(renderTextScore);
+    auto TextScore = std::make_shared<TextComponent>(PlayerScore, "Your score is: " + std::to_string(m_Score), fontEndSceneWon, SDL_Color{ 255, 255, 255, 255 });
+    PlayerScore->AddComponent(TextScore);
+    transformComponent->SetLocalPosition(390, 45, 0);
+    m_Scene.Add(PlayerScore);
+}
+
+void SoloGameMode::SetupHighscores()
+{
+    auto fontEndSceneWon = ResourceManager::GetInstance().LoadFont("Lingua.otf", 22);
+    m_Score = m_pPacMan->GetScore();
+
+    auto& highscoreManager = dae::HighscoreManager::GetInstance();
+    std::vector<dae::HighscoreManager::Score> highscores = highscoreManager.LoadSoloHighscores();
+    highscores.push_back({ highscoreManager.GetPlayerName(), m_Score });
+    std::sort(highscores.begin(), highscores.end(), dae::HighscoreManager::CompareScores);
+    if (highscores.size() > 20) {
+        highscores.resize(20);
+    }
+
+    highscoreManager.SaveSoloHighscores(highscores);
+
+    m_Scene.RemoveAll();
+    auto& input = dae::InputManager::GetInstance();
+    input.ClearInputs();
+
+    auto BackGround = std::make_shared<dae::GameObject>();
+
+    auto transformBackGround = std::make_shared<dae::TransformComponent>(BackGround);
+    auto RenderTextureBackGround = std::make_shared<dae::RenderComponent>(BackGround, "background.tga");
+    BackGround->AddComponent(transformBackGround);
+    BackGround->AddComponent(RenderTextureBackGround);
+    m_Scene.Add(BackGround);
+
+
+    auto TitelHighscore = std::make_shared<GameObject>();
+    auto transFormTitelHighscore = std::make_shared<TransformComponent>(TitelHighscore);
+    TitelHighscore->AddComponent(transFormTitelHighscore);
+    auto renderTitelHighscore = std::make_shared<RenderComponent>(TitelHighscore);
+    TitelHighscore->AddComponent(renderTitelHighscore);
+    auto textTitelHighscore = std::make_shared<TextComponent>(TitelHighscore, "TOP 5 HIGHSCORES", fontEndSceneWon, SDL_Color{ 243, 132, 41, 255 });
+    TitelHighscore->AddComponent(textTitelHighscore);
+    transFormTitelHighscore->SetLocalPosition(380, 100, 0);
+    m_Scene.Add(TitelHighscore);
+
+    float yPos = 130;
+    size_t numHighscoresToShow = std::min(highscores.size(), static_cast<size_t>(5));
+    for (size_t i = 0; i < numHighscoresToShow; ++i) {
+        auto playerScore = std::make_shared<GameObject>();
+        auto transformComponent = std::make_shared<TransformComponent>(playerScore);
+        playerScore->AddComponent(transformComponent);
+        auto renderTextScore = std::make_shared<RenderComponent>(playerScore);
+        playerScore->AddComponent(renderTextScore);
+        auto textScore = std::make_shared<TextComponent>(playerScore, highscores[i].playerName + ": " + std::to_string(highscores[i].score), fontEndSceneWon, SDL_Color{ 255, 255, 255, 255 });
+        playerScore->AddComponent(textScore);
+        transformComponent->SetLocalPosition(410, yPos, 0);
+        m_Scene.Add(playerScore);
+        yPos += 30;
+    }
 }
 
 void SoloGameMode::SetupLevel(const std::string& levelTexture, float ghostChaseTime)

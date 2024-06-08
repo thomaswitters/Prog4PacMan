@@ -45,6 +45,8 @@ namespace dae
 
         void ClearInputs();
 
+        void HandleTextInputEvent(const SDL_TextInputEvent& e);
+        std::string GetTypedString() const;
     private:
         KeyState m_InputType = KeyState::keyDown;
         std::vector<std::unique_ptr<GamePad>> m_pControllers;
@@ -53,5 +55,7 @@ namespace dae
         std::map<GamePad::ControllerButton, CommandData> m_GamePadCommands;
         std::map<GamePad::ControllerStick, CommandData> m_GamePadStickCommands;
         std::map<SDL_Scancode, CommandData> m_KeyboardCommands;
+
+        std::string m_TypedString;
     };
 }

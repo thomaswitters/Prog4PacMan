@@ -9,6 +9,7 @@
 #include <CollectableComponent.h>
 #include <GhosStatesAndTransitions.h>
 #include "GameMode.h"
+#include "HighscoreManager.h"
 
 using json = nlohmann::json;
 
@@ -22,6 +23,8 @@ namespace dae
 		void SetupGameMode() override;
 		void SetupLevel2();
 		void SetupLevel3();
+		void SetupHighScoreScreen();
+		void SetupLosHighScoreScreen() override;
 
 		void NextLevel() override {
 			m_CurrentLevel++;
@@ -43,6 +46,7 @@ namespace dae
 				break;
 			}
 			default:
+				SetupHighScoreScreen();
 				break;
 			}
 		};
@@ -56,6 +60,8 @@ namespace dae
 		void SetupFPSCounter();
 		void SetupInputCommands();
 
+		void SetupHighscores();
+
 		void InitializeGhost(std::shared_ptr<dae::GameObject> pGhost, std::string texturePath, std::vector<int> patrolPoints, float maxTimeInBase, float maxTimeInChase, FSMStates::ChasePlayer::FindPathType pathType) override;
 		std::vector<glm::vec3> LoadPositionsFromJSON(const std::string& filePath, const std::string& type) override;
 
@@ -64,5 +70,7 @@ namespace dae
 
 		int m_AmountLevels = 3;
 		int m_CurrentLevel = 0;
+
+		int m_Score = 0;
 	};
 }

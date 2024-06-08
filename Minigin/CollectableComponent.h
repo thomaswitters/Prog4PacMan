@@ -43,6 +43,7 @@ namespace dae
     private:
         static int m_TotalCoins;
         int m_PointsOnPickup;
+        int m_PointsOnPickupGhost;
         int m_LoseHealthOnPickup;
         std::shared_ptr<BoxColliderComponent> m_pBoxCollider;
         CollectableInfo m_Info;

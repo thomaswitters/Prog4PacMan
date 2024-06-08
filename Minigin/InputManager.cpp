@@ -1,5 +1,7 @@
 #include <SDL.h>
 #include "InputManager.h"
+#include "TypeNameComponent.h"
+#include "HighscoreManager.h"
 //#include "imgui/imgui_impl_sdl2.h"
 
 using namespace dae;
@@ -10,6 +12,26 @@ InputManager::InputManager()
     m_pKeyboards.push_back(std::make_unique<Keyboard>(0));
 }
 
+void InputManager::HandleTextInputEvent(const SDL_TextInputEvent& e)
+{
+    if (m_TypedString.length() < 10)
+    {
+        m_TypedString += e.text;
+    }
+
+    auto nameObject = dae::HighscoreManager::GetInstance().GetNameObject();
+    if (nameObject != nullptr)
+    {
+        nameObject->GetComponent<TypeNameComponent>()->ChangeText();
+    }
+   
+}
+
+std::string InputManager::GetTypedString() const
+{
+    return m_TypedString;
+}
+
 bool InputManager::ProcessInput(float deltaTime)
 {
     SDL_Event e;
@@ -18,6 +40,11 @@ bool InputManager::ProcessInput(float deltaTime)
         if (e.type == SDL_QUIT)
         {
             return false;
+        }
+
+        if (e.type == SDL_TEXTINPUT)
+        {
+            HandleTextInputEvent(e.text);
         }
 
         //ImGui_ImplSDL2_ProcessEvent(&e);

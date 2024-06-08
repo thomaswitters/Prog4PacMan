@@ -22,6 +22,13 @@ namespace dae
             m_pActiveGameMode->NextLevel();
         }
     }
+    void GameModeManager::SetLossActiveGameMode()
+    {
+        if (m_pActiveGameMode)
+        {
+            m_pActiveGameMode->SetupLosHighScoreScreen();
+        }
+    }
 
     int GameModeManager::GetAmountOfLevelsGameMode()
     {

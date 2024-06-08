@@ -9,7 +9,8 @@ namespace dae
         : BaseComponent(pOwner),
         m_PointsOnPickup(0),
         m_LoseHealthOnPickup(0),
-        m_Info(info)
+        m_Info(info),
+        m_PointsOnPickupGhost(200)
     {
         m_pBoxCollider = GetOwner().lock()->GetComponent<BoxColliderComponent>();
 
@@ -84,7 +85,7 @@ namespace dae
                 {
                     ServiceLocator::GetSoundSystem().PlaySoundEffect("../Data/Sounds/eat_ghost.wav", 100, 0);
                     if (pPointsComponent)
-                        pPointsComponent->AddPoints(200);
+                        pPointsComponent->AddPoints(m_PointsOnPickupGhost);
                     m_pBoxCollider->SetActive(false);
                 }
                 else if (pHealthComponent)

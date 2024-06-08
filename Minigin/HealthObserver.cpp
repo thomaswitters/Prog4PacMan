@@ -1,6 +1,7 @@
 #include "HealthObserver.h"
 #include "HealthComponent.h"
 #include "ServiceLocator.h"
+#include "GameModeManager.h"
 
 dae::HealthObserver::HealthObserver(std::weak_ptr<GameObject> pOwner)
 {
@@ -14,8 +15,7 @@ void dae::HealthObserver::Notify(GameObject& actor, Event events)
 	{
 	case dae::Event::ActorDie:
 	{
-		dae::SceneManager::GetInstance();
-		dae::SceneManager::GetInstance().SetActiveScene("EndSceneLost");
+		dae::GameModeManager::GetInstance().SetLossActiveGameMode();
 		dae::ServiceLocator::GetSoundSystem().PlaySoundEffect("../Data/Sounds/death_1.wav", 100, 0);
 		std::string text = actor.GetTag();
 		if (actor.HasTag("Player"))

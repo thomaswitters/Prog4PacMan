@@ -17,9 +17,9 @@ namespace dae
     class Peetje
     {
     public:
-        Peetje(dae::Scene& scene, std::string texturePath, int initialScore, int initialHealth, int beginCellRow, int beginCellCol)
+        Peetje(dae::Scene& scene, std::string texturePath, int initialScore, int initialHealth, int beginCellRow, int beginCellCol, glm::vec2 posScoreUI, glm::vec2 posHealthUI)
             : m_Scene(scene), m_RenderPath(texturePath), m_InitialScore(initialScore), m_InitialHealth(initialHealth),
-            m_BeginCellRow(beginCellRow), m_BeginCellCol(beginCellCol)
+            m_BeginCellRow(beginCellRow), m_BeginCellCol(beginCellCol), m_PosScoreUI(posScoreUI), m_PosHealthUI(posHealthUI)
         {
             Initialize();
         }
@@ -47,7 +47,7 @@ namespace dae
             m_PlayerScore->AddComponent(renderTextScore);
             m_TextScore = std::make_shared<TextComponent>(m_PlayerScore, "SCORE: " + std::to_string(m_Score), font, SDL_Color{ 255, 255, 255, 255 });
             m_PlayerScore->AddComponent(m_TextScore);
-            transformComponent->SetLocalPosition(510, 60, 0);
+            transformComponent->SetLocalPosition(m_PosHealthUI.x, m_PosHealthUI.y, 0);
             m_Scene.Add(m_PlayerScore);
 
             // Initialize GameObject for Pac-Man's health
@@ -58,7 +58,7 @@ namespace dae
             m_PlayerHealth->AddComponent(renderTextHealth);
             m_TextHealth = std::make_shared<TextComponent>(m_PlayerHealth, "# LIVES: " + std::to_string(m_Health), font, SDL_Color{ 255, 255, 255, 255 });
             m_PlayerHealth->AddComponent(m_TextHealth);
-            transformComponent->SetLocalPosition(510, 40, 0);
+            transformComponent->SetLocalPosition(m_PosScoreUI.x, m_PosScoreUI.y, 0);
             m_Scene.Add(m_PlayerHealth);
         }
 
@@ -112,6 +112,11 @@ namespace dae
             return m_PacMan;
         }
 
+        int GetScore() const
+        {
+            return m_PointComponent->GetPoints();
+        }
+
     private:
         Scene& m_Scene;
         std::string m_RenderPath;
@@ -135,5 +140,8 @@ namespace dae
 
         int m_BeginCellRow;
         int m_BeginCellCol;
+
+        glm::vec2 m_PosScoreUI;
+        glm::vec2 m_PosHealthUI;
     };
 }
