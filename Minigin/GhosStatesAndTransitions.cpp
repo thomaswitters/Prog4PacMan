@@ -5,8 +5,8 @@
 #include "PoweredUpComponent.h"
 
 // FSM TODO:
-using namespace FSMStates;
-using namespace FSMConditions;
+using namespace dae::FSMStates;
+using namespace dae::FSMConditions;
 
 
 //------------

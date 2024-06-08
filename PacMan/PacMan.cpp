@@ -67,44 +67,44 @@ void load()
 	PacmanSoloLoby->AddComponent(RenderTexturePacmanSoloLoby);
 	beginScene.Add(PacmanSoloLoby);
 
-	auto StartSoloGame = std::make_shared<GameObject>();
-	auto fontSoloGame = ResourceManager::GetInstance().LoadFont("Lingua.otf", 16);
-	auto transFormStartSoloGame = std::make_shared<TransformComponent>(StartSoloGame);
+	auto StartSoloGame = std::make_shared<dae::GameObject>();
+	auto fontSoloGame = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 16);
+	auto transFormStartSoloGame = std::make_shared<dae::TransformComponent>(StartSoloGame);
 	StartSoloGame->AddComponent(transFormStartSoloGame);
-	auto renderTextStartSoloGame = std::make_shared<RenderComponent>(StartSoloGame);
+	auto renderTextStartSoloGame = std::make_shared<dae::RenderComponent>(StartSoloGame);
 	StartSoloGame->AddComponent(renderTextStartSoloGame);
-	auto textStartSoloGame = std::make_shared<TextComponent>(StartSoloGame, "A/ENTER to Start", fontSoloGame, SDL_Color{ 255, 255, 255, 255 });
+	auto textStartSoloGame = std::make_shared<dae::TextComponent>(StartSoloGame, "A/ENTER to Start", fontSoloGame, SDL_Color{ 255, 255, 255, 255 });
 	StartSoloGame->AddComponent(textStartSoloGame);
 	transFormStartSoloGame->SetLocalPosition(250, 235, 0);
 	beginScene.Add(StartSoloGame);
 
-	auto SwitchGameMode = std::make_shared<GameObject>();
-	auto fontSwitchGameMode = ResourceManager::GetInstance().LoadFont("Lingua.otf", 16);
-	auto transFormSwitchGameMode = std::make_shared<TransformComponent>(SwitchGameMode);
+	auto SwitchGameMode = std::make_shared<dae::GameObject>();
+	auto fontSwitchGameMode = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 16);
+	auto transFormSwitchGameMode = std::make_shared<dae::TransformComponent>(SwitchGameMode);
 	SwitchGameMode->AddComponent(transFormSwitchGameMode);
-	auto renderTextSwitchGameMode = std::make_shared<RenderComponent>(SwitchGameMode);
+	auto renderTextSwitchGameMode = std::make_shared<dae::RenderComponent>(SwitchGameMode);
 	SwitchGameMode->AddComponent(renderTextSwitchGameMode);
-	auto textSwitchGameMode = std::make_shared<TextComponent>(SwitchGameMode, "Y/TAB to switch Game Mode", fontSoloGame, SDL_Color{255, 255, 255, 255});
+	auto textSwitchGameMode = std::make_shared<dae::TextComponent>(SwitchGameMode, "Y/TAB to switch Game Mode", fontSoloGame, SDL_Color{255, 255, 255, 255});
 	StartSoloGame->AddComponent(textSwitchGameMode);
 	transFormSwitchGameMode->SetLocalPosition(220, 265, 0);
 	beginScene.Add(SwitchGameMode);
 
 
-	auto fontName = ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
-	auto m_PlayerScore = std::make_shared<GameObject>();
-	auto transformComponent = std::make_shared<TransformComponent>(m_PlayerScore);
+	auto fontName = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
+	auto m_PlayerScore = std::make_shared<dae::GameObject>();
+	auto transformComponent = std::make_shared<dae::TransformComponent>(m_PlayerScore);
 	m_PlayerScore->AddComponent(transformComponent);
-	auto renderTextScore = std::make_shared<RenderComponent>(m_PlayerScore);
+	auto renderTextScore = std::make_shared<dae::RenderComponent>(m_PlayerScore);
 	m_PlayerScore->AddComponent(renderTextScore);
-	auto m_TextScore = std::make_shared<TextComponent>(m_PlayerScore, "NAME: Enter your name" , fontName, SDL_Color{ 255, 255, 0, 255 });
+	auto m_TextScore = std::make_shared<dae::TextComponent>(m_PlayerScore, "NAME: Enter your name" , fontName, SDL_Color{ 255, 255, 0, 255 });
 	m_PlayerScore->AddComponent(m_TextScore);
 	transformComponent->SetLocalPosition(220, 190, 0);
 	beginScene.Add(m_PlayerScore);
 
-	auto m_NameComponent = std::make_shared<TypeNameComponent>(m_PlayerScore);
+	auto m_NameComponent = std::make_shared<dae::TypeNameComponent>(m_PlayerScore);
 	m_PlayerScore->AddComponent(m_NameComponent);
 
-	auto m_TextObserver = std::make_shared<TextNameObserver>(m_PlayerScore);
+	auto m_TextObserver = std::make_shared<dae::TextNameObserver>(m_PlayerScore);
 	m_NameComponent->GetNameSubject()->AddObserver(m_TextObserver);
 
 	dae::HighscoreManager::GetInstance().SetNameObject(m_PlayerScore);

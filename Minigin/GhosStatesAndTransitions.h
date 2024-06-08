@@ -4,12 +4,10 @@
 #include "RenderComponent.h"
 #include "HealthComponent.h"
 
-using namespace dae;
-
 //------------
 //---STATES---
 //------------
-namespace FSMStates
+namespace dae::FSMStates
 {
     class None : public FSMState
     {
@@ -131,7 +129,7 @@ namespace FSMStates
 //-----------------
 //---CONDITIONS---
 //-----------------
-namespace FSMConditions
+namespace dae::FSMConditions
 {
     class PlayerTimerChase : public FSMCondition
     {
