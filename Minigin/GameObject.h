@@ -65,7 +65,7 @@ namespace dae
         void RemoveObject();
         bool GetRemoveObject();
 
-        void ClearComponents() { m_Components.clear();}
+        void ClearComponents() { if (auto sharedThis = shared_from_this()) { m_Components.clear(); };}
     private:
         void RemoveChild(std::shared_ptr<GameObject> child);
         void AddChild(std::shared_ptr<GameObject> child);

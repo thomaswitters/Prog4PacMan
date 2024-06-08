@@ -1,4 +1,5 @@
 #pragma once
+
 #include <vector>
 #include <queue>
 #include <unordered_map>
@@ -18,7 +19,6 @@ public:
     int getCellId(int row, int col) const;
     int getCellId(const glm::vec2& position) const;
     std::pair<int, int> getCellPosition(int cellId) const;
-
     std::pair<float, float> getCellCenter(int cellId) const;
     void drawGrid() const;
     void setRowHeight(int row, float height);
@@ -29,6 +29,7 @@ public:
     std::vector<int> FindPath(int startCellId, int goalCellId);
     std::vector<int> FindSecondBestPath(int startCellId, int goalCellId);
     std::vector<int> FindFarthestPath(int startCellId, int playerCellId);
+
 private:
     int rows;
     int cols;
@@ -45,4 +46,3 @@ private:
     };
     std::vector<int> AStarSearch(int startCellId, int goalCellId, const std::unordered_set<int>& excludedNodes = {}) const;
 };
-

@@ -8,7 +8,7 @@ void VersusGameMode::SetupGameMode()
 	auto go = std::make_shared<dae::GameObject>();
 
 	auto transform = std::make_shared<dae::TransformComponent>(go);
-	auto RenderTexture = std::make_shared<dae::RenderComponent>(go, "PacManSprites.png");
+	auto RenderTexture = std::make_shared<dae::RenderComponent>(go, "PacManLevel1.png");
 	go->AddComponent(transform);
 	transform->SetLocalPosition(100, 20, 0);
 	go->AddComponent(RenderTexture);
@@ -28,13 +28,15 @@ void VersusGameMode::SetupGameMode()
 
 	m_Scene.Add(FPSCounter);
 
-	Peetje pacMan(m_Scene, "pacman.png", 0, 3, 14, 8);
+	m_PacMan = std::make_shared<Peetje>(m_Scene, "pacman.png", 0, 3, 14, 8);
+	m_PacMan->RespawnScoreAndHealth();
+	m_PacMan->RespawnPacMan();
 
 	auto& input = dae::InputManager::GetInstance();
-	input.SetKeyboardCommand(SDL_SCANCODE_S, new dae::ChangeMoveDirCommand(pacMan.GetPacMan(), PacManMoveComponent::Movement::DOWN, 90.f), dae::KeyState::keyDown);
-	input.SetKeyboardCommand(SDL_SCANCODE_D, new dae::ChangeMoveDirCommand(pacMan.GetPacMan(), PacManMoveComponent::Movement::RIGHT, 0.f), dae::KeyState::keyDown);
-	input.SetKeyboardCommand(SDL_SCANCODE_W, new dae::ChangeMoveDirCommand(pacMan.GetPacMan(), PacManMoveComponent::Movement::UP, 270.f), dae::KeyState::keyDown);
-	input.SetKeyboardCommand(SDL_SCANCODE_A, new dae::ChangeMoveDirCommand(pacMan.GetPacMan(), PacManMoveComponent::Movement::LEFT, 180.f), dae::KeyState::keyDown);
+	input.SetKeyboardCommand(SDL_SCANCODE_S, new dae::ChangeMoveDirCommand(m_PacMan->GetPacMan(), PacManMoveComponent::Movement::DOWN, 90.f), dae::KeyState::keyDown);
+	input.SetKeyboardCommand(SDL_SCANCODE_D, new dae::ChangeMoveDirCommand(m_PacMan->GetPacMan(), PacManMoveComponent::Movement::RIGHT, 0.f), dae::KeyState::keyDown);
+	input.SetKeyboardCommand(SDL_SCANCODE_W, new dae::ChangeMoveDirCommand(m_PacMan->GetPacMan(), PacManMoveComponent::Movement::UP, 270.f), dae::KeyState::keyDown);
+	input.SetKeyboardCommand(SDL_SCANCODE_A, new dae::ChangeMoveDirCommand(m_PacMan->GetPacMan(), PacManMoveComponent::Movement::LEFT, 180.f), dae::KeyState::keyDown);
 
 	//input.SetKeyboardCommand(SDL_SCANCODE_KP_TAB, new dae::SwitchBetweenGameModesCommand(pacMan.GetPacMan()), dae::KeyState::keyDown);
 	//input.SetKeyboardCommand(SDL_SCANCODE_RETURN, new dae::StartGame(pacMan.GetPacMan()), dae::KeyState::keyDown);
@@ -90,72 +92,359 @@ void VersusGameMode::SetupGameMode()
 		m_Scene.Add(PowerUp);
 	}
 
-	{
-		auto Ghost2 = std::make_shared<dae::GameObject>();
-		Ghost2->SetTag("Ghost");
+	auto Ghost1 = std::make_shared<dae::GameObject>();
+	Ghost1->SetTag("Ghost");
 
-		auto transform2 = std::make_shared<dae::TransformComponent>(Ghost2);
-		Ghost2->AddComponent(transform2);
-		auto PointComponentGhost2 = std::make_shared<dae::PointsComponent>(Ghost2);
-		Ghost2->AddComponent(PointComponentGhost2);
-		auto HealthComponentGhost2 = std::make_shared<dae::HealthComponent>(Ghost2);
-		Ghost2->AddComponent(HealthComponentGhost2);
-		auto BoxColliderComponentGhost2 = std::make_shared<dae::BoxColliderComponent>(Ghost2, 10.f, 10.f, glm::vec2(-7, -8));
-		Ghost2->AddComponent(BoxColliderComponentGhost2);
-		auto GhostcollectableComponent2 = std::make_shared<dae::CollectableComponent>(Ghost2, dae::CollectableInfo(dae::Object::GHOST, 1));
-		Ghost2->AddComponent(GhostcollectableComponent2);
-		auto fovComponent2 = std::make_shared<dae::FOVComponent>(Ghost2, 360.0f, 1000.f);
-		Ghost2->AddComponent(fovComponent2);
-		auto StateMangerMovement1 = std::make_shared<StateManagerMovement>(20.f, 7.f, 1.f);
-		auto MoveComponent2 = std::make_shared<PacManMoveComponent>(Ghost2, 90.f, 8, 8, StateMangerMovement1);
-		Ghost2->AddComponent(MoveComponent2);
-		auto RenderGhost2 = std::make_shared<dae::RenderComponent>(Ghost2, "ghost.png");
-		Ghost2->AddComponent(RenderGhost2);
+	auto transform1 = std::make_shared<dae::TransformComponent>(Ghost1);
+	Ghost1->AddComponent(transform1);
+	auto PointComponentGhost1 = std::make_shared<dae::PointsComponent>(Ghost1);
+	Ghost1->AddComponent(PointComponentGhost1);
+	auto HealthComponentGhost1 = std::make_shared<dae::HealthComponent>(Ghost1);
+	Ghost1->AddComponent(HealthComponentGhost1);
+	auto BoxColliderComponentGhost1 = std::make_shared<dae::BoxColliderComponent>(Ghost1, 10.f, 10.f, glm::vec2(-7, -8));
+	Ghost1->AddComponent(BoxColliderComponentGhost1);
+	auto GhostcollectableComponent1 = std::make_shared<dae::CollectableComponent>(Ghost1, dae::CollectableInfo(dae::Object::GHOST, 1));
+	Ghost1->AddComponent(GhostcollectableComponent1);
+	auto fovComponent1 = std::make_shared<dae::FOVComponent>(Ghost1, 360.0f, 1000.f);
+	Ghost1->AddComponent(fovComponent1);
+	auto StateMangerMovement1 = std::make_shared<StateManagerMovement>(20.f, 7.f, 1.f);
+	auto MoveComponent1 = std::make_shared<PacManMoveComponent>(Ghost1, 90.f, 8, 8, StateMangerMovement1);
+	Ghost1->AddComponent(MoveComponent1);
+	auto RenderGhost1 = std::make_shared<dae::RenderComponent>(Ghost1, "ghost.png");
+	Ghost1->AddComponent(RenderGhost1);
 
-		auto returnToBaseState2 = new FSMStates::ReturnToBase(Ghost2);
-		auto noneFrightenedState2 = new FSMStates::NoneFrightened(Ghost2);
-		auto noneState2 = new FSMStates::None(Ghost2);
+	auto returnToBaseState1 = new FSMStates::ReturnToBase(Ghost1);
+	auto noneFrightenedState1 = new FSMStates::NoneFrightened(Ghost1);
+	auto noneState1 = new FSMStates::None(Ghost1);
 
-		auto StateMachine2 = std::make_shared<dae::FiniteStateMachine>(Ghost2, returnToBaseState2);
+	auto StateMachine1 = std::make_shared<dae::FiniteStateMachine>(Ghost1, returnToBaseState1);
 
-		auto playerNotAtBaseCondition2 = new FSMConditions::NotAtBase(Ghost2);
-		auto playerAtBaseCondition2 = new FSMConditions::AtBase(Ghost2);
-		auto playerPoweredUpCondition2 = new FSMConditions::PlayerPoweredUp(Ghost2);
-		auto playerNotPoweredUpCondition2 = new FSMConditions::PlayerNotPoweredUp(Ghost2);
+	auto playerNotAtBaseCondition1 = new FSMConditions::NotAtBase(Ghost1);
+	auto playerAtBaseCondition1 = new FSMConditions::AtBase(Ghost1);
+	auto playerPoweredUpCondition1 = new FSMConditions::PlayerPoweredUp(Ghost1);
+	auto playerNotPoweredUpCondition1 = new FSMConditions::PlayerNotPoweredUp(Ghost1);
 
-		StateMachine2->AddTransition(noneState2, noneFrightenedState2, playerPoweredUpCondition2);
-		StateMachine2->AddTransition(noneFrightenedState2, noneState2, playerNotPoweredUpCondition2);
-		StateMachine2->AddTransition(noneState2, returnToBaseState2, playerNotAtBaseCondition2);
-		StateMachine2->AddTransition(noneFrightenedState2, returnToBaseState2, playerNotAtBaseCondition2);
-		StateMachine2->AddTransition(returnToBaseState2, noneState2, playerAtBaseCondition2);
+	StateMachine1->AddTransition(noneState1, noneFrightenedState1, playerPoweredUpCondition1);
+	StateMachine1->AddTransition(noneFrightenedState1, noneState1, playerNotPoweredUpCondition1);
+	StateMachine1->AddTransition(noneState1, returnToBaseState1, playerNotAtBaseCondition1);
+	StateMachine1->AddTransition(noneFrightenedState1, returnToBaseState1, playerNotAtBaseCondition1);
+	StateMachine1->AddTransition(returnToBaseState1, noneState1, playerAtBaseCondition1);
 
+	Ghost1->AddComponent(StateMachine1);
 
-		Ghost2->AddComponent(StateMachine2);
+	input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Down, new dae::ChangeMoveDirCommand(Ghost1, PacManMoveComponent::Movement::DOWN, 90.f), dae::KeyState::keyDown);
+	input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Right, new dae::ChangeMoveDirCommand(Ghost1, PacManMoveComponent::Movement::RIGHT, 0.f), dae::KeyState::keyDown);
+	input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Up, new dae::ChangeMoveDirCommand(Ghost1, PacManMoveComponent::Movement::UP, 270.f), dae::KeyState::keyDown);
+	input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Left, new dae::ChangeMoveDirCommand(Ghost1, PacManMoveComponent::Movement::LEFT, 180.f), dae::KeyState::keyDown);
 
-		input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Down, new dae::ChangeMoveDirCommand(Ghost2, PacManMoveComponent::Movement::DOWN, 90.f), dae::KeyState::keyDown);
-		input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Right, new dae::ChangeMoveDirCommand(Ghost2, PacManMoveComponent::Movement::RIGHT, 0.f), dae::KeyState::keyDown);
-		input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Up, new dae::ChangeMoveDirCommand(Ghost2, PacManMoveComponent::Movement::UP, 270.f), dae::KeyState::keyDown);
-		input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Left, new dae::ChangeMoveDirCommand(Ghost2, PacManMoveComponent::Movement::LEFT, 180.f), dae::KeyState::keyDown);
-
-		//input.SetGamePadCommand(dae::GamePad::ControllerButton::ButtonA, new dae::StartGame(Ghost2), dae::KeyState::keyDown);
-
-		m_Scene.Add(Ghost2);
-	}
+	m_Scene.Add(Ghost1);
 
 	auto Ghost2 = std::make_shared<dae::GameObject>();
-	InitializeGhost(Ghost2, "ghost2.png", std::vector<int>{322, 315, 250, 305}, 5.f, FSMStates::ChasePlayer::FindPathType::BESTPATH);
+	InitializeGhost(Ghost2, "ghost2.png", std::vector<int>{322, 315, 250, 305}, 5.f, 20.f, FSMStates::ChasePlayer::FindPathType::BESTPATH);
 	m_Scene.Add(Ghost2);
 
 	auto Ghost3 = std::make_shared<dae::GameObject>();
-	InitializeGhost(Ghost3, "ghost3.png", std::vector<int>{0, 34, 37, 3}, 10.f, FSMStates::ChasePlayer::FindPathType::PREDICT);
+	InitializeGhost(Ghost3, "ghost3.png", std::vector<int>{0, 34, 37, 3}, 10.f, 20.f, FSMStates::ChasePlayer::FindPathType::PREDICT);
 	m_Scene.Add(Ghost3);
 
 	auto Ghost4 = std::make_shared<dae::GameObject>();
-	InitializeGhost(Ghost4, "ghost4.png", std::vector<int>{306, 313, 242, 289}, 15.f, FSMStates::ChasePlayer::FindPathType::PREDICT);
+	InitializeGhost(Ghost4, "ghost4.png", std::vector<int>{306, 313, 242, 289}, 15.f, 20.f, FSMStates::ChasePlayer::FindPathType::PREDICT);
+	m_Scene.Add(Ghost4);
+}
+void VersusGameMode::SetupLevel2()
+{
+	m_Scene.RemoveAll();
+	auto& input = dae::InputManager::GetInstance();
+	input.ClearInputs();
+	auto go = std::make_shared<dae::GameObject>();
+
+	auto transform = std::make_shared<dae::TransformComponent>(go);
+	auto RenderTexture = std::make_shared<dae::RenderComponent>(go, "PacManLevel2.png");
+	go->AddComponent(transform);
+	transform->SetLocalPosition(100, 20, 0);
+	go->AddComponent(RenderTexture);
+	m_Scene.Add(go);
+
+	auto FPSCounter = std::make_shared<dae::GameObject>();
+	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 20);
+
+	transform = std::make_shared<dae::TransformComponent>(FPSCounter);
+	FPSCounter->AddComponent(transform);
+	auto RenderTextFps = std::make_shared<dae::RenderComponent>(FPSCounter);
+	FPSCounter->AddComponent(RenderTextFps);
+	auto TextFps = std::make_shared<dae::TextComponent>(FPSCounter, "00 FPS", font, SDL_Color{ 255, 255, 255, 255 });
+	FPSCounter->AddComponent(TextFps);
+	auto FPS = std::make_shared<dae::FPSComponent>(FPSCounter);
+	FPSCounter->AddComponent(FPS);
+
+	m_Scene.Add(FPSCounter);
+
+	m_PacMan->RespawnScoreAndHealth();
+	m_PacMan->RespawnPacMan();
+
+	input.SetKeyboardCommand(SDL_SCANCODE_S, new dae::ChangeMoveDirCommand(m_PacMan->GetPacMan(), PacManMoveComponent::Movement::DOWN, 90.f), dae::KeyState::keyDown);
+	input.SetKeyboardCommand(SDL_SCANCODE_D, new dae::ChangeMoveDirCommand(m_PacMan->GetPacMan(), PacManMoveComponent::Movement::RIGHT, 0.f), dae::KeyState::keyDown);
+	input.SetKeyboardCommand(SDL_SCANCODE_W, new dae::ChangeMoveDirCommand(m_PacMan->GetPacMan(), PacManMoveComponent::Movement::UP, 270.f), dae::KeyState::keyDown);
+	input.SetKeyboardCommand(SDL_SCANCODE_A, new dae::ChangeMoveDirCommand(m_PacMan->GetPacMan(), PacManMoveComponent::Movement::LEFT, 180.f), dae::KeyState::keyDown);
+
+
+	std::string filePath = "../data/vertices.json";
+	std::vector<glm::vec3> coinPositions = LoadPositionsFromJSON(filePath, "coins");
+
+
+	for (size_t i = 0; i < coinPositions.size(); ++i)
+	{
+		auto coin = std::make_shared<dae::GameObject>();
+
+		transform = std::make_shared<dae::TransformComponent>(coin);
+		coin->AddComponent(transform);
+		auto renderComponent = std::make_shared<dae::RenderComponent>(coin, "coinSmal.png");
+		coin->AddComponent(renderComponent);
+
+		auto boxCollider = std::make_shared<dae::BoxColliderComponent>(coin, 5.f, 5.f, glm::vec2(-renderComponent->GetTexture()->GetSize().x / 2, -renderComponent->GetTexture()->GetSize().y / 2));
+		coin->AddComponent(boxCollider);
+
+		auto collectableComponent = std::make_shared<dae::CollectableComponent>(coin, dae::CollectableInfo(dae::Object::COIN, 10));
+		coin->AddComponent(collectableComponent);
+		collectableComponent->SetTotalCoins(int(coinPositions.size()));
+
+
+
+		transform->SetLocalPosition(coinPositions[i]);
+
+		m_Scene.Add(coin);
+	}
+
+	std::vector<glm::vec3> powerUpPositions = LoadPositionsFromJSON(filePath, "powerUps");
+
+	for (size_t i = 0; i < powerUpPositions.size(); ++i)
+	{
+		auto PowerUp = std::make_shared<dae::GameObject>();
+
+		transform = std::make_shared<dae::TransformComponent>(PowerUp);
+		PowerUp->AddComponent(transform);
+
+		auto renderComponent = std::make_shared<dae::RenderComponent>(PowerUp, "PowerUp.png");
+		PowerUp->AddComponent(renderComponent);
+
+		auto boxCollider = std::make_shared<dae::BoxColliderComponent>(PowerUp, 7.f, 7.f, glm::vec2(-renderComponent->GetTexture()->GetSize().x / 2, -renderComponent->GetTexture()->GetSize().y / 2));
+		PowerUp->AddComponent(boxCollider);
+
+		auto collectableComponent = std::make_shared<dae::CollectableComponent>(PowerUp, dae::CollectableInfo(dae::Object::POWERUP, 50));
+		PowerUp->AddComponent(collectableComponent);
+
+		transform->SetLocalPosition(powerUpPositions[i]);
+
+		m_Scene.Add(PowerUp);
+	}
+
+	auto Ghost1 = std::make_shared<dae::GameObject>();
+	Ghost1->SetTag("Ghost");
+
+	auto transform1 = std::make_shared<dae::TransformComponent>(Ghost1);
+	Ghost1->AddComponent(transform1);
+	auto PointComponentGhost1 = std::make_shared<dae::PointsComponent>(Ghost1);
+	Ghost1->AddComponent(PointComponentGhost1);
+	auto HealthComponentGhost1 = std::make_shared<dae::HealthComponent>(Ghost1);
+	Ghost1->AddComponent(HealthComponentGhost1);
+	auto BoxColliderComponentGhost1 = std::make_shared<dae::BoxColliderComponent>(Ghost1, 10.f, 10.f, glm::vec2(-7, -8));
+	Ghost1->AddComponent(BoxColliderComponentGhost1);
+	auto GhostcollectableComponent1 = std::make_shared<dae::CollectableComponent>(Ghost1, dae::CollectableInfo(dae::Object::GHOST, 1));
+	Ghost1->AddComponent(GhostcollectableComponent1);
+	auto fovComponent1 = std::make_shared<dae::FOVComponent>(Ghost1, 360.0f, 1000.f);
+	Ghost1->AddComponent(fovComponent1);
+	auto StateMangerMovement1 = std::make_shared<StateManagerMovement>(20.f, 7.f, 1.f);
+	auto MoveComponent1 = std::make_shared<PacManMoveComponent>(Ghost1, 90.f, 8, 8, StateMangerMovement1);
+	Ghost1->AddComponent(MoveComponent1);
+	auto RenderGhost1 = std::make_shared<dae::RenderComponent>(Ghost1, "ghost.png");
+	Ghost1->AddComponent(RenderGhost1);
+
+	auto returnToBaseState1 = new FSMStates::ReturnToBase(Ghost1);
+	auto noneFrightenedState1 = new FSMStates::NoneFrightened(Ghost1);
+	auto noneState1 = new FSMStates::None(Ghost1);
+
+	auto StateMachine1 = std::make_shared<dae::FiniteStateMachine>(Ghost1, returnToBaseState1);
+
+	auto playerNotAtBaseCondition1 = new FSMConditions::NotAtBase(Ghost1);
+	auto playerAtBaseCondition1 = new FSMConditions::AtBase(Ghost1);
+	auto playerPoweredUpCondition1 = new FSMConditions::PlayerPoweredUp(Ghost1);
+	auto playerNotPoweredUpCondition1 = new FSMConditions::PlayerNotPoweredUp(Ghost1);
+
+	StateMachine1->AddTransition(noneState1, noneFrightenedState1, playerPoweredUpCondition1);
+	StateMachine1->AddTransition(noneFrightenedState1, noneState1, playerNotPoweredUpCondition1);
+	StateMachine1->AddTransition(noneState1, returnToBaseState1, playerNotAtBaseCondition1);
+	StateMachine1->AddTransition(noneFrightenedState1, returnToBaseState1, playerNotAtBaseCondition1);
+	StateMachine1->AddTransition(returnToBaseState1, noneState1, playerAtBaseCondition1);
+
+	Ghost1->AddComponent(StateMachine1);
+
+	input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Down, new dae::ChangeMoveDirCommand(Ghost1, PacManMoveComponent::Movement::DOWN, 90.f), dae::KeyState::keyDown);
+	input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Right, new dae::ChangeMoveDirCommand(Ghost1, PacManMoveComponent::Movement::RIGHT, 0.f), dae::KeyState::keyDown);
+	input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Up, new dae::ChangeMoveDirCommand(Ghost1, PacManMoveComponent::Movement::UP, 270.f), dae::KeyState::keyDown);
+	input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Left, new dae::ChangeMoveDirCommand(Ghost1, PacManMoveComponent::Movement::LEFT, 180.f), dae::KeyState::keyDown);
+
+	m_Scene.Add(Ghost1);
+
+	auto Ghost2 = std::make_shared<dae::GameObject>();
+	InitializeGhost(Ghost2, "ghost2.png", std::vector<int>{322, 315, 250, 305}, 5.f, 25.f, FSMStates::ChasePlayer::FindPathType::BESTPATH);
+	m_Scene.Add(Ghost2);
+
+	auto Ghost3 = std::make_shared<dae::GameObject>();
+	InitializeGhost(Ghost3, "ghost3.png", std::vector<int>{0, 34, 37, 3}, 10.f, 25.f, FSMStates::ChasePlayer::FindPathType::PREDICT);
+	m_Scene.Add(Ghost3);
+
+	auto Ghost4 = std::make_shared<dae::GameObject>();
+	InitializeGhost(Ghost4, "ghost4.png", std::vector<int>{306, 313, 242, 289}, 15.f, 25.f, FSMStates::ChasePlayer::FindPathType::PREDICT);
+	m_Scene.Add(Ghost4);
+}
+void VersusGameMode::SetupLevel3()
+{
+	m_Scene.RemoveAll();
+	auto& input = dae::InputManager::GetInstance();
+	input.ClearInputs();
+	auto go = std::make_shared<dae::GameObject>();
+
+	auto transform = std::make_shared<dae::TransformComponent>(go);
+	auto RenderTexture = std::make_shared<dae::RenderComponent>(go, "PacManLevel3.png");
+	go->AddComponent(transform);
+	transform->SetLocalPosition(100, 20, 0);
+	go->AddComponent(RenderTexture);
+	m_Scene.Add(go);
+
+	auto FPSCounter = std::make_shared<dae::GameObject>();
+	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 20);
+
+	transform = std::make_shared<dae::TransformComponent>(FPSCounter);
+	FPSCounter->AddComponent(transform);
+	auto RenderTextFps = std::make_shared<dae::RenderComponent>(FPSCounter);
+	FPSCounter->AddComponent(RenderTextFps);
+	auto TextFps = std::make_shared<dae::TextComponent>(FPSCounter, "00 FPS", font, SDL_Color{ 255, 255, 255, 255 });
+	FPSCounter->AddComponent(TextFps);
+	auto FPS = std::make_shared<dae::FPSComponent>(FPSCounter);
+	FPSCounter->AddComponent(FPS);
+
+	m_Scene.Add(FPSCounter);
+
+	m_PacMan->RespawnScoreAndHealth();
+	m_PacMan->RespawnPacMan();
+
+	input.SetKeyboardCommand(SDL_SCANCODE_S, new dae::ChangeMoveDirCommand(m_PacMan->GetPacMan(), PacManMoveComponent::Movement::DOWN, 90.f), dae::KeyState::keyDown);
+	input.SetKeyboardCommand(SDL_SCANCODE_D, new dae::ChangeMoveDirCommand(m_PacMan->GetPacMan(), PacManMoveComponent::Movement::RIGHT, 0.f), dae::KeyState::keyDown);
+	input.SetKeyboardCommand(SDL_SCANCODE_W, new dae::ChangeMoveDirCommand(m_PacMan->GetPacMan(), PacManMoveComponent::Movement::UP, 270.f), dae::KeyState::keyDown);
+	input.SetKeyboardCommand(SDL_SCANCODE_A, new dae::ChangeMoveDirCommand(m_PacMan->GetPacMan(), PacManMoveComponent::Movement::LEFT, 180.f), dae::KeyState::keyDown);
+
+
+	std::string filePath = "../data/vertices.json";
+	std::vector<glm::vec3> coinPositions = LoadPositionsFromJSON(filePath, "coins");
+
+
+	for (size_t i = 0; i < coinPositions.size(); ++i)
+	{
+		auto coin = std::make_shared<dae::GameObject>();
+
+		transform = std::make_shared<dae::TransformComponent>(coin);
+		coin->AddComponent(transform);
+		auto renderComponent = std::make_shared<dae::RenderComponent>(coin, "coinSmal.png");
+		coin->AddComponent(renderComponent);
+
+		auto boxCollider = std::make_shared<dae::BoxColliderComponent>(coin, 5.f, 5.f, glm::vec2(-renderComponent->GetTexture()->GetSize().x / 2, -renderComponent->GetTexture()->GetSize().y / 2));
+		coin->AddComponent(boxCollider);
+
+		auto collectableComponent = std::make_shared<dae::CollectableComponent>(coin, dae::CollectableInfo(dae::Object::COIN, 10));
+		coin->AddComponent(collectableComponent);
+		collectableComponent->SetTotalCoins(int(coinPositions.size()));
+
+
+
+		transform->SetLocalPosition(coinPositions[i]);
+
+		m_Scene.Add(coin);
+	}
+
+	std::vector<glm::vec3> powerUpPositions = LoadPositionsFromJSON(filePath, "powerUps");
+
+	for (size_t i = 0; i < powerUpPositions.size(); ++i)
+	{
+		auto PowerUp = std::make_shared<dae::GameObject>();
+
+		transform = std::make_shared<dae::TransformComponent>(PowerUp);
+		PowerUp->AddComponent(transform);
+
+		auto renderComponent = std::make_shared<dae::RenderComponent>(PowerUp, "PowerUp.png");
+		PowerUp->AddComponent(renderComponent);
+
+		auto boxCollider = std::make_shared<dae::BoxColliderComponent>(PowerUp, 7.f, 7.f, glm::vec2(-renderComponent->GetTexture()->GetSize().x / 2, -renderComponent->GetTexture()->GetSize().y / 2));
+		PowerUp->AddComponent(boxCollider);
+
+		auto collectableComponent = std::make_shared<dae::CollectableComponent>(PowerUp, dae::CollectableInfo(dae::Object::POWERUP, 50));
+		PowerUp->AddComponent(collectableComponent);
+
+		transform->SetLocalPosition(powerUpPositions[i]);
+
+		m_Scene.Add(PowerUp);
+	}
+
+	auto Ghost1 = std::make_shared<dae::GameObject>();
+	Ghost1->SetTag("Ghost");
+
+	auto transform1 = std::make_shared<dae::TransformComponent>(Ghost1);
+	Ghost1->AddComponent(transform1);
+	auto PointComponentGhost1 = std::make_shared<dae::PointsComponent>(Ghost1);
+	Ghost1->AddComponent(PointComponentGhost1);
+	auto HealthComponentGhost1 = std::make_shared<dae::HealthComponent>(Ghost1);
+	Ghost1->AddComponent(HealthComponentGhost1);
+	auto BoxColliderComponentGhost1 = std::make_shared<dae::BoxColliderComponent>(Ghost1, 10.f, 10.f, glm::vec2(-7, -8));
+	Ghost1->AddComponent(BoxColliderComponentGhost1);
+	auto GhostcollectableComponent1 = std::make_shared<dae::CollectableComponent>(Ghost1, dae::CollectableInfo(dae::Object::GHOST, 1));
+	Ghost1->AddComponent(GhostcollectableComponent1);
+	auto fovComponent1 = std::make_shared<dae::FOVComponent>(Ghost1, 360.0f, 1000.f);
+	Ghost1->AddComponent(fovComponent1);
+	auto StateMangerMovement1 = std::make_shared<StateManagerMovement>(20.f, 7.f, 1.f);
+	auto MoveComponent1 = std::make_shared<PacManMoveComponent>(Ghost1, 90.f, 8, 8, StateMangerMovement1);
+	Ghost1->AddComponent(MoveComponent1);
+	auto RenderGhost1 = std::make_shared<dae::RenderComponent>(Ghost1, "ghost.png");
+	Ghost1->AddComponent(RenderGhost1);
+
+	auto returnToBaseState1 = new FSMStates::ReturnToBase(Ghost1);
+	auto noneFrightenedState1 = new FSMStates::NoneFrightened(Ghost1);
+	auto noneState1 = new FSMStates::None(Ghost1);
+
+	auto StateMachine1 = std::make_shared<dae::FiniteStateMachine>(Ghost1, returnToBaseState1);
+
+	auto playerNotAtBaseCondition1 = new FSMConditions::NotAtBase(Ghost1);
+	auto playerAtBaseCondition1 = new FSMConditions::AtBase(Ghost1);
+	auto playerPoweredUpCondition1 = new FSMConditions::PlayerPoweredUp(Ghost1);
+	auto playerNotPoweredUpCondition1 = new FSMConditions::PlayerNotPoweredUp(Ghost1);
+
+	StateMachine1->AddTransition(noneState1, noneFrightenedState1, playerPoweredUpCondition1);
+	StateMachine1->AddTransition(noneFrightenedState1, noneState1, playerNotPoweredUpCondition1);
+	StateMachine1->AddTransition(noneState1, returnToBaseState1, playerNotAtBaseCondition1);
+	StateMachine1->AddTransition(noneFrightenedState1, returnToBaseState1, playerNotAtBaseCondition1);
+	StateMachine1->AddTransition(returnToBaseState1, noneState1, playerAtBaseCondition1);
+
+	Ghost1->AddComponent(StateMachine1);
+
+	input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Down, new dae::ChangeMoveDirCommand(Ghost1, PacManMoveComponent::Movement::DOWN, 90.f), dae::KeyState::keyDown);
+	input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Right, new dae::ChangeMoveDirCommand(Ghost1, PacManMoveComponent::Movement::RIGHT, 0.f), dae::KeyState::keyDown);
+	input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Up, new dae::ChangeMoveDirCommand(Ghost1, PacManMoveComponent::Movement::UP, 270.f), dae::KeyState::keyDown);
+	input.SetGamePadCommand(dae::GamePad::ControllerButton::Dpad_Left, new dae::ChangeMoveDirCommand(Ghost1, PacManMoveComponent::Movement::LEFT, 180.f), dae::KeyState::keyDown);
+
+	m_Scene.Add(Ghost1);
+
+	auto Ghost2 = std::make_shared<dae::GameObject>();
+	InitializeGhost(Ghost2, "ghost2.png", std::vector<int>{322, 315, 250, 305}, 5.f, 30.f, FSMStates::ChasePlayer::FindPathType::BESTPATH);
+	m_Scene.Add(Ghost2);
+
+	auto Ghost3 = std::make_shared<dae::GameObject>();
+	InitializeGhost(Ghost3, "ghost3.png", std::vector<int>{0, 34, 37, 3}, 10.f, 30.f, FSMStates::ChasePlayer::FindPathType::PREDICT);
+	m_Scene.Add(Ghost3);
+
+	auto Ghost4 = std::make_shared<dae::GameObject>();
+	InitializeGhost(Ghost4, "ghost4.png", std::vector<int>{306, 313, 242, 289}, 15.f, 30.f, FSMStates::ChasePlayer::FindPathType::PREDICT);
 	m_Scene.Add(Ghost4);
 }
 
-void VersusGameMode::InitializeGhost(std::shared_ptr<dae::GameObject> ghost, std::string texturePath, std::vector<int> patrolPoints, float maxTimeInBase, FSMStates::ChasePlayer::FindPathType pathType) {
+void VersusGameMode::InitializeGhost(std::shared_ptr<dae::GameObject> ghost, std::string texturePath, std::vector<int> patrolPoints, float maxTimeInBase, float maxTimeInChase, FSMStates::ChasePlayer::FindPathType pathType) {
 	ghost->SetTag("Ghost");
 
 	auto transform = std::make_shared<dae::TransformComponent>(ghost);
@@ -173,7 +462,7 @@ void VersusGameMode::InitializeGhost(std::shared_ptr<dae::GameObject> ghost, std
 	auto fovComponent = std::make_shared<dae::FOVComponent>(ghost, 360.0f, 1000.f);
 	ghost->AddComponent(fovComponent);
 
-	auto stateManagerMovement = std::make_shared<StateManagerMovement>(20.f, 7.f, maxTimeInBase);
+	auto stateManagerMovement = std::make_shared<StateManagerMovement>(maxTimeInChase, 7.f, maxTimeInBase);
 	auto moveComponent = std::make_shared<PacManMoveComponent>(ghost, 90.f, 8, 8, stateManagerMovement);
 	ghost->AddComponent(moveComponent);
 

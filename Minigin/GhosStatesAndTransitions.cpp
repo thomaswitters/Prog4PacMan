@@ -45,7 +45,9 @@ void Patrol::OnEnter() {
 
     m_MoveCoomponent->SetTargetCellIndex(m_TargetCellIndices[0]);
 
-    if (m_MoveCoomponent->GetStateManager()->GetPatrolPhase() == 3)
+    m_MoveCoomponent->GetStateManager()->SetPatrolPhasePlus(1);
+
+    if (m_MoveCoomponent->GetStateManager()->GetPatrolPhase() >= 3)
     {
         m_MoveCoomponent->GetStateManager()->SetMaxTimeInPatrolState(5);
     }
@@ -88,7 +90,7 @@ void ChasePlayer::OnEnter() {
             m_PlayerMoveComponent = m_Player->GetComponent<PacManMoveComponent>();
         }
     }
-    
+
    
     m_MoveCoomponent->SetFollowPath(true); 
 }
@@ -207,22 +209,6 @@ void ReturnToBase::Update(float deltaTime) {
     }
    
 }
-
-
-////----------------- Conditions -----------------
-//bool PlayerInSight::Evaluate() const {
-//    if (m_pFovComponent && m_pFovComponent->GetPlayerInSight())
-//        return true;
-//
-//    return false;
-//}
-//
-//bool PlayerNotInSight::Evaluate() const {
-//    if (m_pFovComponent && !m_pFovComponent->GetPlayerInSight() && m_MoveCoomponent->HasReachedTargetCell())
-//        return true;
-//
-//    return false;
-//}
 
 bool PlayerTimerChase::Evaluate() const {
     return m_MoveCoomponent->GetStateManager()->TimeToSwitchToPatrol();

@@ -1,4 +1,5 @@
 #include "PoweredUpComponent.h"
+#include "ServiceLocator.h"
 
 using namespace dae;
 

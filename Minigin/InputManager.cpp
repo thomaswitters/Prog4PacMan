@@ -23,8 +23,6 @@ bool InputManager::ProcessInput(float deltaTime)
         //ImGui_ImplSDL2_ProcessEvent(&e);
     }
 
-
-
     for (size_t i = 0; i < m_pControllers.size(); ++i)
     {
         m_pControllers[i]->Update();
@@ -34,24 +32,24 @@ bool InputManager::ProcessInput(float deltaTime)
             auto& button = commandPair.first;
             auto& commandData = commandPair.second;
 
-            switch (commandData.second)
+            switch (commandData.inputType)
             {
             case KeyState::keyPressed:
                 if (m_pControllers[i]->IsButtonPressed(button))
                 {
-                    commandData.first->Execute(deltaTime);
+                    commandData.command->Execute(deltaTime);
                 }
                 break;
             case KeyState::keyUp:
                 if (m_pControllers[i]->IsButtonUp(button))
                 {
-                    commandData.first->Execute(deltaTime);
+                    commandData.command->Execute(deltaTime);
                 }
                 break;
             case KeyState::keyDown:
                 if (m_pControllers[i]->IsButtonDown(button))
                 {
-                    commandData.first->Execute(deltaTime);
+                    commandData.command->Execute(deltaTime);
                 }
                 break;
             default:
@@ -70,11 +68,10 @@ bool InputManager::ProcessInput(float deltaTime)
 
             if (abs(stickValues.x) > deadzone || abs(stickValues.y) > deadzone)
             {
-                command.second->Execute(deltaTime);
+                command.second.command->Execute(deltaTime);
             }
         }
     }
-
 
     for (size_t i = 0; i < m_pKeyboards.size(); ++i)
     {
@@ -85,24 +82,24 @@ bool InputManager::ProcessInput(float deltaTime)
             auto& key = commandPair.first;
             auto& commandData = commandPair.second;
 
-            switch (commandData.second)
+            switch (commandData.inputType)
             {
             case KeyState::keyPressed:
                 if (m_pKeyboards[i]->IsPressed(key))
                 {
-                    commandData.first->Execute(deltaTime);
+                    commandData.command->Execute(deltaTime);
                 }
                 break;
             case KeyState::keyUp:
                 if (m_pKeyboards[i]->IsUp(key))
                 {
-                    commandData.first->Execute(deltaTime);
+                    commandData.command->Execute(deltaTime);
                 }
                 break;
             case KeyState::keyDown:
                 if (m_pKeyboards[i]->IsDown(key))
                 {
-                    commandData.first->Execute(deltaTime);
+                    commandData.command->Execute(deltaTime);
                 }
                 break;
             default:
@@ -115,19 +112,19 @@ bool InputManager::ProcessInput(float deltaTime)
     return true;
 }
 
-void InputManager::SetGamePadCommand(GamePad::ControllerButton button, Command* command, KeyState inputType)
+void InputManager::SetGamePadCommand(GamePad::ControllerButton button, Command* command, KeyState inputType, bool canBeDeleted)
 {
-    m_GamePadCommands.insert({ button, std::make_pair(std::unique_ptr<Command>(command), inputType) });
+    m_GamePadCommands[button] = CommandData(std::unique_ptr<Command>(command), inputType, canBeDeleted);
 }
 
-void InputManager::SetGamePadStickCommand(GamePad::ControllerStick button, Command* command)
+void InputManager::SetGamePadStickCommand(GamePad::ControllerStick button, Command* command, bool canBeDeleted)
 {
-    m_GamePadStickCommands.insert({ button, std::unique_ptr<Command>(command)});
+    m_GamePadStickCommands[button] = CommandData(std::unique_ptr<Command>(command), KeyState::keyPressed, canBeDeleted);
 }
 
-void InputManager::SetKeyboardCommand(SDL_Scancode key, Command* command, KeyState inputType)
+void InputManager::SetKeyboardCommand(SDL_Scancode key, Command* command, KeyState inputType, bool canBeDeleted)
 {
-    m_KeyboardCommands.insert({ key, std::make_pair(std::unique_ptr<Command>(command), inputType) });
+    m_KeyboardCommands[key] = CommandData(std::unique_ptr<Command>(command), inputType, canBeDeleted);
 }
 
 glm::vec2 InputManager::GetControllerStickValues(GamePad::ControllerStick stick) const
@@ -150,9 +147,41 @@ glm::vec2 InputManager::GetControllerStickValues(GamePad::ControllerStick stick)
 
 void InputManager::ClearInputs()
 {
-    //m_GamePadCommands.clear();
-    //m_GamePadStickCommands.clear();
-    //m_KeyboardCommands.clear();
+    for (auto it = m_GamePadCommands.begin(); it != m_GamePadCommands.end(); )
+    {
+        if (it->second.canBeDeleted)
+        {
+            it = m_GamePadCommands.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    for (auto it = m_GamePadStickCommands.begin(); it != m_GamePadStickCommands.end(); )
+    {
+        if (it->second.canBeDeleted)
+        {
+            it = m_GamePadStickCommands.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    for (auto it = m_KeyboardCommands.begin(); it != m_KeyboardCommands.end(); )
+    {
+        if (it->second.canBeDeleted)
+        {
+            it = m_KeyboardCommands.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 }
 
 

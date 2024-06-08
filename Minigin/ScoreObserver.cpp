@@ -12,7 +12,7 @@ void dae::ScoreObserver::Notify(GameObject& actor, Event events)
 	{
 	case dae::Event::GainPoints:
 		int points = actor.GetComponent<PointsComponent>().get()->GetPoints();
-		m_pText.get()->SetText("Score: " + std::to_string(points));
+		m_pText.get()->SetText("SCORE: " + std::to_string(points));
 		break;
 	}
 }

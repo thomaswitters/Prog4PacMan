@@ -15,6 +15,7 @@ namespace dae
 		void SetPoweredUp();
 		void SetTimerPoweredUpStart(float deltaTime);
 		void CheckEndTime();
+		void ResetTimer() { s_TimerPoweredUp = 0.f; };
 
 		static bool IsPoweredUp() { return s_IsPoweredUp; };
 	private:

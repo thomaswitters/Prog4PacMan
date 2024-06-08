@@ -27,7 +27,7 @@
 #include "SoloGameMode.h"
 #include "DuoGameMode.h" 
 #include "VersusGameMode.h"
-
+#include "ServiceLocator.h"
 
 void load()
 {
@@ -162,11 +162,18 @@ void load()
 	auto& switchBetweenGameModes2 = *new dae::SwitchBetweenGameModesCommand(PacmanSoloLoby);
 	auto& input = dae::InputManager::GetInstance();
 
-	input.SetKeyboardCommand(SDL_SCANCODE_TAB, &switchBetweenGameModes1, dae::KeyState::keyDown);
-	input.SetKeyboardCommand(SDL_SCANCODE_RETURN, new dae::StartGame(allGameModes, switchBetweenGameModes1), dae::KeyState::keyDown);
+	input.SetKeyboardCommand(SDL_SCANCODE_F2, new dae::SkipLevels(), dae::KeyState::keyDown, false);
+	input.SetKeyboardCommand(SDL_SCANCODE_F1, new dae::MuteAndUnMuteSounds(), dae::KeyState::keyDown, false);
 
-	input.SetGamePadCommand(dae::GamePad::ControllerButton::ButtonY, &switchBetweenGameModes2, dae::KeyState::keyDown);
-	input.SetGamePadCommand(dae::GamePad::ControllerButton::ButtonA, new dae::StartGame(allGameModes, switchBetweenGameModes2), dae::KeyState::keyDown);
+	input.SetKeyboardCommand(SDL_SCANCODE_TAB, &switchBetweenGameModes1, dae::KeyState::keyDown, false);
+	input.SetKeyboardCommand(SDL_SCANCODE_RETURN, new dae::StartGame(allGameModes, switchBetweenGameModes1), dae::KeyState::keyDown, false);
+
+	input.SetGamePadCommand(dae::GamePad::ControllerButton::ButtonY, &switchBetweenGameModes2, dae::KeyState::keyDown, false);
+	input.SetGamePadCommand(dae::GamePad::ControllerButton::ButtonA, new dae::StartGame(allGameModes, switchBetweenGameModes2), dae::KeyState::keyDown, false);
+
+
+	dae::ServiceLocator::RegisterSoundSystem(std::make_unique<dae::SDLSoundSystem>());
+	dae::ServiceLocator::GetSoundSystem().PlayMusic("../Data/Sounds/1-03. PAC-MAN NEVA PAX!!.mp3", 50, -1);
 }
 
 int main(int, char* []) {

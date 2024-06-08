@@ -22,7 +22,6 @@ namespace dae
         if (m_TimeInChaseState >= m_MaxTimeInChaseState)
         {
             m_TimeInChaseState = 0.f;
-            m_PatrolPhase++;
             return true;
         }
         return false;
@@ -77,5 +76,10 @@ namespace dae
     void StateManagerMovement::SetMaxTimeInBase(float maxTimeInBase)
     {
         m_MaxTimeInBase = maxTimeInBase;
+    }
+
+    void StateManagerMovement::SetPatrolPhasePlus(int amount)
+    {
+        m_PatrolPhase += amount;
     }
 }

@@ -5,6 +5,8 @@
 #include "PointsComponent.h"
 #include "HealthComponent.h"
 #include "GameMode.h"
+#include "GameModeManager.h"
+#include "ServiceLocator.h"
 
 namespace dae
 {
@@ -99,4 +101,21 @@ namespace dae
 		SwitchBetweenGameModesCommand& m_SwitchCommand;
 	};
 	
+	class SkipLevels final : public Command
+	{
+	public:
+		SkipLevels();
+
+		void Execute(float deltaTime) override;
+	};
+
+	class MuteAndUnMuteSounds final : public Command
+	{
+	public:
+		MuteAndUnMuteSounds();
+
+		void Execute(float deltaTime) override;
+	private:
+		bool m_IsMuted;
+	};
 }

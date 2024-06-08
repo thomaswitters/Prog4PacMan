@@ -1,4 +1,5 @@
 #include "CollectableComponent.h"
+#include "ServiceLocator.h"
 
 namespace dae
 {
@@ -12,21 +13,21 @@ namespace dae
     {
         m_BoxCollider = GetOwner().lock()->GetComponent<BoxColliderComponent>();
 
-        switch (m_Info.object)
+        switch (m_Info.type)
         {
         case Object::COIN:
         case Object::POWERUP:
-            m_PointsOnPickup = m_Info.healthOrPoints;
+            m_PointsOnPickup = m_Info.value;
             break;
         case Object::GHOST:
-            m_LoseHealthOnPickup = m_Info.healthOrPoints;
+            m_LoseHealthOnPickup = m_Info.value;
             break;
         case Object::NONE:
             break;
         }
     }
 
-    void dae::CollectableComponent::Update(float)
+    void CollectableComponent::Update(float)
     {
         if (m_BoxCollider)
         {
@@ -39,7 +40,6 @@ namespace dae
                     {
                         OnPickup(object);
                     }
-                    
                 }
             }
         }
@@ -47,7 +47,6 @@ namespace dae
 
     void CollectableComponent::OnPickup(std::weak_ptr<GameObject> other)
     {
-
         if (auto otherGameObject = other.lock())
         {
             auto pointsComponent = otherGameObject->GetComponent<PointsComponent>();
@@ -55,52 +54,46 @@ namespace dae
             auto healthComponent = otherGameObject->GetComponent<HealthComponent>();
             auto boxColliderComponent = otherGameObject->GetComponent<BoxColliderComponent>();
 
-            switch (m_Info.object)
+            switch (m_Info.type)
             {
             case Object::COIN:
+                ServiceLocator::GetSoundSystem().PlaySoundEffect("../Data/Sounds/munch_1.wav", 100, 0);
                 if (pointsComponent)
-                {
                     pointsComponent->AddPoints(m_PointsOnPickup);
-                }
                 GetOwner().lock()->RemoveObject();
-
                 m_TotalCoins--;
                 if (m_TotalCoins <= 0)
                 {
-                    dae::SceneManager::GetInstance().SetActiveScene("EndSceneWon");
+                    auto& gameModeManager = GameModeManager::GetInstance();
+                    if (gameModeManager.GetCurrentLevelGameMode() >= gameModeManager.GetAmountOfLevelsGameMode())
+                        SceneManager::GetInstance().SetActiveScene("EndSceneWon");
+                    GameModeManager::GetInstance().NextLevelActiveGameMode();
                 }
                 break;
-
             case Object::POWERUP:
                 if (poweredUpComponent)
                 {
+                    ServiceLocator::GetSoundSystem().PlaySoundEffect("../Data/Sounds/power_pellet.wav", 100, 1);
                     poweredUpComponent->SetPoweredUp();
-                    
+                    poweredUpComponent->ResetTimer();
                 }
                 if (pointsComponent)
-                {
                     pointsComponent->AddPoints(m_PointsOnPickup);
-                }
                 GetOwner().lock()->RemoveObject();
                 break;
-
             case Object::GHOST:
                 if (poweredUpComponent && poweredUpComponent->IsPoweredUp())
                 {
+                    ServiceLocator::GetSoundSystem().PlaySoundEffect("../Data/Sounds/eat_ghost.wav", 100, 0);
                     if (pointsComponent)
-                    {
                         pointsComponent->AddPoints(1000);
-                    }
                     m_BoxCollider->SetActive(false);
                 }
                 else if (healthComponent)
                 {
-                    
                     healthComponent->RemoveHealth(m_LoseHealthOnPickup);
-                    //boxColliderComponent->SetActive(false);
                 }
                 break;
-
             default:
                 break;
             }

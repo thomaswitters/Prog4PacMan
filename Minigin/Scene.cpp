@@ -31,10 +31,7 @@ void Scene::RemoveAll()
 void Scene::Reload()
 {
 	RemoveAll();
-	/*for (const auto& object : m_initialObjects)
-	{
-		m_objects.push_back(object->Clone());
-	}*/
+
 }
 
 void Scene::FixedUpdate()

@@ -61,46 +61,6 @@ bool dae::BoxColliderComponent::CheckCollision(const std::shared_ptr<BoxCollider
     return overlapX && overlapY;
 }
 
-void dae::BoxColliderComponent::ResolveCollision(const std::shared_ptr<BoxColliderComponent>& otherCollider)
-{
-    auto owner = GetOwner().lock();
-    auto otherOwner = otherCollider->GetOwner().lock();
-
-    if (!owner || !otherOwner)
-    {
-        return;
-    }
-
-    glm::vec2 thisMin = GetMinBounds();
-    glm::vec2 thisMax = GetMaxBounds();
-    glm::vec2 otherMin = otherCollider->GetMinBounds();
-    glm::vec2 otherMax = otherCollider->GetMaxBounds();
-
-    float overlapX = std::min(thisMax.x, otherMax.x) - std::max(thisMin.x, otherMin.x);
-    float overlapY = std::min(thisMax.y, otherMax.y) - std::max(thisMin.y, otherMin.y);
-
-    if (overlapX > 0 && overlapY > 0)
-    {
-        if (overlapX < overlapY)
-        {
-
-            // Resolve collision along X axis
-            if (thisMin.x < otherMin.x)
-                m_TransformComponent->Translate(glm::vec3(-overlapX, 0, 0));
-            else
-                m_TransformComponent->Translate(glm::vec3(overlapX, 0, 0));
-        }
-        else
-        {
-            // Resolve collision along Y axis
-            if (thisMin.y < otherMin.y)
-                m_TransformComponent->Translate(glm::vec3(0, -overlapY, 0));
-            else
-                m_TransformComponent->Translate(glm::vec3(0, overlapY, 0));
-        }
-    }
-}
-
 glm::vec2 dae::BoxColliderComponent::GetMinBounds() const
 {
     if (m_TransformComponent)

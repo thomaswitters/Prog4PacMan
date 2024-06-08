@@ -14,21 +14,20 @@ namespace dae
 
 		HealthComponent(const HealthComponent&) = delete;
 		HealthComponent(HealthComponent&&) = delete;
-		HealthComponent& operator= (const HealthComponent&) = delete;
-		HealthComponent& operator= (const HealthComponent&&) = delete;
+		HealthComponent& operator=(const HealthComponent&) = delete;
+		HealthComponent& operator=(const HealthComponent&&) = delete;
 
-		void Update(float deltaTime) override;
 		void RemoveHealth(int amount);
 
 		int GetHealth() const;
-		bool GetHasDied() const;
+		bool HasDied() const;
 		Subject* GetHealthSubject() const;
+
 	private:
-		std::unique_ptr<Subject> m_pHealthChanged;
-		std::shared_ptr<PacManMoveComponent> m_pMoveComponent;
-		std::shared_ptr<BoxColliderComponent> m_pBoxColliderComponentComponent;
 		int m_Health;
 		bool m_Died;
+		std::unique_ptr<Subject> m_pHealthChanged;
+		std::shared_ptr<BoxColliderComponent> m_pBoxColliderComponent;
+		std::shared_ptr<PacManMoveComponent> m_pMoveComponent;
 	};
 }
-

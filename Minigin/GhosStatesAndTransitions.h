@@ -133,32 +133,6 @@ namespace FSMStates
 //-----------------
 namespace FSMConditions
 {
-    /*class PlayerInSight : public FSMCondition
-    {
-    public:
-        PlayerInSight(std::shared_ptr<GameObject> pOwner) : FSMCondition(pOwner) {}
-
-        PlayerInSight(const PlayerInSight&) = delete;
-        PlayerInSight& operator=(const PlayerInSight&) = delete;
-        PlayerInSight(PlayerInSight&&) = delete;
-        PlayerInSight& operator=(PlayerInSight&&) = delete;
-
-        bool Evaluate() const override;
-    };
-
-    class PlayerNotInSight : public FSMCondition
-    {
-    public:
-        PlayerNotInSight(std::shared_ptr<GameObject> pOwner) : FSMCondition(pOwner) {}
-
-        PlayerNotInSight(const PlayerNotInSight&) = delete;
-        PlayerNotInSight& operator=(const PlayerNotInSight&) = delete;
-        PlayerNotInSight(PlayerNotInSight&&) = delete;
-        PlayerNotInSight& operator=(PlayerNotInSight&&) = delete;
-
-        bool Evaluate() const override;
-    };*/
-
     class PlayerTimerChase : public FSMCondition
     {
     public:

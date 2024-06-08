@@ -132,6 +132,19 @@ void PacManMoveComponent::Update(float deltaTime)
         }
 
         m_Transform->Translate(displacement);
+
+
+        //respawn player
+        if (m_IsRespawning) 
+        {
+            m_RespawnTimer += deltaTime;
+
+            if (m_RespawnTimer >= m_RespawnDelay)
+            {
+                m_BoxCollider->SetActive(true);
+                m_IsRespawning = false;
+            }
+        }
     }
 
     if (m_CurrentCellId == 136)
@@ -200,7 +213,9 @@ void PacManMoveComponent::Respawn(std::shared_ptr<BoxColliderComponent> boxColli
     m_Transform->SetLocalPosition(initialPosition);
     m_CurrentDirection = glm::vec2{ 0.f, 0.f };
 
-    boxCollider->SetActive(true);
+    m_BoxCollider = boxCollider;
+    m_IsRespawning = true;
+    m_RespawnTimer = 0.0f;
 }
 void PacManMoveComponent::RespawnGhost()
 {

@@ -1,7 +1,6 @@
 #include "Command.h"
 #include "InputManager.h"
 
-
 dae::MoveCommand::MoveCommand(std::shared_ptr<GameObject> object, float speed, glm::f32vec2 direction, bool useStickDir)
     : m_pObject{ object }
     , m_Speed{ speed }
@@ -134,7 +133,10 @@ dae::StartGame::StartGame(std::vector<std::shared_ptr<dae::GameMode>> gameModes,
 
 void dae::StartGame::Execute(float)
 {
+    dae::ServiceLocator::GetSoundSystem().UnloadMusic("../Data/Sounds/1-03. PAC-MAN NEVA PAX!!.mp3");
     auto& sceneManager = dae::SceneManager::GetInstance();
+    auto& gameModeManager = dae::GameModeManager::GetInstance();
+
     const std::string& currentSceneName = sceneManager.GetActiveScene().GetName();
     const std::string& newSceneName = m_SwitchCommand.GetStartLevel();
     
@@ -143,15 +145,52 @@ void dae::StartGame::Execute(float)
 
         if (newSceneName == "Level3")
         {
-            m_GameModes[2]->SetupGameMode();
+            //m_GameModes[2]->SetupGameMode();
+            gameModeManager.SetActiveGameMode(m_GameModes[2]);
+            gameModeManager.NextLevelActiveGameMode();
         }
         else if (newSceneName == "Level2")
         {
-            m_GameModes[1]->SetupGameMode();
+            //m_GameModes[1]->SetupGameMode(); 
+            gameModeManager.SetActiveGameMode(m_GameModes[1]);
+            gameModeManager.NextLevelActiveGameMode();
         }
         else if (newSceneName == "Level1")
         {
-            m_GameModes[0]->SetupGameMode();
+            //m_GameModes[0]->SetupGameMode();
+            gameModeManager.SetActiveGameMode(m_GameModes[0]);
+            gameModeManager.NextLevelActiveGameMode();
         }
     }
+}
+
+dae::SkipLevels::SkipLevels()
+{
+
+}
+
+void dae::SkipLevels::Execute(float)
+{
+    auto& gameModeManager = dae::GameModeManager::GetInstance();
+
+    gameModeManager.NextLevelActiveGameMode();
+}
+
+dae::MuteAndUnMuteSounds::MuteAndUnMuteSounds()
+    : m_IsMuted(false)
+{
+}
+
+void dae::MuteAndUnMuteSounds::Execute(float)
+{
+    if (m_IsMuted)
+    {
+        dae::ServiceLocator::GetSoundSystem().UnmuteAll();
+    }
+    else
+    {
+        dae::ServiceLocator::GetSoundSystem().MuteAll();
+    }
+
+    m_IsMuted = !m_IsMuted;
 }

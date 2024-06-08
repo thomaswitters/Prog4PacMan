@@ -22,6 +22,7 @@ namespace dae
         bool GoOut();
         void SetMaxTimeInBase(float maxTimeInBase);
 
+        void SetPatrolPhasePlus(int amount);
     private:
         float m_TimeInChaseState = 0.f;
         float m_MaxTimeInChaseState;
