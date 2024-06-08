@@ -5,49 +5,49 @@
 
 namespace dae
 {
-    FOVComponent::FOVComponent(std::weak_ptr<GameObject> owner, float viewAngle, float viewDistance)
-        : BaseComponent(owner), m_ViewAngle(viewAngle), m_ViewDistance(viewDistance), m_PlayerInSight(false), m_Angle(0.f)
+    FOVComponent::FOVComponent(std::weak_ptr<GameObject> pOwner, float viewAngle, float viewDistance)
+        : BaseComponent(pOwner), m_ViewAngle(viewAngle), m_ViewDistance(viewDistance), m_PlayerInSight(false), m_Angle(0.f)
     {
     }
 
     void FOVComponent::Update(float)
     {
-        auto owner = GetOwner().lock();
-        if (!owner)
+        auto pOwner = GetOwner().lock();
+        if (!pOwner)
             return;
 
-        auto scene = owner->GetScene();
-        if (!scene)
+        auto pScene = pOwner->GetScene();
+        if (!pScene)
             return;
 
-        auto gameObjects = scene->GetObjects();
+        auto gameObjects = pScene->GetObjects();
 
         m_PlayerInSight = false;
-        m_PlayerInVision.reset();
+        m_pPlayerInVision.reset();
         float closestDistanceSquared = std::numeric_limits<float>::max();
 
-        if (!m_OwnerTransform)
+        if (!m_pOwnerTransform)
         {
-            m_OwnerTransform = owner->GetComponent<TransformComponent>();
-            if (!m_OwnerTransform)
+            m_pOwnerTransform = pOwner->GetComponent<TransformComponent>();
+            if (!m_pOwnerTransform)
                 return;
         }
 
-        glm::vec2 ownerPosition = m_OwnerTransform->GetWorldPosition();
+        glm::vec2 ownerPosition = m_pOwnerTransform->GetWorldPosition();
 
         float cosHalfViewAngle = std::cos(glm::radians(m_ViewAngle / 2.0f));
         glm::vec2 ownerForward = glm::vec2(std::cos(glm::radians(m_Angle)), std::sin(glm::radians(m_Angle)));
 
-        for (const auto& gameObject : gameObjects)
+        for (const auto& pGameObject : gameObjects)
         {
-            if (gameObject == owner || gameObject->GetTag() != "Player")
+            if (pGameObject == pOwner || pGameObject->GetTag() != "Player")
                 continue;
 
-            m_PlayerTransform = gameObject->GetComponent<TransformComponent>();
-            if (!m_PlayerTransform)
+            m_pPlayerTransform = pGameObject->GetComponent<TransformComponent>();
+            if (!m_pPlayerTransform)
                 continue;
 
-            glm::vec2 targetPosition = m_PlayerTransform->GetWorldPosition();
+            glm::vec2 targetPosition = m_pPlayerTransform->GetWorldPosition();
             glm::vec2 direction = targetPosition - ownerPosition;
             float distanceSquared = glm::dot(direction, direction);
 
@@ -63,19 +63,19 @@ namespace dae
                 if (distanceSquared < closestDistanceSquared)
                 {
                     closestDistanceSquared = distanceSquared;
-                    m_PlayerInVision = gameObject;
+                    m_pPlayerInVision = pGameObject;
                 }
             }
         }
     }
 
-    bool FOVComponent::GetPlayerInSight() const
+    bool FOVComponent::IsPlayerInSight() const
     {
         return m_PlayerInSight;
     }
 
     std::shared_ptr<GameObject> FOVComponent::GetPlayerInVision() const
     {
-        return m_PlayerInVision.lock();
+        return m_pPlayerInVision.lock();
     }
 }

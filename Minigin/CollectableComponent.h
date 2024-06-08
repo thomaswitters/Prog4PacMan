@@ -28,7 +28,7 @@ namespace dae
     class CollectableComponent final : public BaseComponent
     {
     public:
-        CollectableComponent(std::weak_ptr<GameObject> owner, CollectableInfo info = { Object::NONE, 0 });
+        CollectableComponent(std::weak_ptr<GameObject> pOwner, CollectableInfo info = { Object::NONE, 0 });
 
         CollectableComponent(const CollectableComponent&) = delete;
         CollectableComponent(CollectableComponent&&) = delete;
@@ -36,7 +36,7 @@ namespace dae
         CollectableComponent& operator=(const CollectableComponent&&) = delete;
 
         void Update(float deltaTime) override;
-        void OnPickup(std::weak_ptr<GameObject> other);
+        void OnPickup(std::weak_ptr<GameObject> pOther);
 
         static void SetTotalCoins(int amount) { m_TotalCoins = amount; };
 
@@ -44,7 +44,7 @@ namespace dae
         static int m_TotalCoins;
         int m_PointsOnPickup;
         int m_LoseHealthOnPickup;
-        std::shared_ptr<BoxColliderComponent> m_BoxCollider;
+        std::shared_ptr<BoxColliderComponent> m_pBoxCollider;
         CollectableInfo m_Info;
     };
 }

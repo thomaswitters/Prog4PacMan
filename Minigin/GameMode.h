@@ -17,7 +17,7 @@ namespace dae
 
 		virtual void SetupGameMode() = 0;
 		virtual void NextLevel() = 0;
-		virtual void InitializeGhost(std::shared_ptr<dae::GameObject> ghost, std::string texturePath, std::vector<int> patrolPoints, float maxTimeInBase, float maxTimeInChase, FSMStates::ChasePlayer::FindPathType pathType) = 0;
+		virtual void InitializeGhost(std::shared_ptr<dae::GameObject> pGhost, std::string texturePath, std::vector<int> patrolPoints, float maxTimeInBase, float maxTimeInChase, FSMStates::ChasePlayer::FindPathType pathType) = 0;
 		virtual std::vector<glm::vec3> LoadPositionsFromJSON(const std::string& filePath, const std::string& type) = 0;
 
 		virtual int GetAmountOfLevels() const = 0;

@@ -10,18 +10,18 @@ namespace dae
 	{
 	public:
 		RenderComponent(std::weak_ptr<GameObject> pOwner) : BaseComponent(pOwner) {};
-		RenderComponent(std::weak_ptr<GameObject> pOwner, std::shared_ptr<Texture2D>texture);
+		RenderComponent(std::weak_ptr<GameObject> pOwner, std::shared_ptr<Texture2D> pTexture);
 		RenderComponent(std::weak_ptr<GameObject> pOwner, const std::string& filename);
 		virtual void Render() const override;
 		virtual void Update(float) override {};
 		void SetTexture(const std::string& filename);
-		void SetTexture(const std::shared_ptr<Texture2D> texture);
-		std::shared_ptr<Texture2D> GetTexture() const { return m_Texture; }
-		std::shared_ptr<Texture2D> GetPreviousTexture() const { return m_PreviousTexture; }
+		void SetTexture(const std::shared_ptr<Texture2D> pTexture);
+		std::shared_ptr<Texture2D> GetTexture() const { return m_pTexture; }
+		std::shared_ptr<Texture2D> GetPreviousTexture() const { return m_pPreviousTexture; }
 		void SetPosition(float x, float y);
 	private:
-		std::shared_ptr<Texture2D> m_Texture{};
-		std::shared_ptr<Texture2D> m_PreviousTexture{};
+		std::shared_ptr<Texture2D> m_pTexture{};
+		std::shared_ptr<Texture2D> m_pPreviousTexture{};
 	};
 }
 

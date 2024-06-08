@@ -18,6 +18,6 @@ namespace dae
 
 	private:
 		const float m_Fixed_time_step = 0.02f;
-		static const int m_Ms_per_frame = 2;
+		static const int m_Ms_per_frame = 14;
 	};
 }

@@ -8,7 +8,7 @@ dae::GameObject::~GameObject() = default;
 
 void dae::GameObject::Render() const
 {
-    for (const auto& component : m_Components)
+    for (const auto& component : m_pComponents)
     {
         component->Render();
     }
@@ -16,26 +16,26 @@ void dae::GameObject::Render() const
 
 void dae::GameObject::AddComponent(std::shared_ptr<BaseComponent> component)
 {
-    m_Components.push_back(component);
+    m_pComponents.push_back(component);
 }
 
 void dae::GameObject::RemoveComponent(std::shared_ptr<BaseComponent> component)
 {
-    auto it = std::find(m_Components.begin(), m_Components.end(), component);
-    if (it != m_Components.end())
+    auto it = std::find(m_pComponents.begin(), m_pComponents.end(), component);
+    if (it != m_pComponents.end())
     {
-        m_Components.erase(it);
+        m_pComponents.erase(it);
     }
 }
 
 bool dae::GameObject::HasComponent(const std::shared_ptr<BaseComponent>& component) const
 {
-    return std::find(m_Components.begin(), m_Components.end(), component) != m_Components.end();
+    return std::find(m_pComponents.begin(), m_pComponents.end(), component) != m_pComponents.end();
 }
 
 void dae::GameObject::Update(float deltaTime)
 {
-    for (const auto& component : m_Components)
+    for (const auto& component : m_pComponents)
     {
         component->Update(deltaTime);
     }
@@ -43,7 +43,7 @@ void dae::GameObject::Update(float deltaTime)
 
 void dae::GameObject::FixedUpdate()
 {
-    for (const auto& component : m_Components)
+    for (const auto& component : m_pComponents)
     {
         component->FixedUpdate();
     }
@@ -76,7 +76,7 @@ void dae::GameObject::SetParent(std::shared_ptr<GameObject> parent, bool keepWor
         if (transform)
         {
             transform->SetPositionDirty();
-            for (auto& child : m_Children)
+            for (auto& child : m_pChildren)
             {
                 if (auto childTransform = child->GetComponent<TransformComponent>())
                 {
@@ -103,16 +103,16 @@ void dae::GameObject::SetParent(std::shared_ptr<GameObject> parent, bool keepWor
 
 void dae::GameObject::RemoveChild(std::shared_ptr<GameObject> child)
 {
-    auto foundObject = std::find(m_Children.begin(), m_Children.end(), child);
-    if (foundObject != m_Children.end())
+    auto foundObject = std::find(m_pChildren.begin(), m_pChildren.end(), child);
+    if (foundObject != m_pChildren.end())
     {
-        m_Children.erase(foundObject);
+        m_pChildren.erase(foundObject);
     }
 }
 
 void dae::GameObject::AddChild(std::shared_ptr<GameObject> child)
 {
-    m_Children.emplace_back(child);
+    m_pChildren.emplace_back(child);
 }
 
 bool dae::GameObject::IsChild(const std::shared_ptr<GameObject>& parent) const
@@ -122,7 +122,7 @@ bool dae::GameObject::IsChild(const std::shared_ptr<GameObject>& parent) const
         return false;
     }
 
-    for (const auto& child : m_Children)
+    for (const auto& child : m_pChildren)
     {
         if (child == parent)
         {
@@ -130,7 +130,7 @@ bool dae::GameObject::IsChild(const std::shared_ptr<GameObject>& parent) const
         }
     }
 
-    for (const auto& child : m_Children)
+    for (const auto& child : m_pChildren)
     {
         if (child->IsChild(parent))
         {
@@ -149,7 +149,7 @@ bool dae::GameObject::HasTag(const std::string& tag) const
 void dae::GameObject::SetScene(Scene* scene)
 {
     m_pScene = scene;
-    for (const auto& children : m_Children)
+    for (const auto& children : m_pChildren)
     {
         children->SetScene(scene);
     }

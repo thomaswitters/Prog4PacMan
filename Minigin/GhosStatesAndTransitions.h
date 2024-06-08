@@ -85,9 +85,9 @@ namespace FSMStates
 
         
     private:
-        std::shared_ptr<PacManMoveComponent> m_PlayerMoveComponent;
-        std::shared_ptr<GameObject> m_PreviousPlayer;
-        std::shared_ptr<GameObject> m_Player;
+        std::shared_ptr<PacManMoveComponent> m_pPlayerMoveComponent;
+        std::shared_ptr<GameObject> m_pPreviousPlayer;
+        std::shared_ptr<GameObject> m_pPlayer;
 
         FindPathType m_FincPathType;
     };

@@ -8,7 +8,7 @@ namespace dae
 {
     class BoxColliderComponent final : public BaseComponent {
     public:
-        BoxColliderComponent(std::weak_ptr<GameObject> owner, float width, float height, const glm::vec2& offset = glm::vec2(0.0f, 0.0f));
+        BoxColliderComponent(std::weak_ptr<GameObject> pOwner, float width, float height, const glm::vec2& offset = glm::vec2(0.0f, 0.0f));
 
         BoxColliderComponent(const BoxColliderComponent&) = delete;
         BoxColliderComponent(BoxColliderComponent&&) = delete;
@@ -39,9 +39,9 @@ namespace dae
         bool m_IsActive;
         bool m_IsOverlapped;
 
-        std::vector<std::weak_ptr<BoxColliderComponent>> m_Colliders;
-        static std::vector<std::weak_ptr<GameObject>> CollidableObjects;
+        std::vector<std::weak_ptr<BoxColliderComponent>> m_pColliders;
+        static std::vector<std::weak_ptr<GameObject>> m_pCollidableObjects;
 
-        std::shared_ptr<TransformComponent> m_TransformComponent;
+        std::shared_ptr<TransformComponent> m_pTransformComponent;
     };
 }

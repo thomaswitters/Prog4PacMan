@@ -11,11 +11,11 @@ namespace dae
     class FOVComponent : public BaseComponent
     {
     public:
-        FOVComponent(std::weak_ptr<GameObject> owner, float viewAngle, float viewDistance);
+        FOVComponent(std::weak_ptr<GameObject> pOwner, float viewAngle, float viewDistance);
 
         void Update(float deltaTime) override;
 
-        bool GetPlayerInSight() const;
+        bool IsPlayerInSight() const;
         std::shared_ptr<GameObject> GetPlayerInVision() const;
 
     private:
@@ -23,9 +23,8 @@ namespace dae
         float m_ViewAngle;
         bool m_PlayerInSight;
         float m_Angle;
-        std::weak_ptr<GameObject> m_PlayerInVision;
-        std::shared_ptr<TransformComponent> m_OwnerTransform;
-        std::shared_ptr<TransformComponent> m_PlayerTransform;
+        std::weak_ptr<GameObject> m_pPlayerInVision;
+        std::shared_ptr<TransformComponent> m_pOwnerTransform;
+        std::shared_ptr<TransformComponent> m_pPlayerTransform;
     };
 }
-

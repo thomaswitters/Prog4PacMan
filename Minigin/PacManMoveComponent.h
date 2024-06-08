@@ -65,22 +65,20 @@ namespace dae
         float m_Speed;
         glm::vec2 m_WantedDirection;
         glm::vec2 m_CurrentDirection;
-        std::shared_ptr<TransformComponent> m_Transform;
+        std::shared_ptr<TransformComponent> m_pTransform;
         Grid m_Grid;
         int m_CurrentCellId;
         int m_LastCellIndex;
         glm::vec3 m_TargetPosition;
         bool m_FollowPath;
-        std::vector<int> followTargetPath;
-        size_t followTargetPathIndex;
+        std::vector<int> m_FollowTargetPath;
+        size_t m_FollowTargetPathIndex;
         glm::vec2 m_PreviousDirection = glm::vec2(0.0f, 0.0f);
         std::shared_ptr<StateManagerMovement> m_StateManagerMovement;
 
-
-        std::shared_ptr<BoxColliderComponent> m_BoxCollider;
+        std::shared_ptr<BoxColliderComponent> m_pBoxCollider;
         bool m_IsRespawning = false;
         float m_RespawnTimer = 0.0f;
-        float m_RespawnDelay = 0.5f;
+        float m_RespawnDelay = 1.f;
     };
 }
-

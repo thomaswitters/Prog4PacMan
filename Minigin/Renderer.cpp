@@ -23,9 +23,9 @@ int GetOpenGLDriverIndex()
 
 void dae::Renderer::Init(SDL_Window* window)
 {
-	m_window = window;
-	m_renderer = SDL_CreateRenderer(window, GetOpenGLDriverIndex(), SDL_RENDERER_ACCELERATED);
-	if (m_renderer == nullptr) 
+	m_pWindow = window;
+	m_pRenderer = SDL_CreateRenderer(window, GetOpenGLDriverIndex(), SDL_RENDERER_ACCELERATED);
+	if (m_pRenderer == nullptr)
 	{
 		throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
 	}
@@ -39,12 +39,12 @@ void dae::Renderer::Init(SDL_Window* window)
 void dae::Renderer::Render() const
 {
 	const auto& color = GetBackgroundColor();
-	SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
-	SDL_RenderClear(m_renderer);
+	SDL_SetRenderDrawColor(m_pRenderer, color.r, color.g, color.b, color.a);
+	SDL_RenderClear(m_pRenderer);
 
 	SceneManager::GetInstance().Render();
 
-	SDL_RenderFlush(m_renderer);
+	SDL_RenderFlush(m_pRenderer);
 
 	//ImGui_ImplOpenGL2_NewFrame();
 	//ImGui_ImplSDL2_NewFrame();
@@ -55,7 +55,7 @@ void dae::Renderer::Render() const
 	//ImGui::Render();
 	//ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
-	SDL_RenderPresent(m_renderer);
+	SDL_RenderPresent(m_pRenderer);
 }
 
 void dae::Renderer::Destroy()
@@ -64,10 +64,10 @@ void dae::Renderer::Destroy()
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();*/
 
-	if (m_renderer != nullptr)
+	if (m_pRenderer != nullptr)
 	{
-		SDL_DestroyRenderer(m_renderer);
-		m_renderer = nullptr;
+		SDL_DestroyRenderer(m_pRenderer);
+		m_pRenderer = nullptr;
 	}
 }
 
@@ -95,8 +95,8 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 void dae::Renderer::DrawRectangle(float x, float y, float width, float height, const SDL_Color& color) const
 {
 	SDL_Rect rect{ static_cast<int>(x), static_cast<int>(y), static_cast<int>(width), static_cast<int>(height) };
-	SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
-	SDL_RenderFillRect(m_renderer, &rect);
+	SDL_SetRenderDrawColor(m_pRenderer, color.r, color.g, color.b, color.a);
+	SDL_RenderFillRect(m_pRenderer, &rect);
 }
 
-SDL_Renderer* dae::Renderer::GetSDLRenderer() const { return m_renderer; }
+SDL_Renderer* dae::Renderer::GetSDLRenderer() const { return m_pRenderer; }

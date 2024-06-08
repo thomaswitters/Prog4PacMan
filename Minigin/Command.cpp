@@ -1,8 +1,8 @@
 #include "Command.h"
 #include "InputManager.h"
 
-dae::MoveCommand::MoveCommand(std::shared_ptr<GameObject> object, float speed, glm::f32vec2 direction, bool useStickDir)
-    : m_pObject{ object }
+dae::MoveCommand::MoveCommand(std::shared_ptr<GameObject> pObject, float speed, glm::f32vec2 direction, bool useStickDir)
+    : m_pObject{ pObject }
     , m_Speed{ speed }
     , m_Direction{ direction }
     , m_UseStickDir{ useStickDir }
@@ -33,8 +33,8 @@ void dae::MoveCommand::Execute(float deltaTime)
 
 }
 
-dae::ChangeMoveDirCommand::ChangeMoveDirCommand(std::shared_ptr<GameObject> object, PacManMoveComponent::Movement movement, float angle)
-    : m_pObject{ object }
+dae::ChangeMoveDirCommand::ChangeMoveDirCommand(std::shared_ptr<GameObject> pObject, PacManMoveComponent::Movement movement, float angle)
+    : m_pObject{ pObject }
     , m_Movement{ movement }
     , m_Angle{ angle }
 {
@@ -57,8 +57,8 @@ void dae::Command::Undo(float)
 
 }
 
-dae::AddPointsCommand::AddPointsCommand(std::shared_ptr<GameObject> object, int amount)
-    : m_pObject{ object }
+dae::AddPointsCommand::AddPointsCommand(std::shared_ptr<GameObject> pObject, int amount)
+    : m_pObject{ pObject }
     , AmountPoints{ amount }
 {
     m_pPoints = m_pObject->GetComponent<PointsComponent>();
@@ -72,8 +72,8 @@ void dae::AddPointsCommand::Execute(float)
     }
 }
 
-dae::RemoveHealthCommand::RemoveHealthCommand(std::shared_ptr<GameObject> object)
-    : m_pObject{ object }
+dae::RemoveHealthCommand::RemoveHealthCommand(std::shared_ptr<GameObject> pObject)
+    : m_pObject{ pObject }
 {
     m_pHealth = m_pObject.lock()->GetComponent<HealthComponent>();
 }
@@ -87,12 +87,12 @@ void dae::RemoveHealthCommand::Execute(float)
 }
 
 int dae::SwitchBetweenGameModesCommand::m_CurrentLevelIndex;
-dae::SwitchBetweenGameModesCommand::SwitchBetweenGameModesCommand(std::shared_ptr<GameObject> object)
-    : m_pObject{ object }
+dae::SwitchBetweenGameModesCommand::SwitchBetweenGameModesCommand(std::shared_ptr<GameObject> pObject)
+    : m_pObject{ pObject }
     , m_StartString{}
 {
     m_StartString = "Level1";
-    m_pRenderComponent = object->GetComponent<RenderComponent>();
+    m_pRenderComponent = pObject->GetComponent<RenderComponent>();
 }
 
 void dae::SwitchBetweenGameModesCommand::Execute(float)
@@ -123,8 +123,8 @@ void dae::SwitchBetweenGameModesCommand::Execute(float)
    
 }
 
-dae::StartGame::StartGame(std::vector<std::shared_ptr<dae::GameMode>> gameModes, SwitchBetweenGameModesCommand& switchCommand)
-    : m_GameModes{ gameModes }
+dae::StartGame::StartGame(std::vector<std::shared_ptr<dae::GameMode>> pGameModes, SwitchBetweenGameModesCommand& switchCommand)
+    : m_pGameModes{ pGameModes }
     , m_SwitchCommand(switchCommand)
     , m_StartString()
 {
@@ -146,19 +146,19 @@ void dae::StartGame::Execute(float)
         if (newSceneName == "Level3")
         {
             //m_GameModes[2]->SetupGameMode();
-            gameModeManager.SetActiveGameMode(m_GameModes[2]);
+            gameModeManager.SetActiveGameMode(m_pGameModes[2]);
             gameModeManager.NextLevelActiveGameMode();
         }
         else if (newSceneName == "Level2")
         {
             //m_GameModes[1]->SetupGameMode(); 
-            gameModeManager.SetActiveGameMode(m_GameModes[1]);
+            gameModeManager.SetActiveGameMode(m_pGameModes[1]);
             gameModeManager.NextLevelActiveGameMode();
         }
         else if (newSceneName == "Level1")
         {
             //m_GameModes[0]->SetupGameMode();
-            gameModeManager.SetActiveGameMode(m_GameModes[0]);
+            gameModeManager.SetActiveGameMode(m_pGameModes[0]);
             gameModeManager.NextLevelActiveGameMode();
         }
     }

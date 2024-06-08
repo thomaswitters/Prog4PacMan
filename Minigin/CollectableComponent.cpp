@@ -5,13 +5,13 @@ namespace dae
 {
     int CollectableComponent::m_TotalCoins = 0;
 
-    CollectableComponent::CollectableComponent(std::weak_ptr<GameObject> owner, CollectableInfo info)
-        : BaseComponent(owner),
+    CollectableComponent::CollectableComponent(std::weak_ptr<GameObject> pOwner, CollectableInfo info)
+        : BaseComponent(pOwner),
         m_PointsOnPickup(0),
         m_LoseHealthOnPickup(0),
         m_Info(info)
     {
-        m_BoxCollider = GetOwner().lock()->GetComponent<BoxColliderComponent>();
+        m_pBoxCollider = GetOwner().lock()->GetComponent<BoxColliderComponent>();
 
         switch (m_Info.type)
         {
@@ -29,11 +29,11 @@ namespace dae
 
     void CollectableComponent::Update(float)
     {
-        if (m_BoxCollider)
+        if (m_pBoxCollider)
         {
-            if (m_BoxCollider->GetOverlapped())
+            if (m_pBoxCollider->GetOverlapped())
             {
-                auto collidingObjects = m_BoxCollider->GetCollidingObjects();
+                auto collidingObjects = m_pBoxCollider->GetCollidingObjects();
                 for (auto& object : collidingObjects)
                 {
                     if (object.lock()->GetTag() == "Player")
@@ -45,21 +45,21 @@ namespace dae
         }
     }
 
-    void CollectableComponent::OnPickup(std::weak_ptr<GameObject> other)
+    void CollectableComponent::OnPickup(std::weak_ptr<GameObject> pOther)
     {
-        if (auto otherGameObject = other.lock())
+        if (auto pOtherGameObject = pOther.lock())
         {
-            auto pointsComponent = otherGameObject->GetComponent<PointsComponent>();
-            auto poweredUpComponent = otherGameObject->GetComponent<PoweredUpComponent>();
-            auto healthComponent = otherGameObject->GetComponent<HealthComponent>();
-            auto boxColliderComponent = otherGameObject->GetComponent<BoxColliderComponent>();
+            auto pPointsComponent = pOtherGameObject->GetComponent<PointsComponent>();
+            auto pPoweredUpComponent = pOtherGameObject->GetComponent<PoweredUpComponent>();
+            auto pHealthComponent = pOtherGameObject->GetComponent<HealthComponent>();
+            auto pBoxColliderComponent = pOtherGameObject->GetComponent<BoxColliderComponent>();
 
             switch (m_Info.type)
             {
             case Object::COIN:
                 ServiceLocator::GetSoundSystem().PlaySoundEffect("../Data/Sounds/munch_1.wav", 100, 0);
-                if (pointsComponent)
-                    pointsComponent->AddPoints(m_PointsOnPickup);
+                if (pPointsComponent)
+                    pPointsComponent->AddPoints(m_PointsOnPickup);
                 GetOwner().lock()->RemoveObject();
                 m_TotalCoins--;
                 if (m_TotalCoins <= 0)
@@ -71,27 +71,27 @@ namespace dae
                 }
                 break;
             case Object::POWERUP:
-                if (poweredUpComponent)
+                if (pPoweredUpComponent)
                 {
                     ServiceLocator::GetSoundSystem().PlaySoundEffect("../Data/Sounds/power_pellet.wav", 100, 1);
-                    poweredUpComponent->SetPoweredUp();
-                    poweredUpComponent->ResetTimer();
+                    pPoweredUpComponent->SetPoweredUp();
+                    pPoweredUpComponent->ResetTimer();
                 }
-                if (pointsComponent)
-                    pointsComponent->AddPoints(m_PointsOnPickup);
+                if (pPointsComponent)
+                    pPointsComponent->AddPoints(m_PointsOnPickup);
                 GetOwner().lock()->RemoveObject();
                 break;
             case Object::GHOST:
-                if (poweredUpComponent && poweredUpComponent->IsPoweredUp())
+                if (pPoweredUpComponent && pPoweredUpComponent->IsPoweredUp())
                 {
                     ServiceLocator::GetSoundSystem().PlaySoundEffect("../Data/Sounds/eat_ghost.wav", 100, 0);
-                    if (pointsComponent)
-                        pointsComponent->AddPoints(1000);
-                    m_BoxCollider->SetActive(false);
+                    if (pPointsComponent)
+                        pPointsComponent->AddPoints(1000);
+                    m_pBoxCollider->SetActive(false);
                 }
-                else if (healthComponent)
+                else if (pHealthComponent)
                 {
-                    healthComponent->RemoveHealth(m_LoseHealthOnPickup);
+                    pHealthComponent->RemoveHealth(m_LoseHealthOnPickup);
                 }
                 break;
             default:

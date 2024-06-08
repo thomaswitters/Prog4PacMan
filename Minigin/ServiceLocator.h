@@ -7,17 +7,13 @@ namespace dae
 	class ServiceLocator final
 	{
 	public:
-		static SoundSystem& GetSoundSystem() { return *m_SoundSysmService; }
+		static SoundSystem& GetSoundSystem() { return *m_pSoundSysmLocator; }
 		static void RegisterSoundSystem(std::unique_ptr<SoundSystem>&& system)
 		{
-			if (system == nullptr)
-			{
-				m_SoundSysmService = std::make_unique<dae::NullSoundSystem>();
-			}
-			m_SoundSysmService = std::move(system);
+			m_pSoundSysmLocator = std::move(system);
 		}
 	private:
-		static std::unique_ptr<SoundSystem> m_SoundSysmService;
+		static std::unique_ptr<SoundSystem> m_pSoundSysmLocator;
 	};
 }
 

@@ -6,8 +6,8 @@ using namespace dae;
 bool PoweredUpComponent::s_IsPoweredUp = false;
 float PoweredUpComponent::s_TimerPoweredUp = false;
 
-PoweredUpComponent::PoweredUpComponent(std::weak_ptr<GameObject> owner, float maxTime) :
-	BaseComponent(owner),
+PoweredUpComponent::PoweredUpComponent(std::weak_ptr<GameObject> pOwner, float maxTime) :
+	BaseComponent(pOwner),
 	m_MaxTimePoweredUp(maxTime)
 {
 }

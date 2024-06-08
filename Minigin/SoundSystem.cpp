@@ -77,7 +77,7 @@ namespace dae
     };
 
     SDLSoundSystem::SDLSoundSystem()
-        : m_SDL_MixerImpl(std::make_unique<SDL_MixerImpl>())
+        : m_pSDL_MixerImpl(std::make_unique<SDL_MixerImpl>())
     {
         PreloadSoundEffect("../Data/Sounds/munch_1.wav");
         PreloadSoundEffect("../Data/Sounds/munch_2.wav");
@@ -85,7 +85,7 @@ namespace dae
         PreloadSoundEffect("../Data/Sounds/power_pellet.wav");
         PreloadMusic("../Data/Sounds/1-03. PAC-MAN NEVA PAX!!.mp3");
 
-        m_Thread = std::make_unique<std::thread>(&SDLSoundSystem::SoundLoaderThread, this);
+        m_pThread = std::make_unique<std::thread>(&SDLSoundSystem::SoundLoaderThread, this);
     }
 
     SDLSoundSystem::~SDLSoundSystem()
@@ -105,9 +105,9 @@ namespace dae
             m_ShouldQuit = true;
         }
         m_ConditionVariable.notify_all();
-        if (m_Thread && m_Thread->joinable())
+        if (m_pThread && m_pThread->joinable())
         {
-            m_Thread->join();
+            m_pThread->join();
         }
     }
 
@@ -116,7 +116,7 @@ namespace dae
         if (m_PreloadedSoundEffects.find(fileName) != m_PreloadedSoundEffects.end())
             return;
 
-        Mix_Chunk* chunk = m_SDL_MixerImpl->LoadSoundEffect(fileName);
+        Mix_Chunk* chunk = m_pSDL_MixerImpl->LoadSoundEffect(fileName);
         if (chunk)
         {
             m_PreloadedSoundEffects[fileName] = chunk;
@@ -128,7 +128,7 @@ namespace dae
         if (m_PreloadedMusic.find(fileName) != m_PreloadedMusic.end())
             return;
 
-        Mix_Music* music = m_SDL_MixerImpl->LoadMusic(fileName);
+        Mix_Music* music = m_pSDL_MixerImpl->LoadMusic(fileName);
         if (music)
         {
             m_PreloadedMusic[fileName] = music;
@@ -196,11 +196,11 @@ namespace dae
 
             if (event.type == SoundType::SoundEffect)
             {
-                m_SDL_MixerImpl->PlaySoundEffect(event.fileName, event.volume, event.loops);
+                m_pSDL_MixerImpl->PlaySoundEffect(event.fileName, event.volume, event.loops);
             }
             else if (event.type == SoundType::Music)
             {
-                m_SDL_MixerImpl->PlayMusic(event.fileName, event.volume, event.loops);
+                m_pSDL_MixerImpl->PlayMusic(event.fileName, event.volume, event.loops);
             }
         }
     }

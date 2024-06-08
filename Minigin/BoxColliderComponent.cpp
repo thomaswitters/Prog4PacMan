@@ -1,6 +1,6 @@
 #include "BoxColliderComponent.h"
 
-std::vector<std::weak_ptr<dae::GameObject>> dae::BoxColliderComponent::CollidableObjects;
+std::vector<std::weak_ptr<dae::GameObject>> dae::BoxColliderComponent::m_pCollidableObjects;
 
 dae::BoxColliderComponent::BoxColliderComponent(std::weak_ptr<GameObject> pOwner, float width, float height, const glm::vec2& offset) :
     BaseComponent(pOwner),
@@ -11,36 +11,36 @@ dae::BoxColliderComponent::BoxColliderComponent(std::weak_ptr<GameObject> pOwner
     m_IsTrigger(true),
     m_IsActive(true)
 {
-    m_TransformComponent = pOwner.lock()->GetComponent<TransformComponent>();
-    CollidableObjects.push_back(pOwner);
+    m_pTransformComponent = pOwner.lock()->GetComponent<TransformComponent>();
+    m_pCollidableObjects.push_back(pOwner);
     FetchColliders();
 }
 
 void dae::BoxColliderComponent::FetchColliders()
 {
-    m_Colliders.clear();
-    auto owner = GetOwner().lock();
-    if (!owner) return;
-    for (auto& obj : CollidableObjects)
+    m_pColliders.clear();
+    auto pOwner = GetOwner().lock();
+    if (!pOwner) return;
+    for (auto& obj : m_pCollidableObjects)
     {
         auto otherOwner = obj.lock();
-        if (!otherOwner || otherOwner == owner)
+        if (!otherOwner || otherOwner == pOwner)
             continue;
 
         auto collider = otherOwner->GetComponent<BoxColliderComponent>();
         if (!collider)
             continue;
 
-        m_Colliders.push_back(collider);
+        m_pColliders.push_back(collider);
     }
 }
 
 void dae::BoxColliderComponent::Render() const
 {
-   /* glm::vec2 minBounds = GetMinBounds();
-    glm::vec2 maxBounds = GetMaxBounds();
+    /* glm::vec2 minBounds = GetMinBounds();
+     glm::vec2 maxBounds = GetMaxBounds();
 
-    dae::Renderer::GetInstance().DrawRectangle(minBounds.x, minBounds.y, m_Width, m_Height, { 255, 255, 255, 255 });*/
+     dae::Renderer::GetInstance().DrawRectangle(minBounds.x, minBounds.y, m_Width, m_Height, { 255, 255, 255, 255 });*/
 }
 
 bool dae::BoxColliderComponent::CheckCollision(const std::shared_ptr<BoxColliderComponent>& otherCollider) const
@@ -63,9 +63,9 @@ bool dae::BoxColliderComponent::CheckCollision(const std::shared_ptr<BoxCollider
 
 glm::vec2 dae::BoxColliderComponent::GetMinBounds() const
 {
-    if (m_TransformComponent)
+    if (m_pTransformComponent)
     {
-        glm::vec2 position = m_TransformComponent->GetLocalPosition();
+        glm::vec2 position = m_pTransformComponent->GetLocalPosition();
         return position - m_Offset - glm::vec2(m_Width / 2.0f, m_Height / 2.0f);
 
     }
@@ -73,9 +73,9 @@ glm::vec2 dae::BoxColliderComponent::GetMinBounds() const
 }
 glm::vec2 dae::BoxColliderComponent::GetMaxBounds() const
 {
-    if (m_TransformComponent)
+    if (m_pTransformComponent)
     {
-        glm::vec2 position = m_TransformComponent->GetLocalPosition();
+        glm::vec2 position = m_pTransformComponent->GetLocalPosition();
         return position - m_Offset + glm::vec2(m_Width / 2.0f, m_Height / 2.0f);
     }
     return glm::vec2(0.f, 0.f);
@@ -84,11 +84,11 @@ glm::vec2 dae::BoxColliderComponent::GetMaxBounds() const
 std::vector<std::weak_ptr<dae::GameObject>> dae::BoxColliderComponent::GetCollidingObjects() const
 {
     std::vector<std::weak_ptr<GameObject>> collidingObjects;
-    auto owner = GetOwner().lock();
-    for (auto& collider : m_Colliders)
+    auto pOwner = GetOwner().lock();
+    for (auto& collider : m_pColliders)
     {
         auto otherCollider = collider.lock();
-        if (!otherCollider || otherCollider->GetOwner().lock() == owner)
+        if (!otherCollider || otherCollider->GetOwner().lock() == pOwner)
             continue;
 
         if (CheckCollision(otherCollider))
@@ -102,7 +102,7 @@ std::vector<std::weak_ptr<dae::GameObject>> dae::BoxColliderComponent::GetCollid
 void dae::BoxColliderComponent::Update(float)
 {
     m_IsOverlapped = false;
-    for (auto& collider : m_Colliders)
+    for (auto& collider : m_pColliders)
     {
         auto otherCollider = collider.lock();
         if (!otherCollider)

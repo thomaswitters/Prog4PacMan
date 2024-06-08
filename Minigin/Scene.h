@@ -10,8 +10,8 @@ namespace dae
 	{
 		friend Scene& SceneManager::CreateScene(const std::string& name);
 	public:
-		void Add(std::shared_ptr<GameObject> object);
-		void Remove(std::shared_ptr<GameObject> object);
+		void Add(std::shared_ptr<GameObject> pObject);
+		void Remove(std::shared_ptr<GameObject> pObject);
 		void RemoveAll();
 		void Reload();
 
@@ -27,31 +27,18 @@ namespace dae
 
 		const std::vector<std::shared_ptr<GameObject>>& GetObjects() const
 		{
-			return m_objects;
+			return m_pObjects;
 		}
 
-		const std::string& GetName() const { return m_name; }
-
-		/*std::vector<std::shared_ptr<GameObject>> FindObjectsWithTag(const std::string& tag) const
-		{
-			std::vector<std::shared_ptr<GameObject>> foundObjects;
-			for (auto& obj : m_objects)
-			{
-				if (obj->GetTag() == tag)
-				{
-					foundObjects.push_back(obj);
-				}
-			}
-			return foundObjects;
-		}*/
+		const std::string& GetName() const { return m_Name; }
 	private: 
 		explicit Scene(const std::string& name);
 
-		std::string m_name;
-		std::vector < std::shared_ptr<GameObject>> m_objects{};
-		std::vector<std::shared_ptr<GameObject>> m_initialObjects{};
+		std::string m_Name;
+		std::vector<std::shared_ptr<GameObject>> m_pObjects{};
+		std::vector<std::shared_ptr<GameObject>> m_pInitialObjects{};
 
-		static unsigned int m_idCounter; 
+		static unsigned int m_IdCounter; 
 	};
 
 }

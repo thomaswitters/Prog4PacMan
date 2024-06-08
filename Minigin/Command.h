@@ -23,7 +23,7 @@ namespace dae
 	class MoveCommand final : public Command
 	{
 	public:
-		MoveCommand(std::shared_ptr<GameObject> object, float speed, glm::f32vec2 direction, bool useStickDir = false);
+		MoveCommand(std::shared_ptr<GameObject> pObject, float speed, glm::f32vec2 direction, bool useStickDir = false);
 
 		void Execute(float deltaTime) override;
 	private:
@@ -37,7 +37,7 @@ namespace dae
 	class ChangeMoveDirCommand final : public Command
 	{
 	public:
-		ChangeMoveDirCommand(std::shared_ptr<GameObject> object, PacManMoveComponent::Movement movement, float angle);
+		ChangeMoveDirCommand(std::shared_ptr<GameObject> pObject, PacManMoveComponent::Movement movement, float angle);
 
 		void Execute(float deltaTime) override;
 	private:
@@ -51,7 +51,7 @@ namespace dae
 	class AddPointsCommand final : public Command
 	{
 	public:
-		AddPointsCommand(std::shared_ptr<GameObject> object, int amount);
+		AddPointsCommand(std::shared_ptr<GameObject> pObject, int amount);
 
 		void Execute(float deltaTime) override;
 	private:
@@ -63,7 +63,7 @@ namespace dae
 	class RemoveHealthCommand final : public Command
 	{
 	public:
-		RemoveHealthCommand(std::shared_ptr<GameObject> object);
+		RemoveHealthCommand(std::shared_ptr<GameObject> pObject);
 
 		void Execute(float deltaTime) override;
 	private:
@@ -74,7 +74,7 @@ namespace dae
 	class SwitchBetweenGameModesCommand final : public Command
 	{
 	public:
-		SwitchBetweenGameModesCommand(std::shared_ptr<GameObject> object);
+		SwitchBetweenGameModesCommand(std::shared_ptr<GameObject> pObject);
 
 		void Execute(float deltaTime) override;
 
@@ -92,11 +92,11 @@ namespace dae
 	class StartGame final : public Command
 	{
 	public:
-		StartGame(std::vector<std::shared_ptr<dae::GameMode>> gameModes, SwitchBetweenGameModesCommand& switchCommand);
+		StartGame(std::vector<std::shared_ptr<dae::GameMode>> pGameModes, SwitchBetweenGameModesCommand& switchCommand);
 
 		void Execute(float deltaTime) override;
 	private:
-		std::vector<std::shared_ptr<dae::GameMode>> m_GameModes;
+		std::vector<std::shared_ptr<dae::GameMode>> m_pGameModes;
 		std::string m_StartString;
 		SwitchBetweenGameModesCommand& m_SwitchCommand;
 	};

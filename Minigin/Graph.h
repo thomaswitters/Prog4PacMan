@@ -14,31 +14,31 @@ class Grid {
 public:
     Grid(int numRows, int numCols, float cellWidth, float cellHeight, float x = 0.0f, float y = 0.0f);
 
-    void setCell(int row, int col, CellType type);
-    CellType getCell(int row, int col) const;
-    int getCellId(int row, int col) const;
-    int getCellId(const glm::vec2& position) const;
-    std::pair<int, int> getCellPosition(int cellId) const;
-    std::pair<float, float> getCellCenter(int cellId) const;
-    void drawGrid() const;
-    void setRowHeight(int row, float height);
-    void setColWidth(int col, float width);
-    int getNextCellId(int currentCellId, const glm::vec2& direction) const;
-    int getNextCellId5Front(int currentCellId, const glm::vec2& pacMandirection, const glm::vec2& ghostdirection) const;
+    void SetCell(int row, int col, CellType type);
+    CellType GetCell(int row, int col) const;
+    int GetCellId(int row, int col) const;
+    int GetCellId(const glm::vec2& position) const;
+    std::pair<int, int> GetCellPosition(int cellId) const;
+    std::pair<float, float> GetCellCenter(int cellId) const;
+    void DrawGrid() const;
+    void SetRowHeight(int row, float height);
+    void SetColWidth(int col, float width);
+    int GetNextCellId(int currentCellId, const glm::vec2& direction) const;
+    int GetNextCellId5Front(int currentCellId, const glm::vec2& pacMandirection, const glm::vec2& ghostdirection) const;
 
     std::vector<int> FindPath(int startCellId, int goalCellId);
     std::vector<int> FindSecondBestPath(int startCellId, int goalCellId);
     std::vector<int> FindFarthestPath(int startCellId, int playerCellId);
 
 private:
-    int rows;
-    int cols;
-    float gridX;
-    float gridY;
-    std::vector<float> rowHeights;
-    std::vector<float> colWidths;
-    std::vector<std::vector<int>> cellIds;
-    std::vector<std::vector<CellType>> cells;
+    int m_Rows;
+    int m_Cols;
+    float m_GridX;
+    float m_GridY;
+    std::vector<float> m_RowHeights;
+    std::vector<float> m_ColWidths;
+    std::vector<std::vector<int>> m_CellIds;
+    std::vector<std::vector<CellType>> m_Cells;
 
     float Heuristic(const std::pair<int, int>& start, const std::pair<int, int>& goal) const;
     struct CompareNode {

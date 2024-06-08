@@ -3,67 +3,67 @@
 #include <glm/geometric.hpp>
 
 Grid::Grid(int numRows, int numCols, float cellWidth, float cellHeight, float x, float y)
-    : rows(numRows), cols(numCols), gridX(x), gridY(y) {
-    rowHeights = std::vector<float>(rows, cellHeight);
-    colWidths = std::vector<float>(cols, cellWidth);
-    cells = std::vector<std::vector<CellType>>(rows, std::vector<CellType>(cols, CellType::Tunnel));
-    cellIds.resize(rows, std::vector<int>(cols, 0));
+    : m_Rows(numRows), m_Cols(numCols), m_GridX(x), m_GridY(y) {
+    m_RowHeights = std::vector<float>(m_Rows, cellHeight);
+    m_ColWidths = std::vector<float>(m_Cols, cellWidth);
+    m_Cells = std::vector<std::vector<CellType>>(m_Rows, std::vector<CellType>(m_Cols, CellType::Tunnel));
+    m_CellIds.resize(m_Rows, std::vector<int>(m_Cols, 0));
     int id = 0;
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
-            cellIds[i][j] = id++;
+    for (int i = 0; i < m_Rows; ++i) {
+        for (int j = 0; j < m_Cols; ++j) {
+            m_CellIds[i][j] = id++;
         }
     }
 }
 
-void Grid::setCell(int row, int col, CellType type) {
-    if (row >= 0 && row < rows && col >= 0 && col < cols) {
-        cells[row][col] = type;
+void Grid::SetCell(int row, int col, CellType type) {
+    if (row >= 0 && row < m_Rows && col >= 0 && col < m_Cols) {
+        m_Cells[row][col] = type;
     }
 }
 
-CellType Grid::getCell(int row, int col) const {
-    if (row >= 0 && row < rows && col >= 0 && col < cols) {
-        return cells[row][col];
+CellType Grid::GetCell(int row, int col) const {
+    if (row >= 0 && row < m_Rows && col >= 0 && col < m_Cols) {
+        return m_Cells[row][col];
     }
     return CellType::Tunnel;
 }
 
-int Grid::getCellId(int row, int col) const
+int Grid::GetCellId(int row, int col) const
 {
-    float cumulativeHeight = gridY;
-    for (int i = 0; i < rows; ++i) {
-        if (col >= cumulativeHeight && col < cumulativeHeight + rowHeights[i]) {
+    float cumulativeHeight = m_GridY;
+    for (int i = 0; i < m_Rows; ++i) {
+        if (col >= cumulativeHeight && col < cumulativeHeight + m_RowHeights[i]) {
             row = i;
             break;
         }
-        cumulativeHeight += rowHeights[i];
+        cumulativeHeight += m_RowHeights[i];
     }
 
-    float cumulativeWidth = gridX;
-    for (int j = 0; j < cols; ++j) {
-        if (row >= cumulativeWidth && row < cumulativeWidth + colWidths[j]) {
+    float cumulativeWidth = m_GridX;
+    for (int j = 0; j < m_Cols; ++j) {
+        if (row >= cumulativeWidth && row < cumulativeWidth + m_ColWidths[j]) {
             col = j;
             break;
         }
-        cumulativeWidth += colWidths[j];
+        cumulativeWidth += m_ColWidths[j];
     }
 
     // If both row and column indices are valid, return the corresponding cell ID
     if (row != -1 && col != -1) {
-        return cellIds[row][col];
+        return m_CellIds[row][col];
     }
     return -1;
 }
 
-int Grid::getCellId(const glm::vec2& position) const {
-    float localX = position.x - gridX;
-    float localY = position.y - gridY;
+int Grid::GetCellId(const glm::vec2& position) const {
+    float localX = position.x - m_GridX;
+    float localY = position.y - m_GridY;
 
     float accumulatedWidth = 0.0f;
     int col = -1;
-    for (int i = 0; i < cols; ++i) {
-        accumulatedWidth += colWidths[i];
+    for (int i = 0; i < m_Cols; ++i) {
+        accumulatedWidth += m_ColWidths[i];
         if (localX < accumulatedWidth) {
             col = i;
             break;
@@ -72,26 +72,26 @@ int Grid::getCellId(const glm::vec2& position) const {
 
     float accumulatedHeight = 0.0f;
     int row = -1;
-    for (int i = 0; i < rows; ++i) {
-        accumulatedHeight += rowHeights[i];
+    for (int i = 0; i < m_Rows; ++i) {
+        accumulatedHeight += m_RowHeights[i];
         if (localY < accumulatedHeight) {
             row = i;
             break;
         }
     }
 
-    if (row >= 0 && row < rows && col >= 0 && col < cols) {
-        return getCellId(row, col);
+    if (row >= 0 && row < m_Rows && col >= 0 && col < m_Cols) {
+        return GetCellId(row, col);
     }
     else {
         return -1;
     }
 }
 
-std::pair<int, int> Grid::getCellPosition(int cellId) const {
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
-            if (cellIds[i][j] == cellId) {
+std::pair<int, int> Grid::GetCellPosition(int cellId) const {
+    for (int i = 0; i < m_Rows; ++i) {
+        for (int j = 0; j < m_Cols; ++j) {
+            if (m_CellIds[i][j] == cellId) {
                 return std::make_pair(i, j);
             }
         }
@@ -99,35 +99,35 @@ std::pair<int, int> Grid::getCellPosition(int cellId) const {
     return std::make_pair(-1, -1);
 }
 
-std::pair<float, float> Grid::getCellCenter(int cellId) const {
-    auto position = getCellPosition(cellId);
+std::pair<float, float> Grid::GetCellCenter(int cellId) const {
+    auto position = GetCellPosition(cellId);
     if (position.first != -1 && position.second != -1) {
-        float centerX = gridX;
+        float centerX = m_GridX;
         for (int j = 0; j < position.second; ++j) {
-            centerX += colWidths[j];
+            centerX += m_ColWidths[j];
         }
-        centerX += colWidths[position.second] / 2;
+        centerX += m_ColWidths[position.second] / 2;
 
-        float centerY = gridY;
+        float centerY = m_GridY;
         for (int i = 0; i < position.first; ++i) {
-            centerY += rowHeights[i];
+            centerY += m_RowHeights[i];
         }
-        centerY += rowHeights[position.first] / 2;
+        centerY += m_RowHeights[position.first] / 2;
 
         return std::make_pair(centerX, centerY);
-    }
+   }
     return std::make_pair(-1.0f, -1.0f);
 }
 
-void Grid::drawGrid() const {
-    float currentY = gridY;
-    for (int i = 0; i < rows; ++i) {
-        float currentX = gridX;
-        for (int j = 0; j < cols; ++j) {
-            float cellWidth = colWidths[j];
-            float cellHeight = rowHeights[i];
+void Grid::DrawGrid() const {
+    float currentY = m_GridY;
+    for (int i = 0; i < m_Rows; ++i) {
+        float currentX = m_GridX;
+        for (int j = 0; j < m_Cols; ++j) {
+            float cellWidth = m_ColWidths[j];
+            float cellHeight = m_RowHeights[i];
 
-            switch (cells[i][j]) {
+            switch (m_Cells[i][j]) {
             case CellType::Tunnel:
                 dae::Renderer::GetInstance().DrawRectangle(currentX, currentY, cellWidth, cellHeight, { 255, 255, 255, 0 });
                 break;
@@ -143,39 +143,39 @@ void Grid::drawGrid() const {
 
             currentX += cellWidth;
         }
-        currentY += rowHeights[i];
+        currentY += m_RowHeights[i];
     }
 }
 
-void Grid::setRowHeight(int row, float height) {
-    if (row >= 0 && row < rows) {
-        rowHeights[row] = height;
+void Grid::SetRowHeight(int row, float height) {
+    if (row >= 0 && row < m_Rows) {
+        m_RowHeights[row] = height;
     }
 }
 
-void Grid::setColWidth(int col, float width) {
-    if (col >= 0 && col < cols) {
-        colWidths[col] = width;
+void Grid::SetColWidth(int col, float width) {
+    if (col >= 0 && col < m_Cols) {
+        m_ColWidths[col] = width;
     }
 }
 
-int Grid::getNextCellId(int currentCellId, const glm::vec2& direction) const {
-    int currentRow = currentCellId / cols;
-    int currentCol = currentCellId % cols;
+int Grid::GetNextCellId(int currentCellId, const glm::vec2& direction) const {
+    int currentRow = currentCellId / m_Cols;
+    int currentCol = currentCellId % m_Cols;
 
     int nextRow = currentRow + static_cast<int>(direction.y);
     int nextCol = currentCol + static_cast<int>(direction.x);
 
-    if (nextRow < 0 || nextRow >= rows || nextCol < 0 || nextCol >= cols) {
+    if (nextRow < 0 || nextRow >= m_Rows || nextCol < 0 || nextCol >= m_Cols) {
         return currentCellId;
     }
 
-    return nextRow * cols + nextCol;
+    return nextRow * m_Cols + nextCol;
 }
 
-int Grid::getNextCellId5Front(int currentCellId, const glm::vec2& pacMandirection, const glm::vec2& ghostdirection) const {
-    int currentRow = currentCellId / cols;
-    int currentCol = currentCellId % cols;
+int Grid::GetNextCellId5Front(int currentCellId, const glm::vec2& pacMandirection, const glm::vec2& ghostdirection) const {
+    int currentRow = currentCellId / m_Cols;
+    int currentCol = currentCellId % m_Cols;
     int lastValidRow = currentRow;
     int lastValidCol = currentCol;
 
@@ -183,23 +183,23 @@ int Grid::getNextCellId5Front(int currentCellId, const glm::vec2& pacMandirectio
         int nextRow = currentRow + static_cast<int>(pacMandirection.y) * (i + 1);
         int nextCol = currentCol + static_cast<int>(pacMandirection.x) * (i + 1);
 
-        if (nextRow >= 0 && nextRow < rows && nextCol >= 0 && nextCol < cols) {
+        if (nextRow >= 0 && nextRow < m_Rows && nextCol >= 0 && nextCol < m_Cols) {
             glm::vec2 nextCellDirection = glm::vec2(nextCol - currentCol, nextRow - currentRow);
             if (glm::dot(nextCellDirection, ghostdirection) == -1) {
-                return lastValidRow * cols + lastValidCol;
+                return lastValidRow * m_Cols + lastValidCol;
             }
 
-            if (cells[nextRow][nextCol] == CellType::Wall) {
-                return lastValidRow * cols + lastValidCol;
+            if (m_Cells[nextRow][nextCol] == CellType::Wall) {
+                return lastValidRow * m_Cols + lastValidCol;
             }
             lastValidRow = nextRow;
             lastValidCol = nextCol;
         }
         else {
-            return lastValidRow * cols + lastValidCol;
+            return lastValidRow * m_Cols + lastValidCol;
         }
     }
-    return lastValidRow * cols + lastValidCol;
+    return lastValidRow * m_Cols + lastValidCol;
 }
 
 float Grid::Heuristic(const std::pair<int, int>& start, const std::pair<int, int>& goal) const {
@@ -211,8 +211,8 @@ bool Grid::CompareNode::operator()(const std::pair<int, float>& n1, const std::p
 }
 
 std::vector<int> Grid::AStarSearch(int startCellId, int goalCellId, const std::unordered_set<int>& excludedNodes) const {
-    auto start = getCellPosition(startCellId);
-    auto goal = getCellPosition(goalCellId);
+    auto start = GetCellPosition(startCellId);
+    auto goal = GetCellPosition(goalCellId);
 
     if (start == std::make_pair(-1, -1) || goal == std::make_pair(-1, -1)) {
         return {};
@@ -220,7 +220,7 @@ std::vector<int> Grid::AStarSearch(int startCellId, int goalCellId, const std::u
 
     auto compare = [](const std::pair<int, float>& left, const std::pair<int, float>& right) {
         return left.second > right.second;
-        };
+    };
 
     std::priority_queue<std::pair<int, float>, std::vector<std::pair<int, float>>, decltype(compare)> openSet(compare);
     std::unordered_set<int> openSetIds;
@@ -251,20 +251,20 @@ std::vector<int> Grid::AStarSearch(int startCellId, int goalCellId, const std::u
         }
 
         closedSet.insert(current);
-        auto currentPos = getCellPosition(current);
+        auto currentPos = GetCellPosition(current);
 
         std::vector<std::pair<int, glm::vec2>> neighbors = {
-            { getNextCellId(current, {0.f, -1.f}), {0.f, -1.f} }, // Up
-            { getNextCellId(current, {0.f, 1.f}), {0.f, 1.f} },   // Down
-            { getNextCellId(current, {-1.f, 0.f}), {-1.f, 0.f} }, // Left
-            { getNextCellId(current, {1.f, 0.f}), {1.f, 0.f} }    // Right
+            { GetNextCellId(current, {0.f, -1.f}), {0.f, -1.f} }, // Up
+            { GetNextCellId(current, {0.f, 1.f}), {0.f, 1.f} },   // Down
+            { GetNextCellId(current, {-1.f, 0.f}), {-1.f, 0.f} }, // Left
+            { GetNextCellId(current, {1.f, 0.f}), {1.f, 0.f} }    // Right
         };
 
         for (const auto& neighbor : neighbors) {
             int neighborId = neighbor.first;
-            auto neighborPos = getCellPosition(neighborId);
+            auto neighborPos = GetCellPosition(neighborId);
 
-            if (neighborPos == std::make_pair(-1, -1) || getCell(neighborPos.first, neighborPos.second) == CellType::Wall) {
+            if (neighborPos == std::make_pair(-1, -1) || GetCell(neighborPos.first, neighborPos.second) == CellType::Wall) {
                 continue;
             }
 
@@ -272,8 +272,8 @@ std::vector<int> Grid::AStarSearch(int startCellId, int goalCellId, const std::u
                 continue;
             }
 
-            auto currentCenter = getCellCenter(current);
-            auto neighborCenter = getCellCenter(neighborId);
+            auto currentCenter = GetCellCenter(current);
+            auto neighborCenter = GetCellCenter(neighborId);
             float distance = std::hypot(neighborCenter.first - currentCenter.first, neighborCenter.second - currentCenter.second);
 
             float tentative_gScore = gScore.at(current) + distance;
@@ -311,18 +311,18 @@ std::vector<int> Grid::FindSecondBestPath(int startCellId, int goalCellId) {
 }
 
 std::vector<int> Grid::FindFarthestPath(int startCellId, int playerCellId) {
-    auto playerPos = getCellPosition(playerCellId);
+    auto playerPos = GetCellPosition(playerCellId);
 
     int farthestCellId = -1;
     float maxDistance = -1.0f;
 
-    for (int row = 0; row < rows; ++row) {
-        for (int col = 0; col < cols; ++col) {
-            if (getCell(row, col) == CellType::Wall) {
+    for (int row = 0; row < m_Rows; ++row) {
+        for (int col = 0; col < m_Cols; ++col) {
+            if (GetCell(row, col) == CellType::Wall) {
                 continue;
             }
 
-            int cellId = getCellId(row, col);
+            int cellId = GetCellId(row, col);
             auto cellPos = std::make_pair(row, col);
 
             float distance = Heuristic(playerPos, cellPos);

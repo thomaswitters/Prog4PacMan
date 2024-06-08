@@ -5,27 +5,27 @@
 
 using namespace dae;
 
-unsigned int Scene::m_idCounter = 0;
+unsigned int Scene::m_IdCounter = 0;
 
-Scene::Scene(const std::string& name) : m_name(name) {}
+Scene::Scene(const std::string& name) : m_Name(name) {}
 
 Scene::~Scene() = default;
 
-void Scene::Add(std::shared_ptr<GameObject> object)
+void Scene::Add(std::shared_ptr<GameObject> pObject)
 {
-	object->SetScene(this);
-	m_objects.emplace_back(std::move(object));
+	pObject->SetScene(this);
+	m_pObjects.emplace_back(std::move(pObject));
 }
 
-void Scene::Remove(std::shared_ptr<GameObject> object)
+void Scene::Remove(std::shared_ptr<GameObject> pObject)
 {
-	object.get()->ClearComponents();
-	m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), object), m_objects.end());
+	pObject.get()->ClearComponents();
+	m_pObjects.erase(std::remove(m_pObjects.begin(), m_pObjects.end(), pObject), m_pObjects.end());
 }
 
 void Scene::RemoveAll()
 {
-	m_objects.clear();
+	m_pObjects.clear();
 }
 
 void Scene::Reload()
@@ -36,7 +36,7 @@ void Scene::Reload()
 
 void Scene::FixedUpdate()
 {
-	for (auto& object : m_objects)
+	for (auto& object : m_pObjects)
 	{
 		object->FixedUpdate();
 	}
@@ -46,7 +46,7 @@ void Scene::Update(float deltaTime)
 {
     std::vector<std::shared_ptr<GameObject>> objectsToRemove;
 
-    for (auto& object : m_objects)
+    for (auto& object : m_pObjects)
     {
         object->Update(deltaTime);
         if (object->GetRemoveObject())
@@ -63,7 +63,7 @@ void Scene::Update(float deltaTime)
 
 void Scene::Render() const
 {
-	for (const auto& object : m_objects)
+	for (const auto& object : m_pObjects)
 	{
 		object->Render();
 	}

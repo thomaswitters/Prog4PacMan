@@ -38,7 +38,7 @@ namespace dae
         template <typename T>
         std::shared_ptr<T> GetComponent() const
         {
-            for (std::shared_ptr<BaseComponent> bc : m_Components)
+            for (std::shared_ptr<BaseComponent> bc : m_pComponents)
             {
                 std::shared_ptr<T> castedPointer = std::dynamic_pointer_cast<T>(bc);
                 if (castedPointer)
@@ -52,7 +52,7 @@ namespace dae
 
         std::weak_ptr<GameObject> GetParent() const { return m_pParent; };
         void SetParent(std::shared_ptr<GameObject> parent, bool keepWorldPosition = false);
-        std::vector<std::shared_ptr<GameObject>> GetChildren() const { return m_Children; }
+        std::vector<std::shared_ptr<GameObject>> GetChildren() const { return m_pChildren; }
 
 
         void SetTag(const std::string& tag) { m_Tag = tag; }
@@ -65,7 +65,7 @@ namespace dae
         void RemoveObject();
         bool GetRemoveObject();
 
-        void ClearComponents() { if (auto sharedThis = shared_from_this()) { m_Components.clear(); };}
+        void ClearComponents() { if (auto sharedThis = shared_from_this()) { m_pComponents.clear(); };}
     private:
         void RemoveChild(std::shared_ptr<GameObject> child);
         void AddChild(std::shared_ptr<GameObject> child);
@@ -73,8 +73,8 @@ namespace dae
 
         std::weak_ptr<GameObject> m_pParent;
 
-        std::vector<std::shared_ptr<BaseComponent>> m_Components;
-        std::vector<std::shared_ptr<GameObject>> m_Children;
+        std::vector<std::shared_ptr<BaseComponent>> m_pComponents;
+        std::vector<std::shared_ptr<GameObject>> m_pChildren;
 
         Scene* m_pScene;
         std::string m_Tag;

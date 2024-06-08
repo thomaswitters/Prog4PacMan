@@ -22,8 +22,8 @@ namespace dae
         CommandData()
             : command(nullptr), inputType(KeyState::keyPressed), canBeDeleted(true) {}
 
-        CommandData(std::unique_ptr<Command> cmd, KeyState state, bool deletable = true)
-            : command(std::move(cmd)), inputType(state), canBeDeleted(deletable) {}
+        CommandData(std::unique_ptr<Command> pCmd, KeyState state, bool deletable = true)
+            : command(std::move(pCmd)), inputType(state), canBeDeleted(deletable) {}
 
         std::unique_ptr<Command> command;
         KeyState inputType;
@@ -37,9 +37,9 @@ namespace dae
 
         bool ProcessInput(float deltaTime);
 
-        void SetGamePadCommand(GamePad::ControllerButton button, Command* command, KeyState inputType, bool canBeDeleted = false);
-        void SetGamePadStickCommand(GamePad::ControllerStick button, Command* command, bool canBeDeleted = false);
-        void SetKeyboardCommand(SDL_Scancode key, Command* command, KeyState inputType, bool canBeDeleted = false);
+        void SetGamePadCommand(GamePad::ControllerButton button, Command* pCommand, KeyState inputType, bool canBeDeleted = false);
+        void SetGamePadStickCommand(GamePad::ControllerStick button, Command* pCommand, bool canBeDeleted = false);
+        void SetKeyboardCommand(SDL_Scancode key, Command* pCommand, KeyState inputType, bool canBeDeleted = false);
 
         glm::vec2 GetControllerStickValues(GamePad::ControllerStick stick) const;
 

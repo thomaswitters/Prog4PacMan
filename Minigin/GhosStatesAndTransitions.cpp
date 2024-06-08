@@ -13,7 +13,7 @@ using namespace FSMConditions;
 //---STATES---
 //------------
 void None::OnEnter() {
-    m_MoveCoomponent->SetFollowPath(false);
+    m_pMoveComponent->SetFollowPath(false);
 }
 
 void None::OnExit() {
@@ -24,14 +24,14 @@ void None::Update(float) {
 }
 
 void NoneFrightened::OnEnter() {
-    m_MoveCoomponent->SetFollowPath(false);
-    m_RenderComponent->SetTexture("frightenghost.png");
-    m_MoveCoomponent->SetSpeed(40);
+    m_pMoveComponent->SetFollowPath(false);
+    m_pRenderComponent->SetTexture("frightenghost.png");
+    m_pMoveComponent->SetSpeed(40);
 }
 
 void NoneFrightened::OnExit() {
-    m_RenderComponent->SetTexture(m_RenderComponent->GetPreviousTexture());
-    m_MoveCoomponent->SetSpeed(90);
+    m_pRenderComponent->SetTexture(m_pRenderComponent->GetPreviousTexture());
+    m_pMoveComponent->SetSpeed(90);
 }
 
 void NoneFrightened::Update(float) {
@@ -41,15 +41,15 @@ void NoneFrightened::Update(float) {
 
 //------------ Patrol State ------------
 void Patrol::OnEnter() {
-    m_MoveCoomponent->SetFollowPath(true);
+    m_pMoveComponent->SetFollowPath(true);
 
-    m_MoveCoomponent->SetTargetCellIndex(m_TargetCellIndices[0]);
+    m_pMoveComponent->SetTargetCellIndex(m_TargetCellIndices[0]);
 
-    m_MoveCoomponent->GetStateManager()->SetPatrolPhasePlus(1);
+    m_pMoveComponent->GetStateManager()->SetPatrolPhasePlus(1);
 
-    if (m_MoveCoomponent->GetStateManager()->GetPatrolPhase() >= 3)
+    if (m_pMoveComponent->GetStateManager()->GetPatrolPhase() >= 3)
     {
-        m_MoveCoomponent->GetStateManager()->SetMaxTimeInPatrolState(5);
+        m_pMoveComponent->GetStateManager()->SetMaxTimeInPatrolState(5);
     }
 }
 
@@ -57,10 +57,10 @@ void Patrol::OnExit() {
 }
 
 void Patrol::Update(float deltaTime) {
-    int currentCell = m_MoveCoomponent->GetCurrentIndex();
+    int currentCell = m_pMoveComponent->GetCurrentIndex();
     int nextCell = 0;
 
-    if (m_MoveCoomponent->HasReachedTargetCell()) {
+    if (m_pMoveComponent->HasReachedTargetCell()) {
         if (currentCell == m_TargetCellIndices[0])
             nextCell = m_TargetCellIndices[1];
         else if (currentCell == m_TargetCellIndices[1])
@@ -70,29 +70,29 @@ void Patrol::Update(float deltaTime) {
         else
             nextCell = m_TargetCellIndices[0];
 
-        m_MoveCoomponent->SetTargetCellIndex(nextCell);
+        m_pMoveComponent->SetTargetCellIndex(nextCell);
     }
 
-    m_MoveCoomponent->FollowPath(deltaTime, nextCell);
+    m_pMoveComponent->FollowPath(deltaTime, nextCell);
 
-    m_MoveCoomponent->GetStateManager()->TimeInPatrolStatePlus(deltaTime);
+    m_pMoveComponent->GetStateManager()->TimeInPatrolStatePlus(deltaTime);
 }
 
 
 //------------ ChasePlayer State ------------
 void ChasePlayer::OnEnter() {
 
-    m_Player = m_pFovComponent->GetPlayerInVision();
-    if (m_Player != nullptr)
+    m_pPlayer = m_pFovComponent->GetPlayerInVision();
+    if (m_pPlayer != nullptr)
     {
-        if (m_PlayerMoveComponent == nullptr)
+        if (m_pPlayerMoveComponent == nullptr)
         {
-            m_PlayerMoveComponent = m_Player->GetComponent<PacManMoveComponent>();
+            m_pPlayerMoveComponent = m_pPlayer->GetComponent<PacManMoveComponent>();
         }
     }
 
    
-    m_MoveCoomponent->SetFollowPath(true); 
+    m_pMoveComponent->SetFollowPath(true);
 }
 
 void ChasePlayer::OnExit() {
@@ -102,37 +102,37 @@ void ChasePlayer::OnExit() {
 void ChasePlayer::Update(float deltaTime) {
 
     std::shared_ptr<GameObject> currentPlayer = m_pFovComponent->GetPlayerInVision();
-    if (currentPlayer != m_PreviousPlayer)
+    if (currentPlayer != m_pPreviousPlayer)
     {
-        m_Player = currentPlayer;
-        if (m_Player != nullptr)
+        m_pPlayer = currentPlayer;
+        if (m_pPlayer != nullptr)
         {
-            m_PlayerMoveComponent = m_Player->GetComponent<PacManMoveComponent>();
+            m_pPlayerMoveComponent = m_pPlayer->GetComponent<PacManMoveComponent>();
         }
-        m_PreviousPlayer = m_Player;
+        m_pPreviousPlayer = m_pPlayer;
     }
 
-    m_MoveCoomponent->GetStateManager()->TimeInChaseStatePlus(deltaTime);
+    m_pMoveComponent->GetStateManager()->TimeInChaseStatePlus(deltaTime);
     switch (m_FincPathType) 
     {
     case FSMStates::ChasePlayer::FindPathType::NONE:
         break;
     case FSMStates::ChasePlayer::FindPathType::BESTPATH:
-        if (m_PlayerMoveComponent != nullptr)
+        if (m_pPlayerMoveComponent != nullptr)
         {
-            m_MoveCoomponent->FollowPathToPlayer(deltaTime, m_PlayerMoveComponent->GetCurrentIndex());
+            m_pMoveComponent->FollowPathToPlayer(deltaTime, m_pPlayerMoveComponent->GetCurrentIndex());
         }
         break;
     case FSMStates::ChasePlayer::FindPathType::SECONDBESTPATH:
-        if (m_PlayerMoveComponent != nullptr)
+        if (m_pPlayerMoveComponent != nullptr)
         {
-            m_MoveCoomponent->FollowSecondBestPath(deltaTime, m_PlayerMoveComponent->GetCurrentIndex());
+            m_pMoveComponent->FollowSecondBestPath(deltaTime, m_pPlayerMoveComponent->GetCurrentIndex());
         }
         break;
     case FSMStates::ChasePlayer::FindPathType::PREDICT:
-        if (m_PlayerMoveComponent != nullptr)
+        if (m_pPlayerMoveComponent != nullptr)
         {
-            m_MoveCoomponent->FollowToPathThatPacManWillBeAt(deltaTime, m_PlayerMoveComponent->GetCurrentIndex(), m_PlayerMoveComponent->GetCurrentDirection());
+            m_pMoveComponent->FollowToPathThatPacManWillBeAt(deltaTime, m_pPlayerMoveComponent->GetCurrentIndex(), m_pPlayerMoveComponent->GetCurrentDirection());
         }
         break;
     default:
@@ -144,9 +144,9 @@ void ChasePlayer::Update(float deltaTime) {
 
 //------------ Frightened State ------------
 void Frightened::OnEnter() {
-    m_RenderComponent->SetTexture("frightenghost.png");
-    m_MoveCoomponent->SetSpeed(40);
-    m_MoveCoomponent->SetFollowPath(true);
+    m_pRenderComponent->SetTexture("frightenghost.png");
+    m_pMoveComponent->SetSpeed(40);
+    m_pMoveComponent->SetFollowPath(true);
 
     m_Player = m_pFovComponent->GetPlayerInVision();
     if (m_Player != nullptr)
@@ -159,70 +159,70 @@ void Frightened::OnEnter() {
 }
 
 void Frightened::OnExit() {
-    m_RenderComponent->SetTexture(m_RenderComponent->GetPreviousTexture());
-    m_MoveCoomponent->SetSpeed(90);
+    m_pRenderComponent->SetTexture(m_pRenderComponent->GetPreviousTexture());
+    m_pMoveComponent->SetSpeed(90);
 }
 
 void Frightened::Update(float deltaTime) {
     if (m_PlayerMoveComponent != nullptr)
     {
-        m_MoveCoomponent->FleeFromPlayer(deltaTime, m_PlayerMoveComponent->GetCurrentIndex());
+        m_pMoveComponent->FleeFromPlayer(deltaTime, m_PlayerMoveComponent->GetCurrentIndex());
     }
 }
 
 
 //------------ ReturnToBase State ------------
 void ReturnToBase::OnEnter() {
-    m_MoveCoomponent->SetFollowPath(true);
-    m_MoveCoomponent->SetTargetCellIndex(144);
+    m_pMoveComponent->SetFollowPath(true);
+    m_pMoveComponent->SetTargetCellIndex(144);
 
-    if (!m_BoxColliderComponent->IsActive())
+    if (!m_pBoxColliderComponent->IsActive())
     {
-        m_RenderComponent->SetTexture("ghostEyes.png");
-        m_MoveCoomponent->SetSpeed(200);
-        m_MoveCoomponent->GetStateManager()->SetMaxTimeInBase(3.f);
+        m_pRenderComponent->SetTexture("ghostEyes.png");
+        m_pMoveComponent->SetSpeed(200);
+        m_pMoveComponent->GetStateManager()->SetMaxTimeInBase(3.f);
     }
    
 }
 
 void ReturnToBase::OnExit() {
-    if (m_RenderComponent->GetPreviousTexture() != nullptr)
+    if (m_pRenderComponent->GetPreviousTexture() != nullptr)
     {
-        m_RenderComponent->SetTexture(m_RenderComponent->GetPreviousTexture());
+        m_pRenderComponent->SetTexture(m_pRenderComponent->GetPreviousTexture());
     }
     
-    m_MoveCoomponent->SetSpeed(90);
-    m_BoxColliderComponent->SetActive(true);
+    m_pMoveComponent->SetSpeed(90);
+    m_pBoxColliderComponent->SetActive(true);
 }
 
 void ReturnToBase::Update(float deltaTime) {
 
-    m_MoveCoomponent->FollowPath(deltaTime, 144);
+    m_pMoveComponent->FollowPath(deltaTime, 144);
 
-    if (m_MoveCoomponent->GetCurrentIndex() == 144)
+    if (m_pMoveComponent->GetCurrentIndex() == 144)
     {
-        if (m_RenderComponent->GetPreviousTexture() != nullptr)
+        if (m_pRenderComponent->GetPreviousTexture() != nullptr)
         {
-            m_RenderComponent->SetTexture(m_RenderComponent->GetPreviousTexture());
+            m_pRenderComponent->SetTexture(m_pRenderComponent->GetPreviousTexture());
         }
-        m_MoveCoomponent->GetStateManager()->TimeInBaseStatePlus(deltaTime);
+        m_pMoveComponent->GetStateManager()->TimeInBaseStatePlus(deltaTime);
     }
    
 }
 
 bool PlayerTimerChase::Evaluate() const {
-    return m_MoveCoomponent->GetStateManager()->TimeToSwitchToPatrol();
+    return m_pMoveComponent->GetStateManager()->TimeToSwitchToPatrol();
 }
 
 bool PlayerTimerPatrol::Evaluate() const {
-    return m_MoveCoomponent->GetStateManager()->TimeToSwitchToChase();
+    return m_pMoveComponent->GetStateManager()->TimeToSwitchToChase();
 }
 
 bool PlayerPoweredUp::Evaluate() const {
     auto player = m_pFovComponent->GetPlayerInVision();
     if (player) {
         auto playerPoweredUp = player->GetComponent<PoweredUpComponent>();
-        return playerPoweredUp && playerPoweredUp->IsPoweredUp() && m_MoveCoomponent->GetCurrentIndex() != 144;
+        return playerPoweredUp && playerPoweredUp->IsPoweredUp() && m_pMoveComponent->GetCurrentIndex() != 144;
     }
     return false;
 }
@@ -238,14 +238,14 @@ bool PlayerNotPoweredUp::Evaluate() const {
 
 bool AtBase::Evaluate() const {
     int baseId = 144;
-    return m_MoveCoomponent->GetCurrentIndex() == baseId &&
-        m_MoveCoomponent->GetStateManager()->GoOut() &&
-        m_pFovComponent->GetPlayerInSight();
+    return m_pMoveComponent->GetCurrentIndex() == baseId &&
+        m_pMoveComponent->GetStateManager()->GoOut() &&
+        m_pFovComponent->IsPlayerInSight();
 }
 
 bool NotAtBase::Evaluate() const {
     int baseId = 144;
-    return (!m_pFovComponent->GetPlayerInSight() &&
-        m_MoveCoomponent->GetCurrentIndex() != baseId) ||
-        !m_BoxColliderComponent->IsActive();
+    return (!m_pFovComponent->IsPlayerInSight() &&
+        m_pMoveComponent->GetCurrentIndex() != baseId) ||
+        !m_pBoxColliderComponent->IsActive();
 }

@@ -7,25 +7,25 @@
 #include "GameObject.h"
 
 
-dae::RenderComponent::RenderComponent(std::weak_ptr<GameObject> owner, const std::string& filename) : BaseComponent(owner)
+dae::RenderComponent::RenderComponent(std::weak_ptr<GameObject> pOwner, const std::string& filename) : BaseComponent(pOwner)
 {
 	SetTexture(filename);
 }
 
-dae::RenderComponent::RenderComponent(std::weak_ptr<GameObject> owner, std::shared_ptr<Texture2D> texture) : BaseComponent{ owner }
+dae::RenderComponent::RenderComponent(std::weak_ptr<GameObject> pOwner, std::shared_ptr<Texture2D> pTexture) : BaseComponent{ pOwner }
 {
-	m_Texture = texture;
+	m_pTexture = pTexture;
 }
 
 void dae::RenderComponent::SetTexture(const std::string& filename)
 {
-	m_PreviousTexture = m_Texture; 
-	m_Texture = ResourceManager::GetInstance().LoadTexture(filename);
+	m_pPreviousTexture = m_pTexture; 
+	m_pTexture = ResourceManager::GetInstance().LoadTexture(filename);
 }
 
-void dae::RenderComponent::SetTexture(const std::shared_ptr<Texture2D> texture)
+void dae::RenderComponent::SetTexture(const std::shared_ptr<Texture2D> pTexture)
 {
-	m_Texture = texture;
+	m_pTexture = pTexture;
 }
 
 void dae::RenderComponent::Render() const
@@ -42,10 +42,10 @@ void dae::RenderComponent::Render() const
 	}
 	glm::vec3 pos = transform->GetWorldPosition();
 	float rotationAngle = transform->GetRotation();
-	if (m_Texture != nullptr)
+	if (m_pTexture != nullptr)
 	{
 		//auto size = glm::vec2(m_Texture.get()->GetSize().x, m_Texture.get()->GetSize().y) * 2.f;
-		dae::Renderer::GetInstance().RenderTexture(*m_Texture, pos.x, pos.y, rotationAngle);
+		dae::Renderer::GetInstance().RenderTexture(*m_pTexture, pos.x, pos.y, rotationAngle);
 	}
 }
 

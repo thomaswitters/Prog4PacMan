@@ -6,13 +6,13 @@
 using namespace dae;
 
 
-FPSComponent::FPSComponent(std::weak_ptr<GameObject> owner) :
-	BaseComponent(owner),
+FPSComponent::FPSComponent(std::weak_ptr<GameObject> pOwner) :
+	BaseComponent(pOwner),
 	m_ElapsedTime(0.f),
 	m_FrameCount(0),
 	m_Fps(0.f)
 {
-	m_TextComponent = GetOwner().lock()->GetComponent<TextComponent>();
+	m_pTextComponent = GetOwner().lock()->GetComponent<TextComponent>();
 }
 
 void FPSComponent::Update(float deltaTime)
@@ -47,9 +47,9 @@ void FPSComponent::UpdateFps(float deltaTime)
 
 
 			
-			if (m_TextComponent)
+			if (m_pTextComponent)
 			{
-				m_TextComponent->SetText(stream.str());
+				m_pTextComponent->SetText(stream.str());
 			}
 		}
 

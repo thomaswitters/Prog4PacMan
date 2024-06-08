@@ -327,41 +327,41 @@ void DuoGameMode::SetupLevel3()
 	m_Scene.Add(Ghost4);
 }
 
-void DuoGameMode::InitializeGhost(std::shared_ptr<dae::GameObject> ghost, std::string texturePath, std::vector<int> patrolPoints, float maxTimeInBase, float maxTimeInChase, FSMStates::ChasePlayer::FindPathType pathType) {
-	ghost->SetTag("Ghost");
+void DuoGameMode::InitializeGhost(std::shared_ptr<dae::GameObject> pGhost, std::string texturePath, std::vector<int> patrolPoints, float maxTimeInBase, float maxTimeInChase, FSMStates::ChasePlayer::FindPathType pathType) {
+	pGhost->SetTag("Ghost");
 
-	auto transform = std::make_shared<dae::TransformComponent>(ghost);
-	ghost->AddComponent(transform);
+	auto transform = std::make_shared<dae::TransformComponent>(pGhost);
+	pGhost->AddComponent(transform);
 
-	auto renderComponent = std::make_shared<dae::RenderComponent>(ghost, texturePath);
-	ghost->AddComponent(renderComponent);
+	auto renderComponent = std::make_shared<dae::RenderComponent>(pGhost, texturePath);
+	pGhost->AddComponent(renderComponent);
 
-	auto boxColliderComponent = std::make_shared<dae::BoxColliderComponent>(ghost, 10.f, 10.f, glm::vec2(-renderComponent->GetTexture()->GetSize().x / 2, -renderComponent->GetTexture()->GetSize().y / 2));
-	ghost->AddComponent(boxColliderComponent);
+	auto boxColliderComponent = std::make_shared<dae::BoxColliderComponent>(pGhost, 10.f, 10.f, glm::vec2(-renderComponent->GetTexture()->GetSize().x / 2, -renderComponent->GetTexture()->GetSize().y / 2));
+	pGhost->AddComponent(boxColliderComponent);
 
-	auto collectableComponent = std::make_shared<dae::CollectableComponent>(ghost, dae::CollectableInfo(dae::Object::GHOST, 1));
-	ghost->AddComponent(collectableComponent);
+	auto collectableComponent = std::make_shared<dae::CollectableComponent>(pGhost, dae::CollectableInfo(dae::Object::GHOST, 1));
+	pGhost->AddComponent(collectableComponent);
 
-	auto fovComponent = std::make_shared<dae::FOVComponent>(ghost, 360.0f, 1000.f);
-	ghost->AddComponent(fovComponent);
+	auto fovComponent = std::make_shared<dae::FOVComponent>(pGhost, 360.0f, 1000.f);
+	pGhost->AddComponent(fovComponent);
 
 	auto stateManagerMovement = std::make_shared<StateManagerMovement>(maxTimeInChase, 7.f, maxTimeInBase);
-	auto moveComponent = std::make_shared<PacManMoveComponent>(ghost, 90.f, 8, 8, stateManagerMovement);
-	ghost->AddComponent(moveComponent);
+	auto moveComponent = std::make_shared<PacManMoveComponent>(pGhost, 90.f, 8, 8, stateManagerMovement);
+	pGhost->AddComponent(moveComponent);
 
-	auto patrolState = new FSMStates::Patrol(ghost, patrolPoints);
-	auto chaseState = new FSMStates::ChasePlayer(ghost, pathType);
-	auto returnToBaseState = new FSMStates::ReturnToBase(ghost);
-	auto frightenedState = new FSMStates::Frightened(ghost);
+	auto patrolState = new FSMStates::Patrol(pGhost, patrolPoints);
+	auto chaseState = new FSMStates::ChasePlayer(pGhost, pathType);
+	auto returnToBaseState = new FSMStates::ReturnToBase(pGhost);
+	auto frightenedState = new FSMStates::Frightened(pGhost);
 
-	auto stateMachine = std::make_shared<dae::FiniteStateMachine>(ghost, returnToBaseState);
+	auto stateMachine = std::make_shared<dae::FiniteStateMachine>(pGhost, returnToBaseState);
 
-	auto playerNotAtBaseCondition = new FSMConditions::NotAtBase(ghost);
-	auto playerAtBaseCondition = new FSMConditions::AtBase(ghost);
-	auto playerTimeInChaseStateCondition = new FSMConditions::PlayerTimerChase(ghost);
-	auto playerTimeInPatrolStateCondition = new FSMConditions::PlayerTimerPatrol(ghost);
-	auto playerPoweredUpCondition = new FSMConditions::PlayerPoweredUp(ghost);
-	auto playerNotPoweredUpCondition = new FSMConditions::PlayerNotPoweredUp(ghost);
+	auto playerNotAtBaseCondition = new FSMConditions::NotAtBase(pGhost);
+	auto playerAtBaseCondition = new FSMConditions::AtBase(pGhost);
+	auto playerTimeInChaseStateCondition = new FSMConditions::PlayerTimerChase(pGhost);
+	auto playerTimeInPatrolStateCondition = new FSMConditions::PlayerTimerPatrol(pGhost);
+	auto playerPoweredUpCondition = new FSMConditions::PlayerPoweredUp(pGhost);
+	auto playerNotPoweredUpCondition = new FSMConditions::PlayerNotPoweredUp(pGhost);
 
 	stateMachine->AddTransition(chaseState, frightenedState, playerPoweredUpCondition);
 	stateMachine->AddTransition(patrolState, frightenedState, playerPoweredUpCondition);
@@ -373,7 +373,7 @@ void DuoGameMode::InitializeGhost(std::shared_ptr<dae::GameObject> ghost, std::s
 	stateMachine->AddTransition(patrolState, chaseState, playerTimeInPatrolStateCondition);
 	stateMachine->AddTransition(chaseState, patrolState, playerTimeInChaseStateCondition);
 
-	ghost->AddComponent(stateMachine);
+	pGhost->AddComponent(stateMachine);
 }
 
 std::vector<glm::vec3> DuoGameMode::LoadPositionsFromJSON(const std::string& filePath, const std::string& type) {

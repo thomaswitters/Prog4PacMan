@@ -7,7 +7,7 @@ namespace dae
 	class PoweredUpComponent : public BaseComponent
 	{
 	public:
-		PoweredUpComponent(std::weak_ptr<GameObject> owner, float maxTime);
+		PoweredUpComponent(std::weak_ptr<GameObject> pOwner, float maxTime);
 
 		void Update(float deltaTime) override;
 		void Render() const override;

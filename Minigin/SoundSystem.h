@@ -33,17 +33,6 @@ namespace dae
         virtual ~SoundSystem() = default;
     };
 
-    class NullSoundSystem : public SoundSystem
-    {
-    public:
-        void PlaySoundEffect(const std::string&, int, int) override {}
-        void PlayMusic(const std::string&, int, int) override {}
-        void MuteAll() override {}
-        void UnmuteAll() override {}
-        void UnloadMusic(const std::string&) override {}
-        void UnloadSoundEffect(const std::string&) override {}
-    };
-
     class SDLSoundSystem : public SoundSystem
     {
     public:
@@ -65,13 +54,13 @@ namespace dae
         void SoundLoaderThread();
         bool IsEventAvailableOrShouldQuit() const;
 
-        std::unique_ptr<std::thread> m_Thread;
+        std::unique_ptr<std::thread> m_pThread;
         std::queue<SoundEvent> m_EventQueue;
         std::mutex m_QueueMutex;
         std::condition_variable m_ConditionVariable;
         bool m_ShouldQuit = false;
         class SDL_MixerImpl;
-        std::unique_ptr<SDL_MixerImpl> m_SDL_MixerImpl;
+        std::unique_ptr<SDL_MixerImpl> m_pSDL_MixerImpl;
 
         std::map<std::string, Mix_Chunk*> m_PreloadedSoundEffects;
         std::map<std::string, Mix_Music*> m_PreloadedMusic;

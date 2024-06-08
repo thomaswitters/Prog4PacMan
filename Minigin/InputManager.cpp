@@ -112,19 +112,19 @@ bool InputManager::ProcessInput(float deltaTime)
     return true;
 }
 
-void InputManager::SetGamePadCommand(GamePad::ControllerButton button, Command* command, KeyState inputType, bool canBeDeleted)
+void InputManager::SetGamePadCommand(GamePad::ControllerButton button, Command* pCommand, KeyState inputType, bool canBeDeleted)
 {
-    m_GamePadCommands[button] = CommandData(std::unique_ptr<Command>(command), inputType, canBeDeleted);
+    m_GamePadCommands[button] = CommandData(std::unique_ptr<Command>(pCommand), inputType, canBeDeleted);
 }
 
-void InputManager::SetGamePadStickCommand(GamePad::ControllerStick button, Command* command, bool canBeDeleted)
+void InputManager::SetGamePadStickCommand(GamePad::ControllerStick button, Command* pCommand, bool canBeDeleted)
 {
-    m_GamePadStickCommands[button] = CommandData(std::unique_ptr<Command>(command), KeyState::keyPressed, canBeDeleted);
+    m_GamePadStickCommands[button] = CommandData(std::unique_ptr<Command>(pCommand), KeyState::keyPressed, canBeDeleted);
 }
 
-void InputManager::SetKeyboardCommand(SDL_Scancode key, Command* command, KeyState inputType, bool canBeDeleted)
+void InputManager::SetKeyboardCommand(SDL_Scancode key, Command* pCommand, KeyState inputType, bool canBeDeleted)
 {
-    m_KeyboardCommands[key] = CommandData(std::unique_ptr<Command>(command), inputType, canBeDeleted);
+    m_KeyboardCommands[key] = CommandData(std::unique_ptr<Command>(pCommand), inputType, canBeDeleted);
 }
 
 glm::vec2 InputManager::GetControllerStickValues(GamePad::ControllerStick stick) const

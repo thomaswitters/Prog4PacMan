@@ -49,7 +49,7 @@ namespace dae
 			}
         };
 
-        void InitializeGhost(std::shared_ptr<dae::GameObject> ghost, std::string texturePath, std::vector<int> patrolPoints, float maxTimeInBase, float maxTimeInChase, FSMStates::ChasePlayer::FindPathType pathType) override;
+        void InitializeGhost(std::shared_ptr<dae::GameObject> pGhost, std::string texturePath, std::vector<int> patrolPoints, float maxTimeInBase, float maxTimeInChase, FSMStates::ChasePlayer::FindPathType pathType) override;
         std::vector<glm::vec3> LoadPositionsFromJSON(const std::string& filePath, const std::string& type) override;
 
 		int GetAmountOfLevels() const override {return m_AmountLevels;}
