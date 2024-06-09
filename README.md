@@ -11,6 +11,9 @@ Ambush Mode: Targets a position four cells ahead of Pac-Man to cut him off.
 Flee Mode: Moves towards the farthest cell from Pac-Man for fleeing purposes.
 Additionally, the ghosts have a field of vision (FOV) component, enabling them to detect Pac-Man and determine his position within their line of sight.
 
+You can skip levels with the F1 key.
+you can mute the audio with the F2 key.
+
 # link
 https://github.com/thomaswitters/Prog4PacMan.git
 
